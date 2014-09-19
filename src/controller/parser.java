@@ -44,7 +44,7 @@ public class parser {
 	}
 
 	private static userInput parseAdd(String content) {
-		// TODO Auto-generated method stub
+		userInput input=new userInput();
 		return null;
 	}
 
@@ -79,7 +79,9 @@ public class parser {
 	}
 
 	private static userInput errorCommand(String content) {
-		return null;
+		userInput input=new userInput();
+		input.unvalidation();
+		return input;
 	}
 
 }
