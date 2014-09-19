@@ -15,7 +15,8 @@ import java.util.*;
 public class userInput {
 	private static boolean valid = true;
 	private static String command = null;
-	private static int number = 0;
+	private static List<Integer> deleteNum = new ArrayList<Integer>();
+	private static int editNum = 0;
 	private static String event = null;
 	private static boolean floating = true;
 	private static Date beginTime;
@@ -23,31 +24,35 @@ public class userInput {
 	private static SimpleDateFormat timeFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm");
 
-	public static boolean getValid() {
+	public boolean getValid() {
 		return valid;
 	}
 
-	public static String getCommand() {
+	public String getCommand() {
 		return command;
 	}
+
+	public List<Integer> getDeleteNumber() {
+		return deleteNum;
+	}
 	
-	public static int getNumber(){
-		return number;
+	public int getEditNumber() {
+		return editNum;
 	}
 
-	public static String getEvent() {
+	public String getEvent() {
 		return event;
 	}
 
-	public static boolean isFloat() {
+	public boolean isFloat() {
 		return floating;
 	}
-	
-	public static Date getBeginDate() {
+
+	public Date getBeginDate() {
 		return beginTime;
 	}
 
-	public static Date getEndDate() {
+	public Date getEndDate() {
 		return endTime;
 	}
 
@@ -55,12 +60,18 @@ public class userInput {
 		valid = false;
 	}
 
-	public void add(String userCommand, String userEvent,
-			boolean userFloat,int num) {
+	public void add(String userCommand, String userEvent, boolean userFloat) {
 		command = userCommand;
 		event = userEvent;
 		floating = userFloat;
-		number=num;
+	}
+
+	public void addDeleteNumber(List<Integer> numbers) {
+		deleteNum = numbers;
+	}
+
+	public void addEditNumber(int number) {
+		editNum = number;
 	}
 
 	public void addBeginDate(String beginDate) throws ParseException {
