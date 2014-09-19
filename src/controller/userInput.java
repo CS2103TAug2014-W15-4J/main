@@ -7,7 +7,7 @@ import java.util.*;
  * 
  * Object passing from parser to logic
  * The format of time is "yyyy-MM-dd HH:mm"
- * (For command with only one time, defult we use addBeginDate and getBeginDate)
+ * (For command with only one time, default we use addBeginDate and getBeginDate)
  * @author Lu Yuehan
  *
  */
