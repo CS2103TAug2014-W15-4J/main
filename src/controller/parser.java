@@ -2,6 +2,8 @@ package controller;
 
 import java.util.*;
 
+import com.sun.corba.se.spi.orbutil.fsm.Input;
+
 public class Parser {
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DELETE = "delete";
@@ -47,62 +49,73 @@ public class Parser {
 	}
 
 	private static UserInput parseAdd(String content) {
-		if (content == null || content == "")
+		if (content == null || content.equals(""))
 			return errorCommand();
 		else {
-			userInput input = new userInput();
+			UserInput input = new UserInput();
 			input.add(CMD_ADD, content, true);
 			return input;
 		}
 	}
 
 	private static UserInput parseDelete(String content) {
-		userInput input = new userInput();
-		int number = 0;
-		Integer.valueOf(content.trim());
+		if(!trueDeleteFormat(content)) return errorCommand();
+		UserInput input = new UserInput();
+		String[] numberInString=content.split(" ");
+		int length=numberInString.length;
+		List<Integer> number=new ArrayList<Integer>();
+		for(int i=0;i<length;i++)
+			if(!numberInString[i].equals(""))
+				number.add(Integer.valueOf(numberInString[i].trim()));
 		input.add(CMD_DELETE, "", true);
+		input.addDeleteNumber(number);
 		return input;
 	}
 
 	private static boolean trueDeleteFormat(String content) {
+		if(content == null|| content.equals(""))
+			return false;
 		for(char i:content.toCharArray())
 			if(!Character.isDigit(i)&&i!=' ')
 				return false;
 		return true;
 	}
 
-	private static userInput parseClear(String content) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static userInput parseSearch(String content) {
+	private static UserInput parseClear(String content) {
+		if(content != null && !content.equals(""))
+			return errorCommand();
+		UserInput input = new UserInput();
+		input.add(CMD_CLEAR, "", true);
+		return input;
+	}	
+	
+	private static UserInput parseEdit(String content) {
 		// TODO Auto-generated method stub
 		return input;
 	}
 
-	private static userInput parseEdit(String content) {
+	private static UserInput parseSearch(String content) {
 		// TODO Auto-generated method stub
 		return input;
 	}
 
-	private static userInput parseShow(String content) {
+	private static UserInput parseShow(String content) {
 		// TODO Auto-generated method stub
 		return input;
 	}
 
-	private static userInput parseDone(String content) {
+	private static UserInput parseDone(String content) {
 		// TODO Auto-generated method stub
 		return input;
 	}
 
-	private static userInput parseDisplay(String content) {
+	private static UserInput parseDisplay(String content) {
 		// TODO Auto-generated method stub
 		return input;
 	}
-
-	private static userInput errorCommand() {
-		userInput input = new userInput();
+	
+	private static UserInput errorCommand() {
+		UserInput input = new UserInput();
 		input.unvalidation();
 		return input;
 	}

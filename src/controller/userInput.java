@@ -17,6 +17,7 @@ public class UserInput {
 	private static String command = null;
 	private static List<Integer> deleteNum = new ArrayList<Integer>();
 	private static int editNum = 0;
+	private static String editCommand = null;
 	private static String event = null;
 	private static boolean floating = true;
 	private static Date beginTime;
@@ -35,9 +36,13 @@ public class UserInput {
 	public List<Integer> getDeleteNumber() {
 		return deleteNum;
 	}
-	
+
 	public int getEditNumber() {
 		return editNum;
+	}
+
+	public String getEditCommand() {
+		return editCommand;
 	}
 
 	public String getEvent() {
@@ -70,8 +75,9 @@ public class UserInput {
 		deleteNum = numbers;
 	}
 
-	public void addEditNumber(int number) {
+	public void addEdit(int number, String command) {
 		editNum = number;
+		editCommand = command;
 	}
 
 	public void addBeginDate(String beginDate) throws ParseException {
