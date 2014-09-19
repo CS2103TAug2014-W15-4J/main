@@ -3,7 +3,14 @@ package controller;
 import java.text.*;
 import java.util.*;
 
-
+/**
+ * 
+ * Object passing from parser to logic
+ * The format of time is "yyyy-MM-dd HH:mm"
+ * (For command with only one time, defult we use addBeginDate and getBeginDate)
+ * @author Lu Yuehan
+ *
+ */
 public class userInput {
 	
 	private static String command=null;
@@ -22,11 +29,13 @@ public class userInput {
 	public static boolean isFloat(){
 		return floating;
 	}
+	
 	public static void add(String userCommand,String userEvent,boolean userFloat){
 		command=userCommand;
 		event=userEvent;
 		floating=userFloat;
 	}
+
 	public static void addBeginDate(String beginDate) throws ParseException{
 		beginTime=timeFormat.parse(beginDate);
 	}
@@ -34,10 +43,10 @@ public class userInput {
 		endTime=timeFormat.parse(endDate);
 	}
 
-	public static Date getBeginTime(){
+	public static Date getBeginDate(){
 		return beginTime;
 	}
-	public static Date getEndTime(){
+	public static Date getEndDate(){
 		return endTime;
 	}
 }
