@@ -42,27 +42,7 @@ public class userInput {
 	public static boolean isFloat() {
 		return floating;
 	}
-
-	public static void unvalidation() {
-		valid = false;
-	}
-
-	public static void add(String userCommand, String userEvent,
-			boolean userFloat,int num) {
-		command = userCommand;
-		event = userEvent;
-		floating = userFloat;
-		number=num;
-	}
-
-	public static void addBeginDate(String beginDate) throws ParseException {
-		beginTime = timeFormat.parse(beginDate);
-	}
-
-	public static void addEndDate(String endDate) throws ParseException {
-		endTime = timeFormat.parse(endDate);
-	}
-
+	
 	public static Date getBeginDate() {
 		return beginTime;
 	}
@@ -70,4 +50,25 @@ public class userInput {
 	public static Date getEndDate() {
 		return endTime;
 	}
+
+	public void unvalidation() {
+		valid = false;
+	}
+
+	public void add(String userCommand, String userEvent,
+			boolean userFloat,int num) {
+		command = userCommand;
+		event = userEvent;
+		floating = userFloat;
+		number=num;
+	}
+
+	public void addBeginDate(String beginDate) throws ParseException {
+		beginTime = timeFormat.parse(beginDate);
+	}
+
+	public void addEndDate(String endDate) throws ParseException {
+		endTime = timeFormat.parse(endDate);
+	}
+
 }
