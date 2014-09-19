@@ -2,7 +2,7 @@ package controller;
 
 import java.util.*;
 
-public class parser {
+public class Parser {
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DELETE = "delete";
 	private static final String CMD_CLEAR = "clear";
@@ -14,7 +14,7 @@ public class parser {
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
 
-	public static userInput parse(String input) {
+	public static UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
@@ -46,17 +46,17 @@ public class parser {
 		}
 	}
 
-	private static userInput parseAdd(String content) {
+	private static UserInput parseAdd(String content) {
 		if (content == null || content == "")
 			return errorCommand();
 		else {
 			userInput input = new userInput();
-			input.add(CMD_ADD, content.trim(), true);
+			input.add(CMD_ADD, content, true);
 			return input;
 		}
 	}
 
-	private static userInput parseDelete(String content) {
+	private static UserInput parseDelete(String content) {
 		userInput input = new userInput();
 		int number = 0;
 		Integer.valueOf(content.trim());
@@ -65,7 +65,10 @@ public class parser {
 	}
 
 	private static boolean trueDeleteFormat(String content) {
-
+		for(char i:content.toCharArray())
+			if(!Character.isDigit(i)&&i!=' ')
+				return false;
+		return true;
 	}
 
 	private static userInput parseClear(String content) {

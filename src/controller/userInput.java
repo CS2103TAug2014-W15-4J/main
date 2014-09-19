@@ -12,7 +12,7 @@ import java.util.*;
  * @author Lu Yuehan
  *
  */
-public class userInput {
+public class UserInput {
 	private static boolean valid = true;
 	private static String command = null;
 	private static List<Integer> deleteNum = new ArrayList<Integer>();
