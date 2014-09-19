@@ -15,6 +15,7 @@ import java.util.*;
 public class userInput {
 	private static boolean valid = true;
 	private static String command = null;
+	private static int number = 0;
 	private static String event = null;
 	private static boolean floating = true;
 	private static Date beginTime;
@@ -28,6 +29,10 @@ public class userInput {
 
 	public static String getCommand() {
 		return command;
+	}
+	
+	public static int getNumber(){
+		return number;
 	}
 
 	public static String getEvent() {
@@ -43,10 +48,11 @@ public class userInput {
 	}
 
 	public static void add(String userCommand, String userEvent,
-			boolean userFloat) {
+			boolean userFloat,int num) {
 		command = userCommand;
 		event = userEvent;
 		floating = userFloat;
+		number=num;
 	}
 
 	public static void addBeginDate(String beginDate) throws ParseException {
