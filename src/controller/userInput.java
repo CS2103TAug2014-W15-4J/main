@@ -13,15 +13,15 @@ import java.util.*;
  *
  */
 public class UserInput {
-	private static boolean valid = true;
-	private static String command = null;
-	private static List<Integer> deleteNum = new ArrayList<Integer>();
-	private static int editNum = 0;
-	private static String editCommand = null;
-	private static String event = null;
-	private static boolean floating = true;
-	private static Date beginTime;
-	private static Date endTime;
+	private boolean valid = true;
+	private String command = null;
+	private List<Integer> deleteID = new ArrayList<Integer>();
+	private int editID = 0;
+	private String editCommand = null;
+	private String event = null;
+	private boolean floating = true;
+	private Date beginTime;
+	private Date endTime;
 	private static SimpleDateFormat timeFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm");
 
@@ -33,12 +33,12 @@ public class UserInput {
 		return command;
 	}
 
-	public List<Integer> getDeleteNumber() {
-		return deleteNum;
+	public List<Integer> getDeleteID() {
+		return deleteID;
 	}
 
-	public int getEditNumber() {
-		return editNum;
+	public int getEditID() {
+		return editID;
 	}
 
 	public String getEditCommand() {
@@ -71,12 +71,12 @@ public class UserInput {
 		floating = userFloat;
 	}
 
-	public void addDeleteNumber(List<Integer> numbers) {
-		deleteNum = numbers;
+	public void addDeleteID(List<Integer> numbers) {
+		deleteID = numbers;
 	}
 
 	public void addEdit(int number, String command) {
-		editNum = number;
+		editID = number;
 		editCommand = command;
 	}
 
