@@ -12,8 +12,8 @@ public class Body {
 	Scanner scanner=new Scanner(System.in);
 	boolean continues=true;
 	String cmd;
-	Parser parse=new Parser();
 	UserInput input=null;
+	Parser parse=new Parser();
 	do{
 		cmd=scanner.nextLine();
 		if(cmd.equals("exit")) continues=false;
