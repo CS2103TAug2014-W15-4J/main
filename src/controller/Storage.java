@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -41,7 +42,15 @@ public class Storage {
 		return xml;
 	}
 	
-	
+	private void close() {
+		try {
+			this.reader.close();
+			this.writer.close();
+		} catch (IOException e) {
+			throw new Error(ERROR_IO);
+		}
+		
+	}
 	private void initilize() {
 		File inputFile = new File(TASK_FILE);
 		try {
@@ -70,6 +79,7 @@ public class Storage {
 	public static void main(String[] args) {
 		Task a = new Task("going to movies tonight");
 		Storage storge = new Storage();
-		System.out.println(serialize(a));
+		System.out.println(storge.serialize(a));
+		storge.close();
 	}
 }
