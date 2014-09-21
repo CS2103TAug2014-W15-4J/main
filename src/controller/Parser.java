@@ -46,8 +46,7 @@ public class Parser {
 	private UserInput parseAdd(String content) {
 		if (content == null || content.equals("")) {
 			return errorCommand();
-		}
-		else {
+		} else {
 			UserInput input = new UserInput();
 			input.add(CMD_ADD, content, true);
 			return input;
@@ -93,8 +92,7 @@ public class Parser {
 		UserInput input = new UserInput();
 		if (!trueNumberFormat(IDString)) {
 			return errorCommand();
-		}
-		else {
+		} else {
 			input.addEdit(Integer.valueOf(IDString), null);
 			input.add(CMD_EDIT, contentString, true);
 		}

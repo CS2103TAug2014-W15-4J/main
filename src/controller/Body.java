@@ -1,6 +1,6 @@
 package controller;
 
-import java.util.*;
+import java.util.Scanner;
 
 /**
  * 
@@ -18,8 +18,9 @@ public class Body {
 		Parser parse = new Parser();
 		do {
 			cmd = scanner.nextLine();
-			if (cmd.equals("exit"))
+			if (cmd.equals("exit")) {
 				continues = false;
+			}
 			parse = new Parser();
 			input = parse.parse(cmd);
 			System.out.println(input.getCommand() + input.getEvent()
