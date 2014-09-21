@@ -13,7 +13,7 @@ public class Parser {
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
 
-	public static UserInput parse(String input) {
+	public UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
@@ -43,7 +43,7 @@ public class Parser {
 		}
 	}
 
-	private static UserInput parseAdd(String content) {
+	private UserInput parseAdd(String content) {
 		if (content == null || content.equals("")) {
 			return errorCommand();
 		}
@@ -54,7 +54,7 @@ public class Parser {
 		}
 	}
 
-	private static UserInput parseDelete(String content) {
+	private UserInput parseDelete(String content) {
 		if (!trueNumberFormat(content))
 			return errorCommand();
 		UserInput input = new UserInput();
@@ -71,7 +71,7 @@ public class Parser {
 		return input;
 	}
 
-	private static UserInput parseClear(String content) {
+	private UserInput parseClear(String content) {
 		if (content != null && !content.equals("")) {
 			return errorCommand();
 		}
@@ -80,8 +80,8 @@ public class Parser {
 		return input;
 	}
 
-	private static UserInput parseEdit(String content) {
-		if (content == null && content.equals("")) {
+	private UserInput parseEdit(String content) {
+		if (content == null || content.equals("")) {
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -101,7 +101,7 @@ public class Parser {
 		return input;
 	}
 
-	private static UserInput parseShow(String content) {
+	private UserInput parseShow(String content) {
 		if (content != null && !content.equals("")) {
 			return errorCommand();
 		}
@@ -110,17 +110,17 @@ public class Parser {
 		return input;
 	}
 
-	private static UserInput parseSearch(String content) {
+	private UserInput parseSearch(String content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private static UserInput parseDone(String content) {
+	private UserInput parseDone(String content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private static boolean trueNumberFormat(String content) {
+	private boolean trueNumberFormat(String content) {
 		if (content == null || content.equals("")) {
 			return false;
 		}
@@ -132,7 +132,7 @@ public class Parser {
 		return true;
 	}
 
-	private static UserInput errorCommand() {
+	private UserInput errorCommand() {
 		UserInput input = new UserInput();
 		input.unvalidation();
 		return input;
