@@ -2,7 +2,6 @@ package controller;
 
 import java.util.*;
 
-
 public class Parser {
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DELETE = "delete";
@@ -14,7 +13,7 @@ public class Parser {
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
 
-	public static UserInput parse(String input) {
+	public UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
@@ -44,9 +43,10 @@ public class Parser {
 		}
 	}
 
-	private static UserInput parseAdd(String content) {
-		if (content == null || content.equals(""))
+	private UserInput parseAdd(String content) {
+		if (content == null || content.equals("")) {
 			return errorCommand();
+		}
 		else {
 			UserInput input = new UserInput();
 			input.add(CMD_ADD, content, true);
@@ -54,75 +54,85 @@ public class Parser {
 		}
 	}
 
-	private static UserInput parseDelete(String content) {
+	private UserInput parseDelete(String content) {
 		if (!trueNumberFormat(content))
 			return errorCommand();
 		UserInput input = new UserInput();
 		String[] numberInString = content.split(" ");
 		int length = numberInString.length;
 		List<Integer> number = new ArrayList<Integer>();
-		for (int i = 0; i < length; i++)
-			if (!numberInString[i].equals(""))
+		for (int i = 0; i < length; i++) {
+			if (!numberInString[i].equals("")) {
 				number.add(Integer.valueOf(numberInString[i].trim()));
+			}
+		}
 		input.add(CMD_DELETE, "", true);
 		input.addDeleteID(number);
 		return input;
 	}
 
-	private static UserInput parseClear(String content) {
-		if (content != null && !content.equals(""))
+	private UserInput parseClear(String content) {
+		if (content != null && !content.equals("")) {
 			return errorCommand();
+		}
 		UserInput input = new UserInput();
 		input.add(CMD_CLEAR, "", true);
 		return input;
 	}
 
-	private static UserInput parseEdit(String content) {
-		if (content == null && content.equals(""))
+	private UserInput parseEdit(String content) {
+		if (content == null || content.equals("")) {
 			return errorCommand();
-		String[] contentSplit=content.split(" ", 2);
-		if(contentSplit.length!=2)
+		}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
 			return errorCommand();
+		}
 		String IDString = contentSplit[0].trim();
 		String contentString = contentSplit[1].trim();
 		UserInput input = new UserInput();
-		if (!trueNumberFormat(IDString))
+		if (!trueNumberFormat(IDString)) {
 			return errorCommand();
+		}
 		else {
 			input.addEdit(Integer.valueOf(IDString), null);
 			input.add(CMD_EDIT, contentString, true);
 		}
 		return input;
 	}
-	
-	private static UserInput parseShow(String content) {
-		if(content !=null && !content.equals(""))
+
+	private UserInput parseShow(String content) {
+		if (content != null && !content.equals("")) {
 			return errorCommand();
+		}
 		UserInput input = new UserInput();
 		input.add(CMD_SHOW, null, true);
 		return input;
 	}
 
-	private static UserInput parseSearch(String content) {
+	private UserInput parseSearch(String content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private static UserInput parseDone(String content) {
+	private UserInput parseDone(String content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private static boolean trueNumberFormat(String content) {
-		if (content == null || content.equals(""))
+	private boolean trueNumberFormat(String content) {
+		if (content == null || content.equals("")) {
 			return false;
-		for (char i : content.toCharArray())
-			if (!Character.isDigit(i) && i != ' ')
+		}
+		for (char i : content.toCharArray()) {
+			if (!Character.isDigit(i) && i != ' ') {
 				return false;
+			}
+		}
 		return true;
 	}
 
-	private static UserInput errorCommand() {
+	private UserInput errorCommand() {
 		UserInput input = new UserInput();
 		input.unvalidation();
 		return input;
