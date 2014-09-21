@@ -17,8 +17,9 @@ public class Parser {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
-		if (inputSplit.length == 2)
+		if (inputSplit.length == 2) {
 			content = inputSplit[1].trim();
+		}
 		switch (command.toLowerCase()) {
 		case CMD_ADD:
 			return parseAdd(content);
@@ -54,8 +55,9 @@ public class Parser {
 	}
 
 	private UserInput parseDelete(String content) {
-		if (!trueNumberFormat(content))
+		if (!trueNumberFormat(content)) {
 			return errorCommand();
+		}
 		UserInput input = new UserInput();
 		String[] numberInString = content.split(" ");
 		int length = numberInString.length;
