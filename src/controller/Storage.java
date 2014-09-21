@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -23,12 +24,20 @@ public class Storage {
 	private BufferedReader reader;
 	private BufferedWriter writer;
 	
+	private ArrayList<String> tasks;
+	
 	public Storage() {
 		this.initilize();
 	}
 	
-	public String save(TaskList list) {
-		return null;
+	public String save(ArrayList<Task> list) {
+		for (Task t: list) {
+			this.tasks.add(serialize(t));
+		}
+		
+		writeToFile(tasks);
+		
+		return "Success";
 	}
 	
 	public TaskList load() {
@@ -52,6 +61,7 @@ public class Storage {
 		
 	}
 	private void initilize() {
+		this.tasks = new ArrayList<>();
 		File inputFile = new File(TASK_FILE);
 		try {
 			if (inputFile.exists()) {
@@ -72,14 +82,30 @@ public class Storage {
 		
 	}
 	
-	private  void saveToFile() {
+	private void writeToFile(ArrayList<String> tasks) {
+		try {
+			this.writer = new BufferedWriter(new FileWriter(TASK_FILE, false));
+		} catch (IOException e1) {
+			throw new Error(ERROR_IO);
+		}
 		
+		for (String task : tasks) {
+			try {
+				this.writer.write(task);
+			} catch (Exception e) {
+				throw new Error(ERROR_IO);
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
-		Task a = new Task("going to movies tonight");
+		ArrayList<Task> test_input= new ArrayList<>();
+		test_input.add(new Task("IamHappy"));
+		test_input.add(new Task("Macbook"));
+		test_input.add(new Task("go to school tonight"));
+		System.out.println("aa");
 		Storage storge = new Storage();
-		System.out.println(storge.serialize(a));
+		storge.save(test_input);
 		storge.close();
 	}
 }
