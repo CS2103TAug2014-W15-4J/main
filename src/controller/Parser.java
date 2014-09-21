@@ -14,7 +14,7 @@ public class Parser {
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
 
-	public static UserInput parse(String input) {
+	public UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
