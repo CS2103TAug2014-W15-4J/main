@@ -25,5 +25,6 @@ public class Body {
 			System.out.println(input.getCommand() + input.getEvent()
 					+ input.getDeleteID() + input.getValid());
 		} while (continues);
+		scanner.close();
 	}
 }
