@@ -71,6 +71,15 @@ public class Logic {
         
     }
     
+    /** 
+     *  @param task
+     *  
+     *  this method marks that a specified task has been done
+     */
+    private static void markDone(Task task) {
+    	
+    }
+    
     
     /**
      *  this method calls the last operation and reverts any changes.

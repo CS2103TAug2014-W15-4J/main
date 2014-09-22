@@ -1,8 +1,14 @@
 package model;
 
+/**
+ *  This class models a (by default, floating) Task object
+ */
+
 public class Task {
 
 	private String description;
+	private String[] tags;
+	private boolean done;
 
 	public Task(String description) {
 		this.description = description;
@@ -11,5 +17,11 @@ public class Task {
 	public String getDescription() {
 		return description;
 	}
+	
+	public String[] getTags() {
+		return tags;
+	}
+	
+	
 
 }
