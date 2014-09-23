@@ -10,11 +10,27 @@ public class TaskList {
 	private ArrayList<Task> tasks;
 
 	public TaskList() {
-		this.tasks = new ArrayList<>();
+		this.tasks = new ArrayList<Task>();
 	}
 	
 	public ArrayList<Task> getList() {
 		return this.tasks;
+	}
+	
+	public void addToList(Task task) {
+		this.tasks.add(task);
+	}
+	
+	public void editTaskDescription(int taskIndex, String description) {
+		this.tasks.get(taskIndex).setDescription(description);
+	}
+	
+	public void deleteFromList(Task task) {
+		this.tasks.remove(task);
+	}
+	
+	public void deleteFromList(int taskIndex) {
+		this.tasks.remove(taskIndex);
 	}
 	
 	@Override

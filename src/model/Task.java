@@ -13,6 +13,10 @@ public class Task {
 	public Task(String description) {
 		this.description = description;
 	}
+	
+	public void setDescription(String desc) {
+		this.description = desc;
+	}
 
 	public String getDescription() {
 		return description;
