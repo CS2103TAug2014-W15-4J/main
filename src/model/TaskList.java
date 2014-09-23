@@ -33,6 +33,18 @@ public class TaskList {
 		this.tasks.remove(taskIndex);
 	}
 	
+	public void deleteFromList(int[] taskIndex) {
+		for (int i=taskIndex.length-1; i>=0; i--) {
+			int indextoRemove = taskIndex[i];
+			this.tasks.remove(indextoRemove);
+		}
+	}
+	
+	public void clearList() {
+		this.tasks.clear();
+	}
+
+	
 	@Override
 	public String toString() {
 		String output = "";
