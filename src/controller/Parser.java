@@ -45,15 +45,26 @@ public class Parser {
 	}
 
 	private UserInput parseAdd(String content) {
-		if (content == null || content.equals("")) {
+		int appear = 0;
+		String description;
+		String timePeriod;
+		String beginTime;
+		String endTime;
+		boolean isFloat= true;
+		if (content == null || content.equals(""))
 			return errorCommand();
-		} else {
+		appear = content.lastIndexOf("at");
+//		if(appear!=-1){
+//			description=content.substring(0, appear);
+//			timePeriod=content.substring(appear);
+//			if()
+//		}
 			UserInput input = new UserInput();
 			input.beAdd();
 			input.add(CMD_ADD, content, true);
 			return input;
-		}
 	}
+
 
 	private UserInput parseDelete(String content) {
 		if (!trueNumberFormat(content)) {
@@ -124,6 +135,10 @@ public class Parser {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+//	private boolean isFloatingTime(String content){
+//		for 
+//	}
 
 	private boolean trueNumberFormat(String content) {
 		if (content == null || content.equals("")) {

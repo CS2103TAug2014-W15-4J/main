@@ -8,6 +8,8 @@ import java.util.*;
  * Object passing from parser to logic The format of time is "yyyy-MM-dd HH:mm"
  * (For command with only one time, default we use addBeginDate and
  * getBeginDate)
+ * (SpecialDates are informal description of time like today, tomorrow, Monday
+ *  and all in lowercase)
  * 
  * @author Lu Yuehan
  *
@@ -34,7 +36,9 @@ public class UserInput {
 	private boolean floating = false;
 
 	private Date beginTime;
+	private String specialBeginDate;
 	private Date endTime;
+	private String specialEndDate;
 	private static SimpleDateFormat timeFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm");
 
@@ -90,8 +94,16 @@ public class UserInput {
 		return beginTime;
 	}
 
+	public String getSpecialBeginDate() {
+		return specialBeginDate;
+	}
+
 	public Date getEndDate() {
 		return endTime;
+	}
+	
+	public String getSpecialEndDate() {
+		return specialEndDate;
 	}
 
 	public void unvalidation() {
@@ -137,9 +149,18 @@ public class UserInput {
 	public void addBeginDate(String beginDate) throws ParseException {
 		beginTime = timeFormat.parse(beginDate);
 	}
+	
+	public void addSpecialBeginDate(String date) {
+		specialBeginDate=date;
+	}
 
 	public void addEndDate(String endDate) throws ParseException {
 		endTime = timeFormat.parse(endDate);
 	}
+	
+	public void addSpecialEndDate(String date) {
+		specialEndDate=date;
+	}
+
 
 }
