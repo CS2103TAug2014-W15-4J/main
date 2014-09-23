@@ -49,6 +49,7 @@ public class Parser {
 			return errorCommand();
 		} else {
 			UserInput input = new UserInput();
+			input.beAdd();
 			input.add(CMD_ADD, content, true);
 			return input;
 		}
@@ -67,6 +68,7 @@ public class Parser {
 				number.add(Integer.valueOf(numberInString[i].trim()));
 			}
 		}
+		input.beDelete();
 		input.add(CMD_DELETE, "", true);
 		input.addDeleteID(number);
 		return input;
@@ -77,6 +79,7 @@ public class Parser {
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
+		input.beClear();
 		input.add(CMD_CLEAR, "", true);
 		return input;
 	}
@@ -95,6 +98,7 @@ public class Parser {
 		if (!trueNumberFormat(IDString)) {
 			return errorCommand();
 		} else {
+			input.beEdit();
 			input.addEdit(Integer.valueOf(IDString), null);
 			input.add(CMD_EDIT, contentString, true);
 		}
@@ -106,6 +110,7 @@ public class Parser {
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
+		input.beShow();
 		input.add(CMD_SHOW, null, true);
 		return input;
 	}

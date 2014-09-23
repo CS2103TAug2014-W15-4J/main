@@ -23,7 +23,7 @@ public class Body {
 			}
 			parse = new Parser();
 			input = parse.parse(cmd);
-			System.out.println(input.getCommand() + input.getEvent()
+			System.out.println(input.getCommand() + input.getDescription()
 					+ input.getDeleteID() + input.getValid());
 		} while (continues);
 		scanner.close();

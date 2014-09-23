@@ -15,11 +15,24 @@ import java.util.*;
 public class UserInput {
 	private boolean valid = true;
 	private String command = null;
+
+	private boolean isAdd = false;
+
+	private boolean isDelete = false;
 	private List<Integer> deleteID = new ArrayList<Integer>();
+
+	private boolean isEdit = false;
 	private int editID = 0;
 	private String editCommand = null;
-	private String event = null;
-	private boolean floating = true;
+
+	private boolean isShow = false;
+
+	private boolean isClear = false;
+
+	private String description = null;
+
+	private boolean floating = false;
+
 	private Date beginTime;
 	private Date endTime;
 	private static SimpleDateFormat timeFormat = new SimpleDateFormat(
@@ -33,8 +46,20 @@ public class UserInput {
 		return command;
 	}
 
+	public boolean isAdd() {
+		return isAdd;
+	}
+
+	public boolean isDelete() {
+		return isDelete;
+	}
+
 	public List<Integer> getDeleteID() {
 		return deleteID;
+	}
+
+	public boolean isEdit() {
+		return isEdit;
 	}
 
 	public int getEditID() {
@@ -45,8 +70,16 @@ public class UserInput {
 		return editCommand;
 	}
 
-	public String getEvent() {
-		return event;
+	public boolean isShow() {
+		return isShow;
+	}
+
+	public boolean isClear() {
+		return isClear;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public boolean isFloat() {
@@ -65,10 +98,31 @@ public class UserInput {
 		valid = false;
 	}
 
-	public void add(String userCommand, String userEvent, boolean userFloat) {
+	public void add(String userCommand, String userDescription,
+			boolean userFloat) {
 		command = userCommand;
-		event = userEvent;
+		description = userDescription;
 		floating = userFloat;
+	}
+
+	public void beAdd() {
+		isAdd = true;
+	}
+
+	public void beDelete() {
+		isDelete = true;
+	}
+
+	public void beEdit() {
+		isEdit = true;
+	}
+
+	public void beShow() {
+		isShow = true;
+	}
+
+	public void beClear() {
+		isClear = true;
 	}
 
 	public void addDeleteID(List<Integer> numbers) {
