@@ -58,7 +58,7 @@ public class Logic {
     	if (userCommand.isAdd()) {
     		String desc = userCommand.getDescription();
     		
-    		if (desc.trim().length() == 0) {
+    		if (desc != null) {
     			System.out.println("no event entered");
     			
     		} else {
@@ -66,8 +66,15 @@ public class Logic {
     		}
 
     		
-    		
     	} else if (userCommand.isEdit()) {
+    		
+    		int editID = userCommand.getEditID();
+    		String desc = userCommand.getDescription();
+    		String editCommand = userCommand.getEditCommand();
+    		
+    		if ((editCommand == null) && (desc != null)) {
+    			editTask(editID, desc);
+    		}
     		
     		
     	} else if (userCommand.isDelete()) {
