@@ -12,6 +12,14 @@ import com.thoughtworks.xstream.XStream;
 import model.Task;
 import model.TaskList;
 
+
+/**
+ * This Storage class is for saving tasks to local file, 
+ * and loading tasks from local file.
+ * 
+ * @author Jiang Sheng
+ *
+ */
 public class Storage {
 	
 	private static final String TASK_FILE = "uClear.xml";
