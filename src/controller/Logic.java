@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -63,6 +64,8 @@ public class Logic {
     			
     		} else {
     			addTask(desc);
+    			
+    			// add other types of add tasks here after parameter checking.
     		}
 
     		
@@ -74,15 +77,29 @@ public class Logic {
     		
     		if ((editCommand == null) && (desc != null)) {
     			editTask(editID, desc);
+    			
+    		} else {
+    			// other types of edits here
     		}
     		
     		
     	} else if (userCommand.isDelete()) {
     		deleteTask(userCommand.getDeleteID());
     		
+    	} else if (userCommand.isShow()) {
+    		// call the UI to display the corresponding tasks here
+    		
+    		
+    	} else if (userCommand.isClear()) {
+    		clearTaskList();
+    		
+    		
+/*    	} else if (userCommand.isMarkDone()) {
+    		markDone(userCommand.getMarkDoneID());
+*/
     		
     	} else {
-    		
+    		// other functions here
     	}
     }
     
@@ -131,29 +148,41 @@ public class Logic {
     }
     
     /**
-     *  @param task
+     *  @param taskIndexList
      *  
      *  this method will delete the specified task(s) from the file
      */
-    private static void deleteTask(List<Integer> taskIndex) {
-    	if (taskIndex.size() == 0) {
+    private static void deleteTask(List<Integer> taskIndexList) {
+    	if (taskIndexList.size() == 0) {
     		System.out.println("error, nothing stated to delete");
     		
-    	} else if (taskIndex.size() == 1) {
-    		listOfTasks.deleteFromList(taskIndex.get(0));
+    	} else if (taskIndexList.size() == 1) {
+    		listOfTasks.deleteFromList(taskIndexList.get(0));
     		
     	} else {
-    		listOfTasks.deleteFromList(taskIndex);
+    		listOfTasks.deleteFromList(taskIndexList);
     	}
     }
     
+    private static void clearTaskList() {
+    	listOfTasks.clearList();
+    }
+    
     /** 
-     *  @param task
+     *  @param taskIndexList
      *  
      *  this method marks that a specified task has been done
      */
-    private static void markDone(Task task) {
+    private static void markDone(List<Integer> taskIndexList) {
+    	if (taskIndexList.size() == 0) {
+    		System.out.println("error, nothing to mark done");
     	
+    	} else if (taskIndexList.size() == 1) {
+    		listOfTasks.markTaskDone(taskIndexList.get(0));
+    	
+    	} else {
+    		listOfTasks.markTaskDone(taskIndexList);
+    	}
     }
     
     

@@ -9,6 +9,7 @@ public class TaskList {
 
 	@XStreamAlias("TaskList")
 	private ArrayList<Task> tasks;
+	private int totalTasks;
 
 	public TaskList() {
 		this.tasks = new ArrayList<Task>();
@@ -20,6 +21,7 @@ public class TaskList {
 	
 	public void addToList(Task task) {
 		this.tasks.add(task);
+		this.totalTasks++;
 	}
 	
 	public void editTaskDescription(int taskIndex, String description) {
@@ -28,19 +30,36 @@ public class TaskList {
 	
 	public void deleteFromList(Integer taskIndex) {
 		this.tasks.remove(taskIndex);
+		this.totalTasks--;
 	}
 	
-	public void deleteFromList(List<Integer> taskIndex) {
-		for (int i=taskIndex.size()-1; i>=0; i--) {
-			int indextoRemove = taskIndex.get(0);
-			this.tasks.remove(indextoRemove);
+	public void deleteFromList(List<Integer> taskIndexList) {
+		for (int i=taskIndexList.size()-1; i>=0; i--) {
+			int indexToRemove = taskIndexList.get(i);
+			this.tasks.remove(indexToRemove);
 		}
+		this.totalTasks = 0;
 	}
 	
 	public void clearList() {
 		this.tasks.clear();
+		this.totalTasks = 0;
 	}
 
+	public void markTaskDone(Integer taskIndex) {
+		this.tasks.get(taskIndex).markDone();
+    }
+
+	public void markTaskDone(List<Integer> taskIndexList) {
+		for (int i=0; i<taskIndexList.size(); i++) {
+			int taskToMarkDone = taskIndexList.get(i);
+			this.tasks.get(taskToMarkDone).markDone();
+		}
+    }
+
+	public int getNumberOfTasks() {
+		return this.totalTasks;
+	}
 	
 	@Override
 	public String toString() {
@@ -61,4 +80,5 @@ public class TaskList {
 			this.tasks.add(new Task("No."+i));
 		}
 	}
+
 }
