@@ -1,9 +1,12 @@
 package controller;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
 import model.Task;
+import model.TaskList;
 
 /**
  *  main class that manages the TaskList
@@ -14,26 +17,29 @@ public class Logic {
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
+    static TaskList listOfTasks = new TaskList();
 
     public static void main(String[] args) {
         
         // get existing tasks from storage
         Storage storage = new Storage(); 
-//        TaskList tasks = storage.load();
+        TaskList tasks = storage.load();
         
         // get and execute new tasks
         while (true) {
             String userInput = getUserInput();
             if (userInput.equals("exit")) {
                 System.exit(0);
-                
+          
             } else {
                 // parse and execute command
-//                UserInput userCommand = Parser.parse(userInput);
-//                executeCommand(userCommand);
+            	Parser parser = new Parser();
+                UserInput userCommand = parser.parse(userInput);
+                executeCommand(userCommand);
             
                 
                 // update the history and storage file
+                storage.save(listOfTasks);
                 
             }
         }
@@ -48,27 +54,90 @@ public class Logic {
      *  an operation, and more.
      */
     private static void executeCommand(UserInput userCommand) {
-        // TODO Auto-generated method stub
-    }
-    
-    
-    /**
-     *  @param task
-     *  
-     *  this method will add a task to the file
-     */
-    private static void addTask(Task task) {
         
-    }
-    
+    	if (userCommand.isAdd()) {
+    		String desc = userCommand.getDescription();
+    		
+    		if (desc.trim().length() == 0) {
+    			System.out.println("no event entered");
+    			
+    		} else {
+    			addTask(desc);
+    		}
 
+    		
+    		
+    	} else if (userCommand.isEdit()) {
+    		
+    		
+    	} else if (userCommand.isDelete()) {
+    		deleteTask(userCommand.getDeleteID());
+    		
+    		
+    	} else {
+    		
+    	}
+    }
+    
+    
+    /**
+     *  @param description 
+     *  @param time 
+     *  @param period
+     *  
+     *  the following methods will add a task to the file, 
+     *  with the specified parameters
+     */
+    private static void addTask(String description) {
+    	Task newTask = new Task(description);
+    	listOfTasks.addToList(newTask);
+    }
+    
+    
+    private static void addTask(String event, Date time) {
+    	
+    }
+    
+    private static void addTask(String event, Date time, Date Period) {
+        
+    }
+    
+    
+    /** 
+     *  @param taskIndex
+     *  @param description
+     *  @param time (for deadline/timed tasks)
+     *  
+     *  the following methods will edit a task in the file,
+     *  with the specified parameters
+     */
+    private static void editTask(int taskIndex, String description) {
+    	
+    }
+    
+    private static void editTask(int taskIndex, Date time) {
+    	
+    }
+    
+    private static void editTask(int taskIndex, String description, Date time) {
+    	
+    }
+    
     /**
      *  @param task
      *  
-     *  this method will delete the specified task from the file
+     *  this method will delete the specified task(s) from the file
      */
-    private static void deleteTask(Task task) {
-        
+    private static void deleteTask(List<Integer> taskIndex) {
+    	if (taskIndex.size() == 0) {
+    		System.out.println("error, nothing stated to delete");
+    		
+    	} else if (taskIndex.size() == 1) {
+    		listOfTasks.deleteFromList(taskIndex.get(0));
+    		
+    	} else {
+    		listOfTasks.deleteFromList(taskIndex);
+    	}
     }
     
     /** 

@@ -8,10 +8,11 @@ public class Task {
 
 	private String description;
 	private String[] tags;
-	private boolean done;
+	private boolean isDone;
 
 	public Task(String description) {
 		this.description = description;
+		this.isDone = false;
 	}
 	
 	public void setDescription(String desc) {
@@ -24,6 +25,14 @@ public class Task {
 	
 	public String[] getTags() {
 		return tags;
+	}
+	
+	public void markDone() {
+		isDone = true;
+	}
+	
+	public boolean getIsDone() {
+		return this.isDone;
 	}
 	
 	

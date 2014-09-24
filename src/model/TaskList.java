@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -25,17 +26,13 @@ public class TaskList {
 		this.tasks.get(taskIndex).setDescription(description);
 	}
 	
-	public void deleteFromList(Task task) {
-		this.tasks.remove(task);
-	}
-	
-	public void deleteFromList(int taskIndex) {
+	public void deleteFromList(Integer taskIndex) {
 		this.tasks.remove(taskIndex);
 	}
 	
-	public void deleteFromList(int[] taskIndex) {
-		for (int i=taskIndex.length-1; i>=0; i--) {
-			int indextoRemove = taskIndex[i];
+	public void deleteFromList(List<Integer> taskIndex) {
+		for (int i=taskIndex.size()-1; i>=0; i--) {
+			int indextoRemove = taskIndex.get(0);
 			this.tasks.remove(indextoRemove);
 		}
 	}
