@@ -16,6 +16,8 @@ import java.util.*;
 public class UserInput {
 	private boolean valid = true;
 	private String command = null;
+	
+	private boolean isExit = false;
 
 	private boolean isAdd = false;
 
@@ -49,6 +51,10 @@ public class UserInput {
 
 	public String getCommand() {
 		return command;
+	}
+	
+	public boolean isExit() {
+		return isExit;
 	}
 
 	public boolean isAdd() {
@@ -113,6 +119,10 @@ public class UserInput {
 
 	public void beDone() {
 		isDone = true;
+	}
+	
+	public void beExit() {
+		isExit = true;
 	}
 
 	public String getSpecialEndDate() {

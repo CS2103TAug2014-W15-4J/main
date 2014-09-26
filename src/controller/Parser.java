@@ -14,6 +14,7 @@ public class Parser {
 	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
+	private static final String CMD_EXIT = "exit";
 
 	public UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
@@ -23,6 +24,8 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
+		case CMD_EXIT:
+			return parseExit(content);
 		case CMD_ADD:
 			return parseAdd(content);
 		case CMD_DELETE:
@@ -44,6 +47,12 @@ public class Parser {
 		default:
 			return errorCommand();
 		}
+	}
+
+	private UserInput parseExit(String content) {
+		UserInput input = new UserInput();
+		input.beExit();
+		return input;
 	}
 
 	private UserInput parseAdd(String content) {
