@@ -1,6 +1,8 @@
 package controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Parser {
 	private static final String CMD_ADD = "add";
@@ -45,7 +47,8 @@ public class Parser {
 	}
 
 	private UserInput parseAdd(String content) {
-		int appear = 0;
+		int atAppear = 0;
+		int forAppear = 0;
 		String description;
 		String timePeriod;
 		String beginTime;
@@ -53,19 +56,19 @@ public class Parser {
 		boolean isFloat= true;
 		if (content == null || content.equals(""))
 			return errorCommand();
-		appear = content.lastIndexOf("at");
-//		if(appear!=-1){
-//			description=content.substring(0, appear);
-//			timePeriod=content.substring(appear);
-//			if()
-//		}
+		forAppear = content.lastIndexOf("for");
+		atAppear = content.lastIndexOf("at");
+//		if(atAppear!=-1){
+//			description=content.substring(0, atAppear);
+//		    timePeriod=content.substring(atAppear);
+//		    if()
+//		    }
 			UserInput input = new UserInput();
 			input.beAdd();
 			input.add(CMD_ADD, content, true);
 			return input;
 	}
-
-
+	
 	private UserInput parseDelete(String content) {
 		if (!trueNumberFormat(content)) {
 			return errorCommand();
@@ -132,13 +135,27 @@ public class Parser {
 	}
 
 	private UserInput parseDone(String content) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!trueNumberFormat(content)) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		String[] numberInString = content.split(" ");
+		int length = numberInString.length;
+		List<Integer> number = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			if (!numberInString[i].equals("")) {
+				number.add(Integer.valueOf(numberInString[i].trim()));
+			}
+		}
+		input.beDone();
+		input.add(CMD_DONE, "", true);
+		input.addDoneID(number);
+		return input;
 	}
 
-//	private boolean isFloatingTime(String content){
-//		for 
-//	}
+	// private boolean isFloatingTime(String content){
+	// for
+	// }
 
 	private boolean trueNumberFormat(String content) {
 		if (content == null || content.equals("")) {

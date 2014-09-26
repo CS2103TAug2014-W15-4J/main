@@ -7,9 +7,8 @@ import java.util.*;
  * 
  * Object passing from parser to logic The format of time is "yyyy-MM-dd HH:mm"
  * (For command with only one time, default we use addBeginDate and
- * getBeginDate)
- * (SpecialDates are informal description of time like today, tomorrow, Monday
- *  and all in lowercase)
+ * getBeginDate) (SpecialDates are informal description of time like today,
+ * tomorrow, Monday and all in lowercase)
  * 
  * @author Lu Yuehan
  *
@@ -21,7 +20,7 @@ public class UserInput {
 	private boolean isAdd = false;
 
 	private boolean isDelete = false;
-	private List<Integer> deleteID = new ArrayList<Integer>();
+	private List<Integer> ID = new ArrayList<Integer>();
 
 	private boolean isEdit = false;
 	private int editID = 0;
@@ -30,6 +29,8 @@ public class UserInput {
 	private boolean isShow = false;
 
 	private boolean isClear = false;
+
+	private boolean isDone = false;
 
 	private String description = null;
 
@@ -58,8 +59,16 @@ public class UserInput {
 		return isDelete;
 	}
 
+	public boolean isDone() {
+		return isDone;
+	}
+
 	public List<Integer> getDeleteID() {
-		return deleteID;
+		return ID;
+	}
+
+	public List<Integer> getDoneID() {
+		return ID;
 	}
 
 	public boolean isEdit() {
@@ -101,7 +110,11 @@ public class UserInput {
 	public Date getEndDate() {
 		return endTime;
 	}
-	
+
+	public void beDone() {
+		isDone = true;
+	}
+
 	public String getSpecialEndDate() {
 		return specialEndDate;
 	}
@@ -138,7 +151,11 @@ public class UserInput {
 	}
 
 	public void addDeleteID(List<Integer> numbers) {
-		deleteID = numbers;
+		ID = numbers;
+	}
+
+	public void addDoneID(List<Integer> numbers) {
+		ID = numbers;
 	}
 
 	public void addEdit(int number, String command) {
@@ -149,18 +166,17 @@ public class UserInput {
 	public void addBeginDate(String beginDate) throws ParseException {
 		beginTime = timeFormat.parse(beginDate);
 	}
-	
+
 	public void addSpecialBeginDate(String date) {
-		specialBeginDate=date;
+		specialBeginDate = date;
 	}
 
 	public void addEndDate(String endDate) throws ParseException {
 		endTime = timeFormat.parse(endDate);
 	}
-	
-	public void addSpecialEndDate(String date) {
-		specialEndDate=date;
-	}
 
+	public void addSpecialEndDate(String date) {
+		specialEndDate = date;
+	}
 
 }
