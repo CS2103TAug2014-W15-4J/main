@@ -22,6 +22,7 @@ public class UserInput {
 	private boolean isAdd = false;
 
 	private boolean isDelete = false;
+	
 	private List<Integer> ID = new ArrayList<Integer>();
 
 	private boolean isEdit = false;

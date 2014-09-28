@@ -15,7 +15,14 @@ public class Parser {
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
 	private static final String CMD_EXIT = "exit";
-
+	
+/**
+ * @param input
+ * @return UserInput after parsing
+ * 
+ * this differs different kinds of command
+ **/
+	
 	public UserInput parse(String input) {
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
@@ -48,35 +55,42 @@ public class Parser {
 			return errorCommand();
 		}
 	}
-
+	
+/**
+ * @param content
+ * @return UserInput
+ * 
+ * this is for entering exit command
+ */
+	
 	private UserInput parseExit(String content) {
 		UserInput input = new UserInput();
 		input.beExit();
 		return input;
 	}
-
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering add command(temporally floating only)
+	 */
+	
 	private UserInput parseAdd(String content) {
-		int atAppear = 0;
-		int forAppear = 0;
-		String description;
-		String timePeriod;
-		String beginTime;
-		String endTime;
-		boolean isFloat= true;
 		if (content == null || content.equals(""))
 			return errorCommand();
-		forAppear = content.lastIndexOf("for");
-		atAppear = content.lastIndexOf("at");
-//		if(atAppear!=-1){
-//			description=content.substring(0, atAppear);
-//		    timePeriod=content.substring(atAppear);
-//		    if()
-//		    }
 			UserInput input = new UserInput();
 			input.beAdd();
 			input.add(CMD_ADD, content, true);
 			return input;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering delete command
+	 */
 	
 	private UserInput parseDelete(String content) {
 		if (!trueNumberFormat(content)) {
@@ -96,6 +110,13 @@ public class Parser {
 		input.addDeleteID(number);
 		return input;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering clearing command
+	 */
 
 	private UserInput parseClear(String content) {
 		if (content != null && !content.equals("")) {
@@ -106,6 +127,13 @@ public class Parser {
 		input.add(CMD_CLEAR, "", true);
 		return input;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering edit command(temporally floating only)
+	 */
 
 	private UserInput parseEdit(String content) {
 		if (content == null || content.equals("")) {
@@ -127,6 +155,13 @@ public class Parser {
 		}
 		return input;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering show command(temporally show all only)
+	 */
 
 	private UserInput parseShow(String content) {
 		if (content != null && !content.equals("")) {
@@ -137,11 +172,25 @@ public class Parser {
 		input.add(CMD_SHOW, null, true);
 		return input;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering search command(not begin yet)
+	 */
 
 	private UserInput parseSearch(String content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	/**
+	 * @param content
+	 * @return UserInput
+	 * 
+	 * this is for entering mark done command
+	 */
 
 	private UserInput parseDone(String content) {
 		if (!trueNumberFormat(content)) {
@@ -161,10 +210,13 @@ public class Parser {
 		input.addDoneID(number);
 		return input;
 	}
+/**
+ * @param content
+ * @return whether the content contents numbers only
+ * 
+ * this is for checking if the contents are only numbers in done and delete command
+ */
 
-	// private boolean isFloatingTime(String content){
-	// for
-	// }
 
 	private boolean trueNumberFormat(String content) {
 		if (content == null || content.equals("")) {
@@ -177,6 +229,13 @@ public class Parser {
 		}
 		return true;
 	}
+	
+	/**
+	 * 
+	 * @return UserInput
+	 * 
+	 * give the error command
+	 */
 
 	private UserInput errorCommand() {
 		UserInput input = new UserInput();
