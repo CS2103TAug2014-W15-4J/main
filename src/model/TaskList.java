@@ -23,10 +23,16 @@ public class TaskList {
 	public void addToList(Task task) {
 		this.tasks.add(task);
 		this.totalTasks++;
+		System.out.println("task added");
 	}
 	
 	public void editTaskDescription(int taskIndex, String description) {
-		this.tasks.get(taskIndex).setDescription(description);
+		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+			System.out.println("no such task index: " + taskIndex);
+		} else {
+			this.tasks.get(taskIndex-1).setDescription(description);
+			System.out.println("task description changed");
+		}
 	}
 		
 	public void deleteFromList(List<Integer> taskIndexList) {
@@ -40,6 +46,7 @@ public class TaskList {
 			} else {
 				this.tasks.remove(indexToRemove-1);
 				this.totalTasks--;
+				System.out.println("task deleted.");
 			}
 		}
 	}
@@ -57,6 +64,7 @@ public class TaskList {
 				System.out.println("no such task index: " + taskToMarkDone);
 			} else {
 				this.tasks.get(taskToMarkDone-1).markDone();
+				System.out.println("task marked done.");
 			}
 		}
     }
