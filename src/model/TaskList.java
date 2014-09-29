@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -27,18 +28,20 @@ public class TaskList {
 	public void editTaskDescription(int taskIndex, String description) {
 		this.tasks.get(taskIndex).setDescription(description);
 	}
-	
-	public void deleteFromList(Integer taskIndex) {
-		this.tasks.remove(taskIndex);
-		this.totalTasks--;
-	}
-	
+		
 	public void deleteFromList(List<Integer> taskIndexList) {
+		
+		Collections.sort(taskIndexList);
 		for (int i=taskIndexList.size()-1; i>=0; i--) {
 			int indexToRemove = taskIndexList.get(i);
-			this.tasks.remove(indexToRemove);
+			
+			if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
+				System.out.println("no such task index: " + indexToRemove);
+			} else {
+				this.tasks.remove(indexToRemove-1);
+				this.totalTasks--;
+			}
 		}
-		this.totalTasks = 0;
 	}
 	
 	public void clearList() {
@@ -46,14 +49,15 @@ public class TaskList {
 		this.totalTasks = 0;
 	}
 
-	public void markTaskDone(Integer taskIndex) {
-		this.tasks.get(taskIndex).markDone();
-    }
-
 	public void markTaskDone(List<Integer> taskIndexList) {
 		for (int i=0; i<taskIndexList.size(); i++) {
 			int taskToMarkDone = taskIndexList.get(i);
-			this.tasks.get(taskToMarkDone).markDone();
+			
+			if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
+				System.out.println("no such task index: " + taskToMarkDone);
+			} else {
+				this.tasks.get(taskToMarkDone-1).markDone();
+			}
 		}
     }
 

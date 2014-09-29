@@ -24,27 +24,21 @@ public class Logic {
         
         // get existing tasks from storage
         Storage storage = new Storage(); 
-        TaskList tasks = storage.load();
+        listOfTasks = storage.load();
         
         // get and execute new tasks
         while (true) {
-            String userInput = getUserInput();
-            if (userInput.equals("exit")) {
-                System.exit(0);
-          
-            } else {
-                // parse and execute command
-            	Parser parser = new Parser();
-                UserInput userCommand = parser.parse(userInput);
-                executeCommand(userCommand);
-            
-                
-                // update the history and storage file
-                storage.save(listOfTasks);
-                
-            }
-        }
-            
+        	String userInput = getUserInput();
+
+        	// parse and execute command
+        	Parser parser = new Parser();
+        	UserInput userCommand = parser.parse(userInput);
+        	executeCommand(userCommand);
+
+        	// update the history and storage file
+        	storage.save(listOfTasks);
+
+        }        
     }
     
     /** 
@@ -59,7 +53,7 @@ public class Logic {
     	if (userCommand.isAdd()) {
     		String desc = userCommand.getDescription();
     		
-    		if (desc != null) {
+    		if (desc == null) {
     			System.out.println("no event entered");
     			
     		} else {
@@ -87,16 +81,19 @@ public class Logic {
     		deleteTask(userCommand.getDeleteID());
     		
     	} else if (userCommand.isShow()) {
-    		// call the UI to display the corresponding tasks here
+    		// call the UI to display the corresponding tasks here eventually
+    		display();
     		
     		
     	} else if (userCommand.isClear()) {
     		clearTaskList();
     		
     		
-/*    	} else if (userCommand.isMarkDone()) {
-    		markDone(userCommand.getMarkDoneID());
-*/
+    	} else if (userCommand.isDone()) {
+    		markDone(userCommand.getDoneID());
+    		
+    	} else if (userCommand.isExit()) {
+    		System.exit(0);
     		
     	} else {
     		// other functions here
@@ -104,7 +101,9 @@ public class Logic {
     }
     
     
-    /**
+
+
+	/**
      *  @param description 
      *  @param time 
      *  @param period
@@ -156,9 +155,6 @@ public class Logic {
     	if (taskIndexList.size() == 0) {
     		System.out.println("error, nothing stated to delete");
     		
-    	} else if (taskIndexList.size() == 1) {
-    		listOfTasks.deleteFromList(taskIndexList.get(0));
-    		
     	} else {
     		listOfTasks.deleteFromList(taskIndexList);
     	}
@@ -169,6 +165,14 @@ public class Logic {
     }
     
     /** 
+     *  this (temporary) method displays the current list of tasks to the console.
+     */
+    private static void display() {
+	    // TODO Auto-generated method stub
+	    
+    }
+    
+    /** 
      *  @param taskIndexList
      *  
      *  this method marks that a specified task has been done
@@ -176,9 +180,6 @@ public class Logic {
     private static void markDone(List<Integer> taskIndexList) {
     	if (taskIndexList.size() == 0) {
     		System.out.println("error, nothing to mark done");
-    	
-    	} else if (taskIndexList.size() == 1) {
-    		listOfTasks.markTaskDone(taskIndexList.get(0));
     	
     	} else {
     		listOfTasks.markTaskDone(taskIndexList);
