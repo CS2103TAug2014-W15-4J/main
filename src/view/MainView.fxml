@@ -10,6 +10,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+<TextField fx:id="textField"/>
+<Button text="Click Me" onAction="#doSomething"/>
 <VBox prefHeight="620.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane prefHeight="125.0" prefWidth="434.0" style="-fx-background-color: #66ccff;">
@@ -41,14 +44,15 @@
       </GridPane>
       <VBox prefHeight="498.0" prefWidth="434.0">
          <children>
-            <VBox id="toBeCompleted" prefHeight="245.0" prefWidth="434.0" />
-            <VBox id="toDo" prefHeight="238.0" prefWidth="434.0" />
+            <VBox fx:id="toBeCompleted" prefHeight="245.0" prefWidth="434.0" />
+            <VBox fx:id="toDo" prefHeight="238.0" prefWidth="434.0" />
          </children></VBox>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #66ccff;">
          <children>
-            <TextField id="input" prefHeight="42.0" prefWidth="431.0" id="textfield">
+            <TextField fx:id="input" prefHeight="42.0" prefWidth="431.0" id="textfield">
             </TextField>
          </children>
       </VBox>
    </children>
 </VBox>
+</fx:root>
