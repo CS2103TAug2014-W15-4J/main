@@ -63,6 +63,7 @@ public class TaskList {
 	}
 
 	public void markTaskDone(List<Integer> taskIndexList) {
+		boolean isDone = false;
 		for (int i=0; i<taskIndexList.size(); i++) {
 			int taskToMarkDone = taskIndexList.get(i);
 			
@@ -70,8 +71,13 @@ public class TaskList {
 				System.out.println("no such task index: " + taskToMarkDone);
 			} else {
 				this.tasks.get(taskToMarkDone-1).markDone();
-				System.out.println("task marked done.");
+				isDone = true;
 			}
+		}
+		
+		// display feedback message when done successfully
+		if (isDone) {
+			System.out.println("task marked done.");
 		}
     }
 
