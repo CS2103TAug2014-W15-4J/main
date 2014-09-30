@@ -41,12 +41,12 @@
       </GridPane>
       <VBox prefHeight="498.0" prefWidth="434.0">
          <children>
-            <VBox prefHeight="245.0" prefWidth="434.0" />
-            <VBox prefHeight="238.0" prefWidth="434.0" />
+            <VBox id="toBeCompleted" prefHeight="245.0" prefWidth="434.0" />
+            <VBox id="toDo" prefHeight="238.0" prefWidth="434.0" />
          </children></VBox>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #66ccff;">
          <children>
-            <TextField prefHeight="42.0" prefWidth="431.0" id="textfield">
+            <TextField id="input" prefHeight="42.0" prefWidth="431.0" id="textfield">
             </TextField>
          </children>
       </VBox>
