@@ -15,6 +15,7 @@ public class TaskList {
 
 	public TaskList() {
 		this.tasks = new ArrayList<Task>();
+		this.totalTasks = this.tasks.size();
 	}
 	
 	public ArrayList<Task> getList() {
@@ -99,6 +100,9 @@ public class TaskList {
 		return output;
 	}
 	
+	
+	// this method is only for testing purpose
+	// generate 50 dummy tasks
 	public void test() {
 		for (int i=0;i<50;i++) {
 			this.tasks.add(new Task("No."+i));
