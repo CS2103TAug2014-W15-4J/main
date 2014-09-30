@@ -22,6 +22,10 @@ import model.TaskList;
  */
 public class Storage {
 	
+	// XML tag for Model Class 
+	private static final String ALIAS_CLASS_TASK = "Task";
+	private static final String ALIAS_CLASS_TASKLIST = "CompleteList";
+
 	private static final String TASK_FILE = "uClear.xml";
 	
 	private static final String ERROR_IO = "Error when trying to read/write the file.";
@@ -111,8 +115,8 @@ public class Storage {
 			throw new Error(ERROR_IO);
 		}	
 		this.xstream = new XStream();
-		this.xstream.alias("CompleteList", TaskList.class);
-		this.xstream.alias("Task", Task.class);
+		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
+		this.xstream.alias(ALIAS_CLASS_TASK, Task.class);
 		this.xstream.processAnnotations(TaskList.class);
 	}
 	
