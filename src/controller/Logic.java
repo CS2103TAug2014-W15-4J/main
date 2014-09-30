@@ -18,7 +18,7 @@ public class Logic {
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
-    static TaskList listOfTasks = new TaskList();
+    static TaskList listOfTasks ;
 	static String help = "current list of available commands: \n" + 
                          "-to add a task              : add <description>\n" +
 			             "-to edit a task description : edit <taskID> <description>\n" +
@@ -27,14 +27,12 @@ public class Logic {
                          "-to mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n" + 
 			             "-to display all tasks       : show\n" + 
                          "-to exit the program        : exit";
-			      
-
+    
+	static Storage storage = new Storage(); 
     public static void main(String[] args) {
-        
         // get existing tasks from storage
-        Storage storage = new Storage(); 
-        
-        
+    	listOfTasks = storage.load();
+    	
         // get and execute new tasks
         while (true) {
         	String userInput = getUserInput();
@@ -109,6 +107,7 @@ public class Logic {
     		markDone(userCommand.getDoneID());
     		
     	} else if (userCommand.isExit()) {
+    		storage.close();
     		System.exit(0);
     		
     	} else {
