@@ -10,6 +10,7 @@ public class TaskList {
 
 	@XStreamAlias("TaskList")
 	private ArrayList<Task> tasks;
+	@XStreamAlias("TasksCount")
 	private int totalTasks;
 
 	public TaskList() {
@@ -36,7 +37,7 @@ public class TaskList {
 	}
 		
 	public void deleteFromList(List<Integer> taskIndexList) {
-		
+		boolean isDeleted = false;
 		Collections.sort(taskIndexList);
 		for (int i=taskIndexList.size()-1; i>=0; i--) {
 			int indexToRemove = taskIndexList.get(i);
@@ -46,8 +47,13 @@ public class TaskList {
 			} else {
 				this.tasks.remove(indexToRemove-1);
 				this.totalTasks--;
-				System.out.println("task deleted.");
+				isDeleted = true;
 			}
+		}
+		
+		// display feedback message when deleted successfully
+		if (isDeleted) {
+			System.out.println("task deleted.");
 		}
 	}
 	
