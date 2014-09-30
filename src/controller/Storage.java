@@ -50,6 +50,7 @@ public class Storage {
 		try {
 			this.writer = new BufferedWriter(new FileWriter(TASK_FILE, false));
 			this.writer.write(serialize(tasks));
+			this.writer.close();
 		} catch (IOException e) {
 			throw new Error(ERROR_IO);
 		}
@@ -83,7 +84,7 @@ public class Storage {
 		return xml;
 	}
 	
-	private void close() {
+	public void close() {
 		try {
 			this.reader.close();
 			this.writer.close();
@@ -101,7 +102,6 @@ public class Storage {
 		try {
 			if (inputFile.exists()) {
 				this.reader = new BufferedReader(new FileReader(inputFile));
-				this.writer = new BufferedWriter(new FileWriter(inputFile, true));
 			} else {
 				// if the file does not exist, we create a new file
 				this.writer = new BufferedWriter(new FileWriter(inputFile, false));
