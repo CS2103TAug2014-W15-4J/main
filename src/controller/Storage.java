@@ -39,7 +39,6 @@ public class Storage {
 	/**
 	 * Constructor
 	 * 
-	 * 
 	 */
 	public Storage() {
 		this.initilize();
@@ -102,6 +101,12 @@ public class Storage {
 	 * This method initialize all the file operators
 	 */
 	private void initilize() {
+		
+		this.xstream = new XStream();
+		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
+		this.xstream.alias(ALIAS_CLASS_TASK, Task.class);
+		this.xstream.processAnnotations(TaskList.class);
+
 		File inputFile = new File(TASK_FILE);
 		try {
 			if (inputFile.exists()) {
@@ -110,19 +115,24 @@ public class Storage {
 				// if the file does not exist, we create a new file
 				this.writer = new BufferedWriter(new FileWriter(inputFile, false));
 				this.reader = new BufferedReader(new FileReader(inputFile));
+				
+				// write an empty list to it.
+				TaskList empty = new TaskList();
+				try {
+					this.writer.write(serialize(empty));
+					this.writer.close();
+				} catch (IOException e) {
+					throw new Error(ERROR_IO);
+				}
 			}
 		} catch (Exception e) {
 			throw new Error(ERROR_IO);
 		}	
-		this.xstream = new XStream();
-		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
-		this.xstream.alias(ALIAS_CLASS_TASK, Task.class);
-		this.xstream.processAnnotations(TaskList.class);
 	}
 	
 	
 	public static void main(String[] args) {
-		testSave();
+//		testSave();
 		testLoad();
 	}
 
@@ -138,7 +148,6 @@ public class Storage {
 	public static void testSave() {
 		TaskList a = new TaskList();
 		a.test();
-		
 		Storage storge = new Storage();
 //		System.out.println(storge.serialize(a));
 		storge.save(a);
