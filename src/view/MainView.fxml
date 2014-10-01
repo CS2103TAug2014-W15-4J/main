@@ -11,8 +11,6 @@
 <?import javafx.scene.layout.*?>
 
 <fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
-<TextField fx:id="textField"/>
-<Button text="Click Me" onAction="#doSomething"/>
 <VBox prefHeight="620.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane prefHeight="125.0" prefWidth="434.0" style="-fx-background-color: #66ccff;">
@@ -35,7 +33,7 @@
                   <Font size="17.0" />
                </font>
                   </Label>
-            <Label alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="212.0" text="Date" textFill="WHITE" GridPane.columnIndex="1" id="date">
+            <Label fx:id="date" alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="212.0" text="Date" textFill="WHITE" GridPane.columnIndex="1">
                <font>
                   <Font size="17.0" />
                </font>
@@ -49,7 +47,7 @@
          </children></VBox>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #66ccff;">
          <children>
-            <TextField fx:id="input" prefHeight="42.0" prefWidth="431.0" id="textfield">
+            <TextField fx:id="textField" prefHeight="42.0" prefWidth="431.0" id="textfield">
             </TextField>
          </children>
       </VBox>
