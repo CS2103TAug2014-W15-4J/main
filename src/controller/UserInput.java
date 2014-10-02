@@ -1,19 +1,28 @@
 package controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 /**
- * 
- * Object passing from parser to logic The format of time is "yyyy-MM-dd HH:mm"
- * (For command with only one time, default we use addBeginDate and
- * getBeginDate) (SpecialDates are informal description of time like today,
- * tomorrow, Monday and all in lowercase)
- * 
+ * All write/read option in userInput:
+ * validation of cmd: 
+ *                    unvalidation()/getValid();
+ * allCommands: 
+ *                    add(CMD,String,boolean)/--;
+ * addCommand:
+ *                    addDate(List<Date>)/getDescription();getDate();
+ * editCommad;
+ *                    addDate(List<Date>);addEdit(int,String)/getEditID();getDescription();getDate();
+ *                                                   (the description and date need to be changed)
+ * deleteCommand:
+ *                    addDeleteID(List<Integer>)/getDeleteID();
+ * doneCommand:
+ *                    addDoneID(List<Integer>)/getDoneID();
+ * showCommand:
+ *                    addShow(string)/getShowCommand();
+ *                 
  * @author Lu Yuehan
  *
  */
@@ -28,18 +37,13 @@ public class UserInput {
 	private List<Integer> ID = new ArrayList<Integer>();
 
 	private int editID = 0;
-	private String editCommand = null;
+	private String afterCommand = null;
 
 	private String description = null;
 
 	private boolean floating = false;
 
-	private Date beginTime;
-	private String specialBeginDate;
-	private Date endTime;
-	private String specialEndDate;
-	private static SimpleDateFormat timeFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm");
+	private List<Date> dates = new ArrayList<Date>();
 
 	public boolean getValid() {
 		return valid;
@@ -60,9 +64,17 @@ public class UserInput {
 	public int getEditID() {
 		return editID;
 	}
+	
+	public List<Date> getDate() {
+		return dates;
+	}
 
 	public String getEditCommand() {
-		return editCommand;
+		return afterCommand;
+	}
+	
+	public String getShowCommand() {
+		return afterCommand;
 	}
 
 	public String getDescription() {
@@ -71,22 +83,6 @@ public class UserInput {
 
 	public boolean isFloat() {
 		return floating;
-	}
-
-	public Date getBeginDate() {
-		return beginTime;
-	}
-
-	public String getSpecialBeginDate() {
-		return specialBeginDate;
-	}
-
-	public Date getEndDate() {
-		return endTime;
-	}
-
-	public String getSpecialEndDate() {
-		return specialEndDate;
 	}
 
 	public void unvalidation() {
@@ -110,23 +106,17 @@ public class UserInput {
 
 	public void addEdit(int number, String command) {
 		editID = number;
-		editCommand = command;
+		afterCommand = command;
+	}
+	
+	public void addShow(String command) {
+		afterCommand = command;
+	}
+	
+	public void addDate(List<Date> date){
+		dates = date;
 	}
 
-	public void addBeginDate(String beginDate) throws ParseException {
-		beginTime = timeFormat.parse(beginDate);
-	}
 
-	public void addSpecialBeginDate(String date) {
-		specialBeginDate = date;
-	}
-
-	public void addEndDate(String endDate) throws ParseException {
-		endTime = timeFormat.parse(endDate);
-	}
-
-	public void addSpecialEndDate(String date) {
-		specialEndDate = date;
-	}
 
 }
