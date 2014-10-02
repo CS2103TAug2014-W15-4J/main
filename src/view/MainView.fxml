@@ -47,7 +47,7 @@
          </children></VBox>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #66ccff;">
          <children>
-            <TextField fx:id="textField" prefHeight="42.0" prefWidth="431.0" id="textfield">
+            <TextField fx:id="textField" prefHeight="42.0" prefWidth="431.0" id="textfield" onAction="#onEnter">
             </TextField>
          </children>
       </VBox>

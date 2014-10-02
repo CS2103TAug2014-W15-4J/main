@@ -1,5 +1,7 @@
 package view;
 
+import controller.Logic;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,6 +35,12 @@ public class MainViewController extends VBox {
     
     @FXML
     private Label date;
+    
+    @FXML
+    private VBox toBeCompleted;
+    
+    @FXML
+    private VBox toDo;
 
     public MainViewController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
@@ -54,6 +62,25 @@ public class MainViewController extends VBox {
         textProperty().set(value);
     }
     
+    public String getInput() {
+    	return textField.getText();
+    }
+    
+    public void display() {
+    	Label displayForToBeCompleted = new Label();
+    	Label displayForToDo = new Label();
+    	displayForToBeCompleted.setText(getInput());
+    	displayForToDo.setText(getInput());
+    	toBeCompleted.getChildren().add(displayForToBeCompleted);
+    	toDo.getChildren().add(displayForToDo);
+    }
+    
+    @FXML
+    public void onEnter() {
+    	display();
+    	textField.setText("");
+    }
+    
     public String getDateLabel() {
     	return date.getText();
     }
@@ -66,19 +93,6 @@ public class MainViewController extends VBox {
     public StringProperty textProperty() {
         return textField.textProperty();
     }
-
-//    @FXML
-//    protected void doSomething() {
-//        System.out.println("The button was clicked!");
-//    }
-    
-//    private String getCurrentDate() {
-//    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//    	Date currentDate = new Date();
-//    	return dateFormat.format(currentDate);
-//    }
-    
-    
     
 }
 
