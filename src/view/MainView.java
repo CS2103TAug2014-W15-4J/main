@@ -19,6 +19,7 @@ public class MainView extends Application {
 		MainViewController mainViewControl = new MainViewController();
 		mainViewControl.setText("Enter Command here...");
 		mainViewControl.setDateLabel();
+//		mainViewControl.display();
 		
         
 //        Scene scene = new Scene(root, 434, 620);
