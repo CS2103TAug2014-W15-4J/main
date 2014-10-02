@@ -105,8 +105,10 @@ public class TaskList {
 	// generate 50 dummy tasks
 	public void test() {
 		for (int i=0;i<50;i++) {
-			this.tasks.add(new Task("No."+i));
+			this.tasks.add(new FloatingTask("No."+i));
 		}
 	}
+	
+	
 
 }

@@ -1,10 +1,10 @@
 package model;
 
 /**
- *  This class models a (by default, floating) Task object
+ *  This class models a Task object
  */
 
-public class Task {
+public abstract class Task {
 
 	private String description;
 	private String[] tags;

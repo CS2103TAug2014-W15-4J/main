@@ -6,8 +6,14 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import model.Task;
 import model.TaskList;
+import model.Task;
+import model.DeadlineTask;
+import model.FloatingTask;
+import model.RepeatedTask;
+import model.TimedTask;
+
+
 
 /**
  *  main class that manages the TaskList
@@ -133,7 +139,7 @@ public class Logic {
      *  with the specified parameters
      */
     private static void addTask(String description) {
-    	Task newTask = new Task(description);
+    	Task newTask = new FloatingTask(description);
     	listOfTasks.addToList(newTask);
     }
     
