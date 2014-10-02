@@ -15,4 +15,11 @@ public class RepeatedTask extends Task {
 		return null;
 	}
 
+	@Override
+    public Task markDone() {
+	    super.markDone();
+	    Task taskToRepeat = new RepeatedTask(this.getDescription(), this.period);
+	    return taskToRepeat;
+    }
+
 }

@@ -27,8 +27,9 @@ public abstract class Task {
 		return tags;
 	}
 	
-	public void markDone() {
+	public Task markDone() {
 		isDone = true;
+		return null;
 	}
 	
 	public boolean getIsDone() {

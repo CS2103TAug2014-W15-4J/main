@@ -71,7 +71,13 @@ public class TaskList {
 			if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
 				System.out.println("no such task index: " + taskToMarkDone);
 			} else {
-				this.tasks.get(taskToMarkDone-1).markDone();
+				
+				Task newRepeatTask = this.tasks.get(taskToMarkDone-1).markDone();
+				if (newRepeatTask != null) {
+					this.addToList(newRepeatTask);
+					this.totalTasks++;
+				}
+				
 				isDone = true;
 			}
 		}
