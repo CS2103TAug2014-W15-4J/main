@@ -3,6 +3,8 @@ package controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import controller.UserInput.CMD;
+
 
 public class Parser {
 	private static final String CMD_ADD = "add";
@@ -64,8 +66,11 @@ public class Parser {
  */
 	
 	private UserInput parseExit(String content) {
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
 		UserInput input = new UserInput();
-		input.beExit();
+		input.add(CMD.EXIT,null,true);
 		return input;
 	}
 	
@@ -80,8 +85,7 @@ public class Parser {
 		if (content == null || content.equals(""))
 			return errorCommand();
 			UserInput input = new UserInput();
-			input.beAdd();
-			input.add(CMD_ADD, content, true);
+			input.add(CMD.ADD, content, true);
 			return input;
 	}
 	
@@ -105,8 +109,7 @@ public class Parser {
 				number.add(Integer.valueOf(numberInString[i].trim()));
 			}
 		}
-		input.beDelete();
-		input.add(CMD_DELETE, "", true);
+		input.add(CMD.DELETE, null, true);
 		input.addDeleteID(number);
 		return input;
 	}
@@ -123,8 +126,7 @@ public class Parser {
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
-		input.beClear();
-		input.add(CMD_CLEAR, "", true);
+		input.add(CMD.CLEAR, null, true);
 		return input;
 	}
 	
@@ -149,9 +151,8 @@ public class Parser {
 		if (!trueNumberFormat(IDString)) {
 			return errorCommand();
 		} else {
-			input.beEdit();
 			input.addEdit(Integer.valueOf(IDString), null);
-			input.add(CMD_EDIT, contentString, true);
+			input.add(CMD.EDIT, contentString, true);
 		}
 		return input;
 	}
@@ -168,8 +169,7 @@ public class Parser {
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
-		input.beShow();
-		input.add(CMD_SHOW, null, true);
+		input.add(CMD.SHOW, null, true);
 		return input;
 	}
 	
@@ -205,8 +205,7 @@ public class Parser {
 				number.add(Integer.valueOf(numberInString[i].trim()));
 			}
 		}
-		input.beDone();
-		input.add(CMD_DONE, "", true);
+		input.add(CMD.DONE, null, true);
 		input.addDoneID(number);
 		return input;
 	}

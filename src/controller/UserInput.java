@@ -18,26 +18,17 @@ import java.util.List;
  *
  */
 public class UserInput {
-	private boolean valid = true;
-	private String command = null;
+	public enum CMD {
+		ADD,DELETE,EDIT,CLEAR,DONE,SEARCH,EXIT,SHOW
+	};
 	
-	private boolean isExit = false;
-
-	private boolean isAdd = false;
-
-	private boolean isDelete = false;
+	private boolean valid = true;
+	private CMD command = null;
 	
 	private List<Integer> ID = new ArrayList<Integer>();
 
-	private boolean isEdit = false;
 	private int editID = 0;
 	private String editCommand = null;
-
-	private boolean isShow = false;
-
-	private boolean isClear = false;
-
-	private boolean isDone = false;
 
 	private String description = null;
 
@@ -54,26 +45,10 @@ public class UserInput {
 		return valid;
 	}
 
-	public String getCommand() {
+	public CMD getCommand() {
 		return command;
 	}
 	
-	public boolean isExit() {
-		return isExit;
-	}
-
-	public boolean isAdd() {
-		return isAdd;
-	}
-
-	public boolean isDelete() {
-		return isDelete;
-	}
-
-	public boolean isDone() {
-		return isDone;
-	}
-
 	public List<Integer> getDeleteID() {
 		return ID;
 	}
@@ -82,24 +57,12 @@ public class UserInput {
 		return ID;
 	}
 
-	public boolean isEdit() {
-		return isEdit;
-	}
-
 	public int getEditID() {
 		return editID;
 	}
 
 	public String getEditCommand() {
 		return editCommand;
-	}
-
-	public boolean isShow() {
-		return isShow;
-	}
-
-	public boolean isClear() {
-		return isClear;
 	}
 
 	public String getDescription() {
@@ -122,14 +85,6 @@ public class UserInput {
 		return endTime;
 	}
 
-	public void beDone() {
-		isDone = true;
-	}
-	
-	public void beExit() {
-		isExit = true;
-	}
-
 	public String getSpecialEndDate() {
 		return specialEndDate;
 	}
@@ -138,31 +93,11 @@ public class UserInput {
 		valid = false;
 	}
 
-	public void add(String userCommand, String userDescription,
+	public void add(CMD userCommand, String userDescription,
 			boolean userFloat) {
 		command = userCommand;
 		description = userDescription;
 		floating = userFloat;
-	}
-
-	public void beAdd() {
-		isAdd = true;
-	}
-
-	public void beDelete() {
-		isDelete = true;
-	}
-
-	public void beEdit() {
-		isEdit = true;
-	}
-
-	public void beShow() {
-		isShow = true;
-	}
-
-	public void beClear() {
-		isClear = true;
 	}
 
 	public void addDeleteID(List<Integer> numbers) {

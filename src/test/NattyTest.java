@@ -1,5 +1,5 @@
 package test;
-import com.joestelmach.natty.*;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,13 +22,20 @@ public class NattyTest {
 		List<DateGroup> groups = parser.parse(input);
 		for(DateGroup group:groups) {
 		  List<Date> dates = group.getDates();
-		  int line = group.getLine();
-		  int column = group.getPosition();
-		  String matchingValue = group.getText();
-		  String syntaxTree = group.getSyntaxTree().toStringTree();
-		  Map<String, List<ParseLocation>> parseMap = group.getParseLocations();
-		  boolean isRecurreing = group.isRecurring();
-		  Date recursUntil = group.getRecursUntil();
+//		  int line = group.getLine();
+//		  System.out.println(line);
+//		  int column = group.getPosition();
+//		  System.out.println(column);
+//		  String matchingValue = group.getText();
+//		  System.out.println(matchingValue);
+//		  String syntaxTree = group.getSyntaxTree().toStringTree();
+//		  System.out.println(syntaxTree);
+//		  Map<String, List<ParseLocation>> parseMap = group.getParseLocations();
+//		  System.out.println(parseMap);
+//		  boolean isRecurreing = group.isRecurring();
+//		  System.out.println(isRecurreing);
+//		  Date recursUntil = group.getRecursUntil();
+//		  System.out.println(recursUntil);
 		  dateList.addAll(dates);
 		}
 		System.out.println(dateList);
