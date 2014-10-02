@@ -96,7 +96,7 @@ public class Parser {
 	 * this is for entering delete command
 	 */
 	
-	private UserInput parseDelete(String content) {
+	private UserInput parseDelete(String content) {   
 		if (!trueNumberFormat(content)) {
 			return errorCommand();
 		}
