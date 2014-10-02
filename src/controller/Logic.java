@@ -61,7 +61,7 @@ public class Logic {
      */
     private static void executeCommand(UserInput userCommand) {
         
-    	if (userCommand.isAdd()) {
+    	if (userCommand.getCommand() == UserInput.CMD.ADD) {
     		String desc = userCommand.getDescription();
     		
     		if (desc == null) {
@@ -74,7 +74,7 @@ public class Logic {
     		}
 
     		
-    	} else if (userCommand.isEdit()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.EDIT) {
     		
     		int editID = userCommand.getEditID();
     		String desc = userCommand.getDescription();
@@ -90,23 +90,26 @@ public class Logic {
     		}
     		
     		
-    	} else if (userCommand.isDelete()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.DELETE) {
     		deleteTask(userCommand.getDeleteID());
     		
-    	} else if (userCommand.isShow()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
     		// call the UI to display the corresponding tasks here eventually
     		display();
     		
     		
-    	} else if (userCommand.isClear()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
     		clearTaskList();
     		System.out.println("list cleared");
     		
     		
-    	} else if (userCommand.isDone()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.DONE) {
     		markDone(userCommand.getDoneID());
     		
-    	} else if (userCommand.isExit()) {
+    	} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
+    		// search function here.
+    		
+    	} else if (userCommand.getCommand() == UserInput.CMD.EXIT) {
     		storage.close();
     		System.exit(0);
     		
