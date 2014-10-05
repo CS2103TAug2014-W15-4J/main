@@ -1,31 +1,32 @@
 package controller;
 
-import java.util.Scanner;
-
 /**
  * 
- * For temp use only
- * 
- * @author Lu Yuehan
+ * This is to be used before the formal GUI
  *
  */
 public class Body {
 	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-		boolean continues = true;
-		String cmd;
-		UserInput input = null;
-		Parser parse = new Parser();
-		do {
-			cmd = scanner.nextLine();
-			if (cmd.equals("exit")) {
-				continues = false;
-			}
-			parse = new Parser();
-			input = parse.parse(cmd);
-			System.out.println(input.getCommand() + input.getDescription()
-					+ input.getDeleteID() + input.getValid());
-		} while (continues);
-		scanner.close();
+		Storage storage = new Storage(); 
+		// get existing tasks from storage
+    	Logic.listOfTasks = storage.load();
+    	
+        // get and execute new tasks
+        while (true) {
+        	String userInput = Logic.getUserInput();
+
+        	if (userInput.equalsIgnoreCase("help")) {
+        		System.out.println(Logic.help);
+        	} else {
+	        	// parse and execute command
+	        	Parser parser = new Parser();
+	        	UserInput userCommand = parser.parse(userInput);
+	        	Logic.executeCommand(userCommand);
+	
+	        	// update the history and storage file
+	        	storage.save(Logic.listOfTasks);
+        	}
+
+        }
 	}
 }

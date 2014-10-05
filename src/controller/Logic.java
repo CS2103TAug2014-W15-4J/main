@@ -35,28 +35,28 @@ public class Logic {
                          "-to exit the program        : exit";
     
 	static Storage storage = new Storage(); 
-    public static void main(String[] args) {
-        // get existing tasks from storage
-    	listOfTasks = storage.load();
-    	
-        // get and execute new tasks
-        while (true) {
-        	String userInput = getUserInput();
-
-        	if (userInput.equalsIgnoreCase("help")) {
-        		System.out.println(help);
-        	} else {
-	        	// parse and execute command
-	        	Parser parser = new Parser();
-	        	UserInput userCommand = parser.parse(userInput);
-	        	executeCommand(userCommand);
-	
-	        	// update the history and storage file
-	        	storage.save(listOfTasks);
-        	}
-
-        }        
-    }
+//    public static void main(String[] args) {
+//        // get existing tasks from storage
+//    	listOfTasks = storage.load();
+//    	
+//        // get and execute new tasks
+//        while (true) {
+//        	String userInput = getUserInput();
+//
+//        	if (userInput.equalsIgnoreCase("help")) {
+//        		System.out.println(help);
+//        	} else {
+//	        	// parse and execute command
+//	        	Parser parser = new Parser();
+//	        	UserInput userCommand = parser.parse(userInput);
+//	        	executeCommand(userCommand);
+//	
+//	        	// update the history and storage file
+//	        	storage.save(listOfTasks);
+//        	}
+//
+//        }        
+//    }
     
     /** 
      *  @param userCommand
@@ -65,7 +65,7 @@ public class Logic {
      *  the commands will include to add/ edit/ delete a task, to undo/ redo 
      *  an operation, and more.
      */
-    private static void executeCommand(UserInput userCommand) {
+    public static void executeCommand(UserInput userCommand) {
         
     	if (userCommand.getCommand() == UserInput.CMD.ADD) {
     		String desc = userCommand.getDescription();
@@ -263,7 +263,7 @@ public class Logic {
      *  this method reads the user input from the command line 
      *  and returns it as a string.
      */
-    private static String getUserInput() {
+    public static String getUserInput() {
         System.out.print("Enter command: ");
         String userInput = scanner.nextLine();
         return userInput;
