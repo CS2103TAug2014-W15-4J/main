@@ -26,17 +26,18 @@ public class NattyTest {
 //		  System.out.println(line);
 //		  int column = group.getPosition();
 //		  System.out.println(column);
-//		  String matchingValue = group.getText();
-//		  System.out.println(matchingValue);
+		  String matchingValue = group.getText();
+		  System.out.println(matchingValue);
 //		  String syntaxTree = group.getSyntaxTree().toStringTree();
 //		  System.out.println(syntaxTree);
 //		  Map<String, List<ParseLocation>> parseMap = group.getParseLocations();
 //		  System.out.println(parseMap);
-//		  boolean isRecurreing = group.isRecurring();
-//		  System.out.println(isRecurreing);
-//		  Date recursUntil = group.getRecursUntil();
-//		  System.out.println(recursUntil);
+		  boolean isRecurreing = group.isRecurring();
+		  System.out.println(isRecurreing);
+		  Date recursUntil = group.getRecursUntil();
+		  System.out.println(recursUntil);
 		  dateList.addAll(dates);
+		  System.out.println(input.replaceAll(matchingValue,""));
 		}
 		System.out.println(dateList);
 	}
