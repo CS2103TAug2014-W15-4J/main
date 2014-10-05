@@ -42,6 +42,8 @@ public class UserInput {
 	private String description = null;
 
 	private boolean floating = false;
+	private boolean repeated = false;
+	private boolean deadline = false;
 
 	private List<Date> dates = new ArrayList<Date>();
 
@@ -84,6 +86,14 @@ public class UserInput {
 	public boolean isFloat() {
 		return floating;
 	}
+	
+	public boolean isRepeated() {
+		return repeated;
+	}
+	
+	public boolean isDeadline() {
+		return deadline;
+	}
 
 	public void unvalidation() {
 		valid = false;
@@ -94,6 +104,14 @@ public class UserInput {
 		command = userCommand;
 		description = userDescription;
 		floating = userFloat;
+	}
+	
+	public void beRepeated(){
+		repeated = true;
+	}
+
+	public void beDeadline(){
+		deadline = true;
 	}
 
 	public void addDeleteID(List<Integer> numbers) {
