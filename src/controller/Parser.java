@@ -22,6 +22,7 @@ public class Parser {
 	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
+	private static final String CMD_HELP = "help";
 	private static final String CMD_EXIT = "exit";
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
@@ -43,28 +44,30 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
-		case CMD_EXIT:
-			return parseExit(content);
-		case CMD_ADD:
-			return parseAdd(content);
-		case CMD_DELETE:
-			return parseDelete(content);
-		case CMD_CLEAR:
-			return parseClear(content);
-		case CMD_SEARCH:
-			return parseSearch(content);
-		case CMD_EDIT:
-			return parseEdit(content);
-		case CMD_DONE:
-			return parseDone(content);
-		case CMD_COMPLETE:
-			return parseDone(content);
-		case CMD_FINISH:
-			return parseDone(content);
-		case CMD_SHOW:
-			return parseShow(content);
-		default:
-			return errorCommand();
+			case CMD_EXIT :
+				return parseExit(content);
+			case CMD_HELP :
+				return parseHelp(content);
+			case CMD_ADD :
+				return parseAdd(content);
+			case CMD_DELETE :
+				return parseDelete(content);
+			case CMD_CLEAR :
+				return parseClear(content);
+			case CMD_SEARCH :
+				return parseSearch(content);
+			case CMD_EDIT :
+				return parseEdit(content);
+			case CMD_DONE :
+				return parseDone(content);
+			case CMD_COMPLETE :
+				return parseDone(content);
+			case CMD_FINISH :
+				return parseDone(content);
+			case CMD_SHOW :
+				return parseShow(content);
+			default :
+				return errorCommand();
 		}
 	}
 
@@ -83,6 +86,15 @@ public class Parser {
 		input.addCommand(CMD.EXIT);
 		return input;
 	}
+	
+	private UserInput parseHelp(String content) {
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.HELP);
+		return input;
+	}
 
 	/**
 	 * @param content
@@ -99,19 +111,19 @@ public class Parser {
 		UserInput input = new UserInput();
 		input.addCommand(CMD.ADD);
 		switch (taskType(content)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		default: {
-			input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-			if (input.getValid())
-				return input;
-			input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-			if (input.getValid())
-				return input;
-			return parseFloat(input, content);
-		}
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			default : {
+				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
+				if (input.getValid())
+					return input;
+				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
+				if (input.getValid())
+					return input;
+				return parseFloat(input, content);
+			}
 		}
 	}
 
@@ -275,19 +287,19 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		switch (taskType(content)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		default: {
-			input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-			if (input.getValid())
-				return input;
-			input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-			if (input.getValid())
-				return input;
-			return parseFloat(input, content);
-		}
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			default : {
+				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
+				if (input.getValid())
+					return input;
+				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
+				if (input.getValid())
+					return input;
+				return parseFloat(input, content);
+			}
 		}
 	}
 

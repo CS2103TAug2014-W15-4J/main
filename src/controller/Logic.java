@@ -11,7 +11,7 @@ import model.Task;
 import model.DeadlineTask;
 import model.FloatingTask;
 import model.RepeatedTask;
-import model.TimedTask;
+import model.FixedTask;
 
 
 
@@ -140,8 +140,6 @@ public class Logic {
     				
     			// is fixed task
     			} else {
-    				
-    				if ()
     				
     			}
     			
