@@ -10,8 +10,12 @@ public class DeadlineTask extends Task {
 		deadline = dl;
 	}
 	
-	public String getDeadline() {
-		return null;
+	public Date getDeadline() {
+		return deadline;
+	}
+	
+	public void setDeadline(Date dl) {
+		deadline = dl;
 	}
 
 }

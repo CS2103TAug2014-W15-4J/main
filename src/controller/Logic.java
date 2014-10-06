@@ -38,7 +38,9 @@ public class Logic {
     
     static String MESSAGE_INVALID_ADD_ = "";
     static String MESSAGE_INVALID_ADD_EMPTY_DESCRIPTION = "Error adding task: no description entered";
+    static String MESSAGE_INVALID_ADD_DATE_ERROR = "Error adding task: date error";
     static String MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION = "Error editing task: no description entered";
+    static String MESSAGE_INVALID_EDIT_DATE_ERROR = "Error editing task: date error";
     static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
     static String MESSAGE_INVALID_MARKED_DONE = "Error marking task(s) done.";
     static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
@@ -118,17 +120,28 @@ public class Logic {
     				return addTask(desc);
     				
     			} else if (userCommand.isDeadline()) {
-    				
-    				
+    				if (dateList.size() == 1) {
+    					Date date = dateList.get(0);
+    					return addTask(desc, date);
+    					
+    				} else {
+    					return MESSAGE_INVALID_ADD_DATE_ERROR;
+    				}
     			} else if (userCommand.isRepeated()) {
     				
-    				//userCommand.repeatDate()
-    				//userCommand.getDate
+    				if (dateList.size() == 1) {
+    					Date date = dateList.get(0);
+    					String repeatDate = userCommand.repeatDate();
+    					return addTask(desc, date, repeatDate);
     				
-    			
+    				} else {
+    					return MESSAGE_INVALID_EDIT_DATE_ERROR;
+    				}
+    				
     			// is fixed task
     			} else {
     				
+    				if ()
     				
     			}
     			
@@ -194,6 +207,7 @@ public class Logic {
      *  
      *  the following methods will add a task to the file, 
      *  with the specified parameters
+     *  (floating, deadline, repeated, fixed tasks respectively)
      */
     private static String addTask(String description) {
     	Task newTask = new FloatingTask(description);
@@ -202,11 +216,16 @@ public class Logic {
     }
     
     
-    private static void addTask(String event, Date time) {
-    	
+    private static String addTask(String description, Date time) {
+    	Task newTask = new DeadlineTask(description, time);
+    	listOfTasks.addToList(newTask);
+    	return MESSAGE_TASK_ADDED;
     }
     
-    private static void addTask(String event, Date time, Date Period) {
+    private static String addTask(String description, Date time, String repeatDate) {
+    	Task newTask = new RepeatedTask(description, time, repeatDate);
+    	listOfTasks.addToList(newTask);
+    	return MESSAGE_TASK_ADDED;
         
     }
     

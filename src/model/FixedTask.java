@@ -1,8 +1,8 @@
 package model;
 
-public class TimedTask extends Task {
+public class FixedTask extends Task {
 
-	public TimedTask(String description) {
+	public FixedTask(String description) {
 		super(description);
 		// TODO Auto-generated constructor stub
 	}
