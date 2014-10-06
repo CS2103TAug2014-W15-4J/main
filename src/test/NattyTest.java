@@ -16,6 +16,9 @@ public class NattyTest {
 
 		List<Date> dateList = new ArrayList<Date>();
 		Parser parser = new Parser();
+		 String aa="asdfghjkl";
+		  
+		  System.out.println(aa.replaceAll("(?i)"+"A", "q"));
 		System.out.println("Enter something with a date/time:");
 		Scanner sc = new Scanner(System.in);
 		String input = sc.nextLine();
@@ -27,7 +30,6 @@ public class NattyTest {
 //		  int column = group.getPosition();
 //		  System.out.println(column);
 		  String matchingValue = group.getText();
-		  System.out.println(matchingValue);
 //		  String syntaxTree = group.getSyntaxTree().toStringTree();
 //		  System.out.println(syntaxTree);
 //		  Map<String, List<ParseLocation>> parseMap = group.getParseLocations();
@@ -41,4 +43,5 @@ public class NattyTest {
 		}
 		System.out.println(dateList);
 	}
+
 }
