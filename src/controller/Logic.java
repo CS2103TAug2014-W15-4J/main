@@ -181,15 +181,16 @@ public class Logic {
     			}
     			
     		} else if (taskType == Task.Type.DEADLINE) {
-				Date date = dateList.get(0);
 				
     			if ((dateList.size() == 1) && (!desc.isEmpty())) {
+    				Date date = dateList.get(0);
 					return editTask(editID, desc, date);
 					
 				} else if (!desc.isEmpty()) {
 					return editTask(editID, desc);
 					
 				} else if (dateList.size() == 1) {
+					Date date = dateList.get(0);
 					return editTask(editID, date);
 					
 				} else {
@@ -197,15 +198,16 @@ public class Logic {
 				}
     			
     		} else if (taskType == Task.Type.REPEATED) {
-    			Date date = dateList.get(0);
     			
     			if ((dateList.size() == 1) && (!desc.isEmpty())) {
+    				Date date = dateList.get(0);
     				return editTask(editID, desc, date);
     				
     			} else if (!desc.isEmpty()) {
     				return editTask(editID, desc);
     				
     			} else if (dateList.size() == 1) {
+    				Date date = dateList.get(0);
     				return editTask(editID, date);
     				
     			} else {
