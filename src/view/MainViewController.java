@@ -109,6 +109,7 @@ public class MainViewController extends VBox {
     	
     		setTaskListView();
     		determinePopMessage();
+    		Logic.saveTaskList();
     	}
     	
 //    	displayForToBeCompleted.setText(feedback);

@@ -83,6 +83,9 @@ public class Logic {
     	return listOfTasks;
     }
     
+    public static void saveTaskList() {
+    	storage.save(listOfTasks);
+    }
 	
 	/** 
 	 *  @param userInput
