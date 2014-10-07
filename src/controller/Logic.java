@@ -66,14 +66,11 @@ public class Logic {
         while (true) {
         	String userInput = getUserInput();
 
-        	if (userInput.equalsIgnoreCase("help")) {
-        		System.out.println(MESSAGE_HELP);
-        	} else {
 	        	// parse and execute command
 	        	System.out.println(readAndExecuteCommands(userInput));
 	        	// update the history and storage file
 	        	storage.save(listOfTasks);
-        	}
+
 
         }        
     }
@@ -152,7 +149,7 @@ public class Logic {
     		List<Date> dateList = userCommand.getDate();
     		
     		
-    		if (editCommand == null) {
+    		if (editCommand != null) {
     			// additional functions
     			// editCommand --> no-repeat / no-time
     			return null;
