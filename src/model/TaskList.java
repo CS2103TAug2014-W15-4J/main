@@ -23,6 +23,10 @@ public class TaskList {
 		return this.tasks;
 	}
 	
+	public Task get(int index) {
+		return this.tasks.get(index);
+	}
+	
 	public void addToList(Task task) {
 		this.tasks.add(task);
 		this.totalTasks++;
