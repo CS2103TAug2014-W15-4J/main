@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import com.thoughtworks.xstream.XStream;
 
+import model.FloatingTask;
 import model.Task;
 import model.TaskList;
 
@@ -23,7 +24,7 @@ import model.TaskList;
 public class Storage {
 	
 	// XML tag for Model Class 
-	private static final String ALIAS_CLASS_TASK = "Task";
+	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatTask";
 	private static final String ALIAS_CLASS_TASKLIST = "CompleteList";
 
 	private static final String TASK_FILE = "uClear.xml";
@@ -104,7 +105,7 @@ public class Storage {
 		
 		this.xstream = new XStream();
 		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
-		this.xstream.alias(ALIAS_CLASS_TASK, Task.class);
+		this.xstream.alias(ALIAS_CLASS_FLOATING_TASK, FloatingTask.class);		
 		this.xstream.processAnnotations(TaskList.class);
 
 		File inputFile = new File(TASK_FILE);
