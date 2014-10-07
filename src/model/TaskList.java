@@ -94,7 +94,6 @@ public class TaskList {
 					Task newRepeatTask = this.tasks.get(taskToMarkDone-1).markDone();
 					if (newRepeatTask != null) {
 						this.addToList(newRepeatTask);
-						this.totalTasks++;
 					}
 				}
 			}
