@@ -22,6 +22,7 @@ public class Parser {
 	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
+	private static final String CMD_HELP = "help";
 	private static final String CMD_EXIT = "exit";
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
@@ -43,28 +44,30 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
-		case CMD_EXIT:
-			return parseExit(content);
-		case CMD_ADD:
-			return parseAdd(content);
-		case CMD_DELETE:
-			return parseDelete(content);
-		case CMD_CLEAR:
-			return parseClear(content);
-		case CMD_SEARCH:
-			return parseSearch(content);
-		case CMD_EDIT:
-			return parseEdit(content);
-		case CMD_DONE:
-			return parseDone(content);
-		case CMD_COMPLETE:
-			return parseDone(content);
-		case CMD_FINISH:
-			return parseDone(content);
-		case CMD_SHOW:
-			return parseShow(content);
-		default:
-			return errorCommand();
+			case CMD_EXIT :
+				return parseExit(content);
+			case CMD_HELP :
+				return parseHelp(content);
+			case CMD_ADD :
+				return parseAdd(content);
+			case CMD_DELETE :
+				return parseDelete(content);
+			case CMD_CLEAR :
+				return parseClear(content);
+			case CMD_SEARCH :
+				return parseSearch(content);
+			case CMD_EDIT :
+				return parseEdit(content);
+			case CMD_DONE :
+				return parseDone(content);
+			case CMD_COMPLETE :
+				return parseDone(content);
+			case CMD_FINISH :
+				return parseDone(content);
+			case CMD_SHOW :
+				return parseShow(content);
+			default :
+				return errorCommand();
 		}
 	}
 
@@ -83,6 +86,24 @@ public class Parser {
 		input.addCommand(CMD.EXIT);
 		return input;
 	}
+	/**
+	 *
+	 * @param content
+	 * @return UserInput
+	 * 
+	 *     for help command
+	 * 
+	 *
+	 */
+	
+	private UserInput parseHelp(String content) {
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.HELP);
+		return input;
+	}
 
 	/**
 	 * @param content
@@ -99,21 +120,31 @@ public class Parser {
 		UserInput input = new UserInput();
 		input.addCommand(CMD.ADD);
 		switch (taskType(content)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		default: {
-			input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-			if (input.getValid())
-				return input;
-			input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-			if (input.getValid())
-				return input;
-			return parseFloat(input, content);
-		}
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			default : {
+				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
+				if (input.getValid())
+					return input;
+				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
+				if (input.getValid())
+					return input;
+				return parseFloat(input, content);
+			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @return UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for repeated task for add command or edit command
+	 */
 
 	private UserInput parseRepeated(UserInput input, String content,
 			ParseTime times) {
@@ -137,6 +168,16 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @return UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for deadline task for add command or edit command
+	 */
+
 	private UserInput parseDeadline(UserInput input, String content,
 			ParseTime times) {
 		String description = content.replaceAll(times.getText(), "").trim();
@@ -155,6 +196,17 @@ public class Parser {
 			return input;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @param taskType
+	 * @return  UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for fixed tasks for parseAdd and parseEdit
+	 */
 
 	private UserInput parseFixed(UserInput input, String content,
 			ParseTime times, TaskType taskType) {
@@ -173,6 +225,15 @@ public class Parser {
 			return input;
 		}
 	}
+	
+	/**
+	 *
+	 * @param input
+	 * @param content
+	 * @return  UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for floating task for parseAdd or parseEdit
+	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
 		if (content != null && !content.equals(""))
@@ -180,6 +241,14 @@ public class Parser {
 		input.beFloat();
 		return input;
 	}
+	
+	/**
+	 * 
+	 * @param content
+	 * @return TaskType
+	 * 
+	 * this is for check what kind of command by keywords
+	 */
 
 	private TaskType taskType(String content) {
 		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
@@ -275,19 +344,19 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		switch (taskType(content)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		default: {
-			input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-			if (input.getValid())
-				return input;
-			input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-			if (input.getValid())
-				return input;
-			return parseFloat(input, content);
-		}
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			default : {
+				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
+				if (input.getValid())
+					return input;
+				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
+				if (input.getValid())
+					return input;
+				return parseFloat(input, content);
+			}
 		}
 	}
 

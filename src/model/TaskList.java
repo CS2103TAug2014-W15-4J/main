@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -25,36 +26,49 @@ public class TaskList {
 	public void addToList(Task task) {
 		this.tasks.add(task);
 		this.totalTasks++;
-		System.out.println("task added");
 	}
 	
 	public void editTaskDescription(int taskIndex, String description) {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			System.out.println("no such task index: " + taskIndex);
+			// error here
 		} else {
 			this.tasks.get(taskIndex-1).setDescription(description);
-			System.out.println("task description changed");
 		}
 	}
+	
+	public void editTaskDeadline(int taskIndex, Date time) {
+	   if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+		   // error here
+	   } else {
+		   this.tasks.get(taskIndex-1).setDeadline(time);
+	   }   
+    }
 		
-	public void deleteFromList(List<Integer> taskIndexList) {
-		boolean isDeleted = false;
+
+	public void editTaskRepeatPeriod(int taskIndex, String repeatPeriod) {
+	    if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+	    	// error here
+	    } else {
+	    	this.tasks.get(taskIndex-1).setRepeatPeriod(repeatPeriod);
+	    }
+	    
+    }
+
+
+	
+	public void deleteFromList(List<Integer> taskIndexList) throws Exception {
+
 		Collections.sort(taskIndexList);
 		for (int i=taskIndexList.size()-1; i>=0; i--) {
 			int indexToRemove = taskIndexList.get(i);
 			
 			if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
-				System.out.println("no such task index: " + indexToRemove);
+				throw new Exception();
+
 			} else {
 				this.tasks.remove(indexToRemove-1);
 				this.totalTasks--;
-				isDeleted = true;
 			}
-		}
-		
-		// display feedback message when deleted successfully
-		if (isDeleted) {
-			System.out.println("task deleted.");
 		}
 	}
 	
@@ -63,29 +77,28 @@ public class TaskList {
 		this.totalTasks = 0;
 	}
 
-	public void markTaskDone(List<Integer> taskIndexList) {
-		boolean isDone = false;
-		for (int i=0; i<taskIndexList.size(); i++) {
-			int taskToMarkDone = taskIndexList.get(i);
+	public void markTaskDone(List<Integer> taskIndexList) throws Exception {
+		
+		if (taskIndexList.isEmpty()) {
+			throw new Exception();
 			
-			if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
-				System.out.println("no such task index: " + taskToMarkDone);
-			} else {
+		} else {
+			for (int i=0; i<taskIndexList.size(); i++) {
+				int taskToMarkDone = taskIndexList.get(i);
 				
-				Task newRepeatTask = this.tasks.get(taskToMarkDone-1).markDone();
-				if (newRepeatTask != null) {
-					this.addToList(newRepeatTask);
-					this.totalTasks++;
+				if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
+					throw new Exception();
+					
+				} else {
+					Task newRepeatTask = this.tasks.get(taskToMarkDone-1).markDone();
+					if (newRepeatTask != null) {
+						this.addToList(newRepeatTask);
+						this.totalTasks++;
+					}
 				}
-				
-				isDone = true;
 			}
 		}
-		
-		// display feedback message when done successfully
-		if (isDone) {
-			System.out.println("task marked done.");
-		}
+
     }
 
 	public int getNumberOfTasks() {

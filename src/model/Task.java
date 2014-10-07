@@ -6,9 +6,9 @@ package model;
 
 public abstract class Task {
 
-	private String description;
-	private String[] tags;
-	private boolean isDone;
+	protected String description;
+	protected String[] tags;
+	protected boolean isDone;
 
 	public Task(String description) {
 		this.description = description;

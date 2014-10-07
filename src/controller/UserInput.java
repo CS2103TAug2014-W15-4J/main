@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class UserInput {
 	public enum CMD {
-		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW
+		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP
 	};
 
 	private boolean valid = true;
