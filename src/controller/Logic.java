@@ -148,6 +148,9 @@ public class Logic {
     		String editCommand = userCommand.getEditCommand();
     		List<Date> dateList = userCommand.getDate();
     		
+    		Task taskToEdit = listOfTasks.get(editID-1);
+    		Task.Type taskType = taskToEdit.getType();
+    		
     		
     		if (editCommand != null) {
     			// additional functions
@@ -157,7 +160,7 @@ public class Logic {
     		} else if (desc == null) {
     			return MESSAGE_INVALID_EDIT;
     			
-    		} else if (userCommand.isFloat()) {
+    		} else if (taskType == Task.Type.FLOAT) {
     			if (desc.isEmpty()) {
     				return MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION;
 
@@ -165,7 +168,7 @@ public class Logic {
     				return editTask(editID, desc);
     			}
     			
-    		} else if (userCommand.isDeadline()) {
+    		} else if (taskType == Task.Type.DEADLINE) {
 				Date date = dateList.get(0);
 				
     			if ((dateList.size() == 1) && (!desc.isEmpty())) {
@@ -181,7 +184,7 @@ public class Logic {
 					return MESSAGE_INVALID_EDIT_DATE_ERROR;
 				}
     			
-    		} else if (userCommand.isRepeated()) {
+    		} else if (taskType == Task.Type.REPEATED) {
     			Date date = dateList.get(0);
     			
     			if ((dateList.size() == 1) && (!desc.isEmpty())) {
@@ -196,6 +199,9 @@ public class Logic {
     			} else {
     				return MESSAGE_INVALID_EDIT_DATE_ERROR;
 				}
+    			
+    		} else if (taskType == Task.Type.FIXED) {
+    			return null;
     			
     		} else {
     			// other types of edits here
@@ -361,16 +367,16 @@ public class Logic {
     	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
     		Task task = listOfTasks.get(i);
     		taskDisplay.append((i+1) + ". " + task.getDescription()+"\n");
-    		if (task.getType() == Task.Type.Deadline) {
+    		if (task.getType() == Task.Type.DEADLINE) {
     			DeadlineTask deadlineTask = (DeadlineTask) task;
     			taskDisplay.append("Due: "+dateFormat.format(deadlineTask.getDeadline())+"\n");
     		}
-    		if (task.getType() == Task.Type.Fixed) {
+    		if (task.getType() == Task.Type.FIXED) {
     			FixedTask fixedTask = (FixedTask) task;
     			taskDisplay.append("Start: "+dateFormat.format(fixedTask.getStartTime()));
     			taskDisplay.append("\nDue: "+dateFormat.format(fixedTask.getDeadline()+"\n"));
     		}
-    		if (task.getType() == Task.Type.Repeated) {
+    		if (task.getType() == Task.Type.REPEATED) {
     			RepeatedTask repeatedTask = (RepeatedTask) task;
     			taskDisplay.append("Due: "+dateFormat.format(repeatedTask.getDeadline()));
     			taskDisplay.append("\nRepeat: "+repeatedTask.getRepeatPeriod()+"\n");

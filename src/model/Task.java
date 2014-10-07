@@ -8,7 +8,7 @@ import java.util.Date;
 
 public abstract class Task {
 	public enum Type {
-		Float, Deadline, Fixed, Repeated
+		FLOAT, DEADLINE, FIXED, REPEATED
 	}
 	protected String description;
 	protected String[] tags;
