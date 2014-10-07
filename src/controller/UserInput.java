@@ -16,7 +16,7 @@ import java.util.List;
  *                        /getDescription();getDate();isFloat() or isRepeated or isDeadline();
  * editCommad;
  *          addDate(List<Date>);addEdit(int,String)
- *                      /getEditID();getDescription();getDate(); (the description and date need to be changed) 
+ *                      /getEditID();getDescription();getDate();getEditCommandÅiÅjÅG (the description and date need to be changed) 
  * deleteCommand:
  *          addDeleteID(List<Integer>)/getDeleteID(); 
  * doneCommand:

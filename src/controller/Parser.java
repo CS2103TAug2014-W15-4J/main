@@ -332,7 +332,6 @@ public class Parser {
 			content = input.getDescription();
 			input.add(null);
 			input = parseEditTaskAndTime(input, content);
-			input.add(contentString);
 		}
 		return input;
 	}
