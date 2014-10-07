@@ -2,13 +2,15 @@ package model;
 
 import java.util.Date;
 
+import model.Task.Type;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 public class FixedTask extends Task {
 	
-	@XStreamAlias("Star Time")
+	@XStreamAlias("StartTime")
 	private Date startTime;
-	@XStreamAlias("End Time")
+	@XStreamAlias("EndTime")
 	private Date endTime;
 	
 	public FixedTask(String description, Date startTime, Date endTime) {
@@ -16,6 +18,7 @@ public class FixedTask extends Task {
 		// TODO Auto-generated constructor stub
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.taskType = Type.Fixed;
 	}
 
 	public Date getStartTime() {
@@ -26,12 +29,12 @@ public class FixedTask extends Task {
 		this.startTime = startTime;
 	}
 
-	public Date getEndTime() {
+	public Date getDeadline() {
 		return endTime;
 	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
+	
+	public void setDeadline(Date endtime) {
+		this.endTime = endtime;
 	}
 	
 

@@ -7,11 +7,14 @@ import java.util.Date;
  */
 
 public abstract class Task {
-
+	public enum Type {
+		Float, Deadline, Fixed, Repeated
+	}
 	protected String description;
 	protected String[] tags;
 	protected boolean isDone;
-
+	protected Type taskType;
+	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
@@ -53,6 +56,10 @@ public abstract class Task {
 	    // TODO Auto-generated method stub
 	    return null;
     }
+	
+	public Type getType() {
+		return taskType;
+	}
 	
 	
 

@@ -6,11 +6,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 import com.thoughtworks.xstream.XStream;
 
+import model.DeadlineTask;
+import model.FixedTask;
 import model.FloatingTask;
-import model.Task;
+import model.RepeatedTask;
 import model.TaskList;
 
 
@@ -24,8 +27,12 @@ import model.TaskList;
 public class Storage {
 	
 	// XML tag for Model Class 
-	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatTask";
+	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatingTask";
+	private static final String ALIAS_CLASS_FIXED_TASK = "FixedTask";
+	private static final String ALIAS_CLASS_DEADLINE_TASK = "DeadlineTask";
+	private static final String ALIAS_CLASS_REPEATED_TASK = "RepeatedTask";
 	private static final String ALIAS_CLASS_TASKLIST = "CompleteList";
+
 
 	private static final String TASK_FILE = "uClear.xml";
 	
@@ -42,7 +49,11 @@ public class Storage {
 	 * 
 	 */
 	public Storage() {
-		this.initilize();
+		this.initilize(TASK_FILE);
+	}
+	
+	public Storage(String filename) {
+		this.initilize(filename);
 	}
 	
 	/**
@@ -53,6 +64,23 @@ public class Storage {
 	public String save(TaskList tasks) {
 		try {
 			this.writer = new BufferedWriter(new FileWriter(TASK_FILE, false));
+			this.writer.write(serialize(tasks));
+			this.writer.close();
+		} catch (IOException e) {
+			throw new Error(ERROR_IO);
+		}
+		return "Success";
+	}
+	
+	/**
+	 * Overload
+	 * @param tasks the TaskList object which contains the list of tasks\
+	 * @param filename the name of the task list to be stored
+	 * @return a feedback message
+	 */
+	public String save(TaskList tasks, String filename) {
+		try {
+			this.writer = new BufferedWriter(new FileWriter(filename, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
@@ -100,15 +128,23 @@ public class Storage {
 	
 	/**
 	 * This method initialize all the file operators
+	 * @param filename the name of the task list to be stored
 	 */
-	private void initilize() {
+	private void initilize(String filename) {
 		
 		this.xstream = new XStream();
 		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
 		this.xstream.alias(ALIAS_CLASS_FLOATING_TASK, FloatingTask.class);		
+		this.xstream.alias(ALIAS_CLASS_FIXED_TASK, FixedTask.class);
+		this.xstream.alias(ALIAS_CLASS_DEADLINE_TASK, DeadlineTask.class);
+		this.xstream.alias(ALIAS_CLASS_REPEATED_TASK, RepeatedTask.class);
 		this.xstream.processAnnotations(TaskList.class);
+		this.xstream.processAnnotations(FloatingTask.class);
+		this.xstream.processAnnotations(FixedTask.class);
+		this.xstream.processAnnotations(DeadlineTask.class);
+		this.xstream.processAnnotations(RepeatedTask.class);
 
-		File inputFile = new File(TASK_FILE);
+		File inputFile = new File(filename);
 		try {
 			if (inputFile.exists()) {
 				this.reader = new BufferedReader(new FileReader(inputFile));
@@ -134,24 +170,25 @@ public class Storage {
 	
 	public static void main(String[] args) {
 //		testSave();
-		testLoad();
+//		testLoad();
 	}
 
 	
 	/*************
 	 * Testing
 	 *************/
-	
+
 	
 	/**
 	 * Test save method
 	 */
 	public static void testSave() {
 		TaskList a = new TaskList();
-		a.test();
-		Storage storge = new Storage();
-//		System.out.println(storge.serialize(a));
-		storge.save(a);
+		a.addToList(new FloatingTask("going to school"));
+		a.addToList(new FixedTask("test", new Date(), new Date()));
+		Storage storge = new Storage("test.xml");
+		System.out.println(storge.serialize(a));
+		storge.save(a, "test.xml");
 		storge.close();
 	}
 	
@@ -159,7 +196,7 @@ public class Storage {
 	 * Test load method
 	 */
 	public static void testLoad() {
-		Storage storge = new Storage();
+		Storage storge = new Storage("test.xml");
 		TaskList a = storge.load();
 		System.out.println(a.toString());
 	}
