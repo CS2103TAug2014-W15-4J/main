@@ -31,6 +31,8 @@ public class Logic {
     static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
     static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
     
+    static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
+    
     static String MESSAGE_PROGRAM_REDO = "redo successful.";
     static String MESSAGE_PROGRAM_UNDO = "undo successful.";
     static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
@@ -425,6 +427,11 @@ public class Logic {
      * 
      */
     private static String display() {
+    	if (listOfTasks.getNumberOfTasks() == 0) {
+    		// empty task list
+    		return MESSAGE_EMPTY_TASK_LIST;
+    	}
+    	
     	StringBuilder taskDisplay = new StringBuilder();
     	taskDisplay.append("Current tasks:\n");
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
