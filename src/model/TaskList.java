@@ -28,23 +28,23 @@ public class TaskList {
 		this.totalTasks++;
 	}
 	
-	public void editTaskDescription(int taskIndex, String description) {
+	public void editTaskDescription(int taskIndex, String description) throws Exception {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			// error here
+			throw new Exception();
 		} else {
 			this.tasks.get(taskIndex-1).setDescription(description);
 		}
 	}
 	
-	public void editTaskDeadline(int taskIndex, Date time) {
-	   if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-		   // error here
-	   } else {
-		   this.tasks.get(taskIndex-1).setDeadline(time);
-	   }   
+	public void editTaskDeadline(int taskIndex, Date time) throws Exception {
+		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+			throw new Exception();
+		} else {
+			this.tasks.get(taskIndex-1).setDeadline(time);
+		}   
     }
 		
-
+	/*
 	public void editTaskRepeatPeriod(int taskIndex, String repeatPeriod) {
 	    if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
 	    	// error here
@@ -53,6 +53,7 @@ public class TaskList {
 	    }
 	    
     }
+    */
 
 
 	

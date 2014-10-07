@@ -14,7 +14,6 @@ import model.RepeatedTask;
 import model.FixedTask;
 
 
-
 /**
  *  main class that manages the TaskList
  */
@@ -24,7 +23,7 @@ public class Logic {
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
-    static TaskList listOfTasks ;
+    static TaskList listOfTasks;
     
     static String MESSAGE_TASK_ADDED = "Task added successfully.";
     static String MESSAGE_TASK_EDITED = "Task edited successfully.";
@@ -113,7 +112,7 @@ public class Logic {
     		String desc = userCommand.getDescription();
     		List<Date> dateList = userCommand.getDate();
     		
-    		if (desc == null) {
+    		if ((desc == null) || (desc.isEmpty())) {
     			return MESSAGE_INVALID_ADD_EMPTY_DESCRIPTION;
     			
     		} else {
@@ -161,27 +160,27 @@ public class Logic {
     			// editCommand --> no-repeat / no-time
     			return null;
     			
+    		} else if (desc == null) {
+    			return MESSAGE_INVALID_EDIT;
+    			
     		} else if (userCommand.isFloat()) {
-    			if ((desc != null) && (!desc.equals(""))) {
-    				return editTask(editID, desc);
-    				
-    			} else {
+    			if (desc.isEmpty()) {
     				return MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION;
+
+    			} else {
+    				return editTask(editID, desc);
     			}
     			
     		} else if (userCommand.isDeadline()) {
-    			if (desc.equals("")) {
-    				return MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION;
-    				
-    			} else if ((dateList.size() == 1) && (desc != null)) {
-					Date date = dateList.get(0);
+				Date date = dateList.get(0);
+				
+    			if ((dateList.size() == 1) && (!desc.isEmpty())) {
 					return editTask(editID, desc, date);
 					
-				} else if (desc != null) {
+				} else if (!desc.isEmpty()) {
 					return editTask(editID, desc);
 					
 				} else if (dateList.size() == 1) {
-					Date date = dateList.get(0);
 					return editTask(editID, date);
 					
 				} else {
@@ -190,46 +189,19 @@ public class Logic {
     			
     		} else if (userCommand.isRepeated()) {
     			Date date = dateList.get(0);
-    			String repeatDate = userCommand.repeatDate();
     			
-    			if ((dateList.size() == 1) && ((desc != null) && (!desc.equals("")))) {
+    			if ((dateList.size() == 1) && (!desc.isEmpty())) {
     				return editTask(editID, desc, date);
+    				
+    			} else if (!desc.isEmpty()) {
+    				return editTask(editID, desc);
     				
     			} else if (dateList.size() == 1) {
     				return editTask(editID, date);
     				
-    			} else if ((desc != null) && (!desc.equals(""))) {
-    				return editTask(editID, desc);
-    				
     			} else {
     				return MESSAGE_INVALID_EDIT_DATE_ERROR;
 				}
-    			
-    				/*
-    			if ((dateList.size() == 1) && ((desc != null) && (!desc.equals("")))) {
-    				return editTask(editID, desc, date, repeatDate);
-    				
-    			} else if ((dateList.size() == 1) && ((desc != null) && (!desc.equals("")))) {
-    				return editTask(editID, desc, date);
-    			
-    			} else if ((dateList.size() == 1) && (repeatDate != null)) {
-    				return editTask(editID, date, repeatDate);
-    			
-    			} else if ((desc != null) && (repeatDate != null)) {
-    				return editTask(editID, desc, repeatDate);
-    				
-    			} else if (dateList.size() == 1) {
-    				return editTask(editID, date);
-    				
-    			} else if (desc != null) {
-    				return editTask(editID, desc);
-    				
-    			} else {
-    				// edit repeatDate
-    				return MESSAGE_INVALID_EDIT_DATE_ERROR;
-				}
-    				*/
-    			
     			
     		} else {
     			// other types of edits here
@@ -310,28 +282,47 @@ public class Logic {
      *  with the specified parameters
      */
     private static String editTask(int taskIndex, String description) {
-    	listOfTasks.editTaskDescription(taskIndex, description);
-    	return MESSAGE_TASK_EDITED;
+    	try {
+	        listOfTasks.editTaskDescription(taskIndex, description);
+	        return MESSAGE_TASK_EDITED;
+	        
+        } catch (Exception e) {
+	        return MESSAGE_INVALID_EDIT;
+        }
     }
     
     private static String editTask(int taskIndex, Date time) {
-    	listOfTasks.editTaskDeadline(taskIndex, time);
-    	return MESSAGE_TASK_EDITED;
+    	try {
+	    	listOfTasks.editTaskDeadline(taskIndex, time);
+	    	return MESSAGE_TASK_EDITED;
+	    	
+        } catch (Exception e) {
+	        return MESSAGE_INVALID_EDIT;
+        }
+
     }
     
     private static String editTask(int taskIndex, String desc, Date time) {
-    	listOfTasks.editTaskDescription(taskIndex,desc);
-    	listOfTasks.editTaskDeadline(taskIndex, time);
-    	return MESSAGE_TASK_EDITED;
+    	try {
+    		listOfTasks.editTaskDescription(taskIndex,desc);
+    		listOfTasks.editTaskDeadline(taskIndex, time);
+    		return MESSAGE_TASK_EDITED;
+    		
+    	} catch (Exception e) {
+    		return MESSAGE_INVALID_EDIT;
+    	}
+
     }
 
+    /*
     private static String editTask(int taskIndex, String desc, Date time, String repeatPeriod) {
     	listOfTasks.editTaskDescription(taskIndex,desc);
     	listOfTasks.editTaskDeadline(taskIndex, time);
     	listOfTasks.editTaskRepeatPeriod(taskIndex, repeatPeriod);
     	return MESSAGE_TASK_EDITED;
-    	
+    
     }
+    */
 
     /**
      *  @param taskIndexList

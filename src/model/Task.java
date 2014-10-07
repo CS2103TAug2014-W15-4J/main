@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 /**
  *  This class models a Task object
  */
@@ -35,6 +37,11 @@ public abstract class Task {
 	public boolean getIsDone() {
 		return this.isDone;
 	}
+
+	public void setDeadline(Date time) {
+	    // task override for repeated / fixed / deadline tasks
+	    
+    }
 	
 	
 
