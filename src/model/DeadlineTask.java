@@ -13,6 +13,7 @@ public class DeadlineTask extends Task {
 		deadline = dl;
 	}
 	
+	@Override
 	public Date getDeadline() {
 		return deadline;
 	}

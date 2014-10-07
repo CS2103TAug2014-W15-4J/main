@@ -382,9 +382,9 @@ public class Logic {
     		
     		if (task instanceof DeadlineTask) {
     			if (task.getIsDone()) {
-    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    				taskDisplay += count + ". " + task.getDescription() + " (by " + task.getDeadline().toString() + ") (done)\n";
     			} else {
-    				taskDisplay += count + ". " + task.getDescription() + "\n";
+    				taskDisplay += count + ". " + task.getDescription() + " (by " + task.getDeadline().toString() + ")\n";
     			}
     			count++;
     		} 
@@ -395,7 +395,7 @@ public class Logic {
     		
     		if (task instanceof RepeatedTask) {
     			if (task.getIsDone()) {
-    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    				taskDisplay += count + ". " + task.getDescription() + " (done " + task.getDoneDate() + ")\n";
     			} else {
     				taskDisplay += count + ". " + task.getDescription() + "\n";
     			}

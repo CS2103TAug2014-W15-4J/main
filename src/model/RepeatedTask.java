@@ -9,6 +9,7 @@ public class RepeatedTask extends Task {
 	private Date deadline;
 	@XStreamAlias("Period")
 	private String period;
+	private Date doneDate;
 
 	public RepeatedTask(String description, Date time, String repeatDate) {
 	    super(description);
@@ -27,13 +28,24 @@ public class RepeatedTask extends Task {
 	public void setDeadline(Date dl) {
 		deadline = dl;
 	}
+	
 	public void setRepeatPeriod(String repeatPeriod) {
 		period = repeatPeriod;
+	}
+	
+	private void setDoneDate() {
+		doneDate = new Date(System.currentTimeMillis());
+	}
+	
+	@Override
+	public Date getDoneDate() {
+		return doneDate;
 	}
 
 	@Override
     public Task markDone() {
 	    Task taskToRepeat = new RepeatedTask(this.description, this.deadline, this.period);
+	    this.setDoneDate();
 	    super.markDone();
 	    return taskToRepeat;
     }
