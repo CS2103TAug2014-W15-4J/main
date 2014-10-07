@@ -42,7 +42,7 @@ public abstract class Task {
 	}
 
 	public void setDeadline(Date time) {
-	    // task override for repeated / fixed / deadline tasks
+	    // sub task override for repeated / fixed / deadline tasks
 	    
     }
 
@@ -60,6 +60,11 @@ public abstract class Task {
 	public Type getType() {
 		return taskType;
 	}
+
+	public void setStartTime(Date startDate) {
+	    // TODO Auto-generated method stub
+	    
+    }
 	
 	
 

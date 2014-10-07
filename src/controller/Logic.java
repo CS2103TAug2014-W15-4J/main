@@ -141,7 +141,7 @@ public class Logic {
     					return addTask(desc, date, repeatDate);
     				
     				} else {
-    					return MESSAGE_INVALID_EDIT_DATE_ERROR;
+    					return MESSAGE_INVALID_ADD_DATE_ERROR;
     				}
     				
     			// is fixed task
@@ -151,13 +151,12 @@ public class Logic {
     					Date startDate = dateList.get(0);
     					Date endDate = dateList.get(1);
     					return addTask(desc, startDate, endDate);
+    					
+    				} else {
+    					return MESSAGE_INVALID_ADD_DATE_ERROR;
     				}
-    				System.out.println();
-    				return null;
-    				
     			}
     		}
-
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.EDIT) {
     		
@@ -221,7 +220,23 @@ public class Logic {
 				}
     			
     		} else if (taskType == Task.Type.FIXED) {
-    			return null;
+    			
+    			if ((dateList.size() == 2) && (!desc.isEmpty())) {
+    				Date dateStart = dateList.get(0);
+    				Date dateEnd = dateList.get(1);
+    				return editTask(editID, desc, dateStart, dateEnd);
+    				
+    			} else if (dateList.size() == 2) {
+    				Date dateStart = dateList.get(0);
+    				Date dateEnd = dateList.get(1);
+    				return editTask(editID, dateStart, dateEnd);
+    				
+    			} else if (!desc.isEmpty()) {
+    				return editTask(editID, desc);
+    				
+    			} else {
+    				return MESSAGE_INVALID_EDIT;
+    			}
     			
     		} else {
     			// other types of edits here
@@ -335,6 +350,30 @@ public class Logic {
     		return MESSAGE_INVALID_EDIT;
     	}
 
+    }
+    
+    private static String editTask(int taskIndex, Date startDate, Date endDate) {
+    	try {
+    		listOfTasks.editTaskStartDate(taskIndex, startDate);
+    		listOfTasks.editTaskDeadline(taskIndex, endDate);
+    		return MESSAGE_TASK_EDITED;
+    		
+    	} catch (Exception e) {
+    		return MESSAGE_INVALID_EDIT;
+    	}
+    }
+    
+    private static String editTask(int taskIndex, String desc, Date startDate, Date endDate) {
+    	try {
+    		listOfTasks.editTaskDescription(taskIndex, desc);
+    		listOfTasks.editTaskStartDate(taskIndex, startDate);
+    		listOfTasks.editTaskDeadline(taskIndex, endDate);
+    		return MESSAGE_TASK_EDITED;
+    		
+    	} catch (Exception e) {
+    		return MESSAGE_INVALID_EDIT;
+    	}
+    	
     }
 
     /*

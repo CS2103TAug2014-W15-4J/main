@@ -36,7 +36,5 @@ public class FixedTask extends Task {
 	public void setDeadline(Date endtime) {
 		this.endTime = endtime;
 	}
-	
-
 
 }

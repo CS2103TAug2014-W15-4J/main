@@ -47,6 +47,15 @@ public class TaskList {
 			this.tasks.get(taskIndex-1).setDeadline(time);
 		}   
     }
+	
+	public void editTaskStartDate(int taskIndex, Date startDate) throws Exception {
+		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+			throw new Exception();
+		} else {
+			this.tasks.get(taskIndex-1).setStartTime(startDate);
+		}
+	    
+    }
 		
 	/*
 	public void editTaskRepeatPeriod(int taskIndex, String repeatPeriod) {
@@ -131,6 +140,7 @@ public class TaskList {
 			this.tasks.add(new FloatingTask("No."+i));
 		}
 	}
+
 	
 	
 
