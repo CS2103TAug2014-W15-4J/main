@@ -28,7 +28,7 @@
                   <Font size="34.0" />
                </font>
             </Label>
-            <Label prefHeight="25.0" prefWidth="280.0" text="Good! All tasks are clear!" textFill="WHITE" GridPane.columnSpan="2" GridPane.rowIndex="1" id="assert">
+            <Label fx:id="popMessage" prefWidth="280.0" text="Good! All tasks are clear!" textFill="WHITE" GridPane.columnSpan="2" GridPane.rowIndex="1" id="assert">
                <font>
                   <Font size="17.0" />
                </font>

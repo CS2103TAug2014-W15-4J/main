@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import model.TaskList;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -18,9 +19,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainViewController extends VBox {
+	
+	private static final String MESSAGE_NO_TASK = "Good! All tasks are clear!";
+	private static final String MESSAGE_TASKS_EXIST = "Oops! %s to be completed!";
 	
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
@@ -30,8 +35,6 @@ public class MainViewController extends VBox {
 			date.setText(dateFormat.format(cal.getTime()));
 		}
 	}));
-	
-	private static String input;
 	
     @FXML 
     private TextField textField;
@@ -45,9 +48,17 @@ public class MainViewController extends VBox {
     @FXML
     private VBox toDo;
     
-    private ArrayList<String> toDoTaskList;
+    @FXML
+    private Label popMessage;
     
-    private ArrayList<String> toBeCompletedTaskList;
+	Label displayTaskList = new Label();
+	TaskList taskList;
+	int countTasks;
+	String tasks;
+    
+//    private ArrayList<String> toDoTaskList;
+//    
+//    private ArrayList<String> toBeCompletedTaskList;
 
     public MainViewController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
@@ -60,8 +71,14 @@ public class MainViewController extends VBox {
             throw new RuntimeException(exception);
         }
         
-        toDoTaskList = new ArrayList<String>();
-        toBeCompletedTaskList = new ArrayList<String>();
+//        toDoTaskList = new ArrayList<String>();
+//        toBeCompletedTaskList = new ArrayList<String>();
+        
+        Logic.initialize();
+        toBeCompleted.getChildren().add(displayTaskList);
+        
+        setTaskListView();
+		determinePopMessage();
     }
 
     public String getText() {
@@ -77,22 +94,45 @@ public class MainViewController extends VBox {
     }
     
     public void display() {
-    	Label displayForToBeCompleted = new Label();
-    	Label displayForToDo = new Label();
-    	input = getInput();
-    	Logic.initialize();
-    	String feedback = Logic.readAndExecuteCommands(input);
-//    	System.out.println(input);
+
+//    	Label displayForToBeCompleted = new Label();
+//    	Label displayForToDo = new Label();
     	
-    	displayForToBeCompleted.setText(feedback);
-    	displayForToDo.setText(Logic.getTaskList().getList().toString());
-    	toBeCompleted.getChildren().add(displayForToBeCompleted);
-    	toDo.getChildren().add(displayForToDo);
+    	String input = getInput();
+    	
+    	if (input.equals("exit")) {
+    		Stage stage = (Stage) getScene().getWindow();
+    		stage.close();
+    	} else {
+    	
+    		String feedback = Logic.readAndExecuteCommands(input);
+    	
+    		setTaskListView();
+    		determinePopMessage();
+    	}
+    	
+//    	displayForToBeCompleted.setText(feedback);
+//    	displayForToDo.setText(Logic.getTaskList().getList().toString());
+//    	toBeCompleted.getChildren().add(displayForToBeCompleted);
+//    	toDo.getChildren().add(displayForToDo);
     }
     
-    public String getCommand() {
-    	return input;
+    private void setTaskListView() {
+    	taskList = Logic.getTaskList();
+		countTasks = taskList.getNumberOfTasks();
+		tasks = taskList.toString();
+	
+		displayTaskList.setText(tasks);
     }
+    
+    private void determinePopMessage() {
+		if(tasks.equals("")) {
+			popMessage.setText(MESSAGE_NO_TASK);
+		} else {
+			popMessage.setText(String.format(MESSAGE_TASKS_EXIST, countTasks));
+		}
+    }
+    
     
     @FXML
     public void onEnter() {

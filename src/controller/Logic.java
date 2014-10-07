@@ -80,8 +80,9 @@ public class Logic {
     }
     
     public static TaskList getTaskList() {
-    	return storage.load();
+    	return listOfTasks;
     }
+    
 	
 	/** 
 	 *  @param userInput
