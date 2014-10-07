@@ -2,7 +2,10 @@ package model;
 
 import java.util.Date;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 public class DeadlineTask extends Task {
+	@XStreamAlias("Deadline")
 	private Date deadline;
 
 	public DeadlineTask(String description, Date dl) {
