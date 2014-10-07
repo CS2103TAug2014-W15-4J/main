@@ -74,6 +74,14 @@ public class Logic {
 
         }        
     }
+    
+    public static void initialize() {
+    	listOfTasks = storage.load();
+    }
+    
+    public static TaskList getTaskList() {
+    	return storage.load();
+    }
 	
 	/** 
 	 *  @param userInput

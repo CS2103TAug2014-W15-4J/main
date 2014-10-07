@@ -80,16 +80,14 @@ public class MainViewController extends VBox {
     	Label displayForToBeCompleted = new Label();
     	Label displayForToDo = new Label();
     	input = getInput();
+    	Logic.initialize();
+    	String feedback = Logic.readAndExecuteCommands(input);
 //    	System.out.println(input);
     	
-//    	displayForToBeCompleted.setText(getInput());
-//    	displayForToDo.setText(getInput());
-//    	toBeCompleted.getChildren().add(displayForToBeCompleted);
-//    	toDo.getChildren().add(displayForToDo);
-    	
-    	if (!toDoTaskList.isEmpty()) {
-    		
-    	}
+    	displayForToBeCompleted.setText(feedback);
+    	displayForToDo.setText(Logic.getTaskList().getList().toString());
+    	toBeCompleted.getChildren().add(displayForToBeCompleted);
+    	toDo.getChildren().add(displayForToDo);
     }
     
     public String getCommand() {
