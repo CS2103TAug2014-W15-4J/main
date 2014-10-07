@@ -2,6 +2,8 @@ package model;
 
 import java.util.Date;
 
+import model.Task.Type;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 public class FixedTask extends Task {
@@ -16,6 +18,7 @@ public class FixedTask extends Task {
 		// TODO Auto-generated constructor stub
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.taskType = Type.Fixed;
 	}
 
 	public Date getStartTime() {

@@ -14,6 +14,7 @@ public class RepeatedTask extends Task {
 	    super(description);
 	    deadline = time;
 	    period = repeatDate;
+	    this.taskType = Type.Repeated;
     }
 
 	public Date getDeadline() {

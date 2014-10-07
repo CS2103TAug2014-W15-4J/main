@@ -7,11 +7,14 @@ import java.util.Date;
  */
 
 public abstract class Task {
-
+	public enum Type {
+		Float, Deadline, Fixed, Repeated
+	}
 	protected String description;
 	protected String[] tags;
 	protected boolean isDone;
-
+	protected Type taskType;
+	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
@@ -42,6 +45,10 @@ public abstract class Task {
 	    // task override for repeated / fixed / deadline tasks
 	    
     }
+	
+	public Type getType() {
+		return taskType;
+	}
 	
 	
 
