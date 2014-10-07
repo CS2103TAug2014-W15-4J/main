@@ -1,6 +1,6 @@
 package controller;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -70,7 +70,7 @@ public class Logic {
         		System.out.println(MESSAGE_HELP);
         	} else {
 	        	// parse and execute command
-	        	readAndExecuteCommands(userInput);
+	        	System.out.println(readAndExecuteCommands(userInput));
 	        	// update the history and storage file
 	        	storage.save(listOfTasks);
         	}
@@ -211,9 +211,7 @@ public class Logic {
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
     		// call the UI to display the corresponding tasks here eventually
-    		display();
-    		return null;
-    		
+    		return display();
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
     		return clearTaskList();
@@ -356,25 +354,44 @@ public class Logic {
     }
     
     /** 
-     *  this (temporary) method displays the current list of tasks to the console.
+     * This method will display user's tasks information.
+     * 
      */
-    private static void display() {
-    	String taskDisplay = "Current tasks:\n";
-    	ArrayList<Task> taskList = listOfTasks.getList();
-	    
+    private static String display() {
+    	StringBuilder taskDisplay = new StringBuilder();
+    	taskDisplay.append("Current tasks:\n");
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
-    		Task task = taskList.get(i);
-    		taskDisplay += (i+1) + ". " + task.getDescription();
-    		 
+    		Task task = listOfTasks.get(i);
+    		taskDisplay.append((i+1) + ". " + task.getDescription()+"\n");
+    		if (task.getType() == Task.Type.Deadline) {
+    			DeadlineTask deadlineTask = (DeadlineTask) task;
+    			taskDisplay.append("Due: "+dateFormat.format(deadlineTask.getDeadline())+"\n");
+    		}
+    		if (task.getType() == Task.Type.Fixed) {
+    			FixedTask fixedTask = (FixedTask) task;
+    			taskDisplay.append("Start: "+dateFormat.format(fixedTask.getStartTime()));
+    			taskDisplay.append("\nDue: "+dateFormat.format(fixedTask.getDeadline()+"\n"));
+    		}
+    		if (task.getType() == Task.Type.Repeated) {
+    			RepeatedTask repeatedTask = (RepeatedTask) task;
+    			taskDisplay.append("Due: "+dateFormat.format(repeatedTask.getDeadline()));
+    			taskDisplay.append("\nRepeat: "+repeatedTask.getRepeatPeriod()+"\n");
+    		}
     		if (task.getIsDone()) {
-    			taskDisplay += " (done)";
+    			taskDisplay.append("Status: Done");
+    		} else {
+    			taskDisplay.append("Status: Ongoing");
     		}
     		
-    		taskDisplay += "\n";
+    		if (i!=listOfTasks.getNumberOfTasks() - 1) {
+    			taskDisplay.append("\n\n");
+    		} else {
+    			taskDisplay.append("\n");
+    		}
     	}
     	
-    	System.out.println(taskDisplay);
-	    
+    	return taskDisplay.toString();
     }
     
     /** 
