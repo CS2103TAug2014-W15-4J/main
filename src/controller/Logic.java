@@ -70,7 +70,7 @@ public class Logic {
         		System.out.println(MESSAGE_HELP);
         	} else {
 	        	// parse and execute command
-	        	readAndExecuteCommands(userInput);
+	        	System.out.println(readAndExecuteCommands(userInput));
 	        	// update the history and storage file
 	        	storage.save(listOfTasks);
         	}
@@ -360,19 +360,63 @@ public class Logic {
      */
     private static void display() {
     	String taskDisplay = "Current tasks:\n";
+    	int count = 1;
     	ArrayList<Task> taskList = listOfTasks.getList();
-	    
+    	
+    	taskDisplay += "\n floating tasks: \n";
     	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
     		Task task = taskList.get(i);
-    		taskDisplay += (i+1) + ". " + task.getDescription();
-    		 
-    		if (task.getIsDone()) {
-    			taskDisplay += " (done)";
-    		}
     		
-    		taskDisplay += "\n";
+    		if (task instanceof FloatingTask) {
+    			if (task.getIsDone()) {
+    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    			} else {
+    				taskDisplay += count + ". " + task.getDescription() + "\n";
+    			}
+    			count++;
+    		} 
+    	}
+    	taskDisplay += "\n deadline tasks: \n";
+    	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
+    		Task task = taskList.get(i);
+    		
+    		if (task instanceof DeadlineTask) {
+    			if (task.getIsDone()) {
+    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    			} else {
+    				taskDisplay += count + ". " + task.getDescription() + "\n";
+    			}
+    			count++;
+    		} 
+    	}
+    	taskDisplay += "\n repeated tasks: \n";
+    	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
+    		Task task = taskList.get(i);
+    		
+    		if (task instanceof RepeatedTask) {
+    			if (task.getIsDone()) {
+    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    			} else {
+    				taskDisplay += count + ". " + task.getDescription() + "\n";
+    			}
+    			count++;
+    		} 
     	}
     	
+    	taskDisplay += "\n fixed tasks: \n";
+    	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
+    		Task task = taskList.get(i);
+    		
+    		if (task instanceof FixedTask) {
+    			if (task.getIsDone()) {
+    				taskDisplay += count + ". " + task.getDescription() + " (done)\n";
+    			} else {
+    				taskDisplay += count + ". " + task.getDescription() + "\n";
+    			}
+    			count++;
+    		} 
+    	}
+
     	System.out.println(taskDisplay);
 	    
     }
