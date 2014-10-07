@@ -58,28 +58,25 @@ public class Logic {
                                  "- exit the program        : exit";
     
 	static Storage storage = new Storage(); 
-//    public static void main(String[] args) {
-//        // get existing tasks from storage
-//    	listOfTasks = storage.load();
-//    	
-//        // get and execute new tasks
-//        while (true) {
-//        	String userInput = getUserInput();
-//
-//        	if (userInput.equalsIgnoreCase("help")) {
-//        		System.out.println(help);
-//        	} else {
-//	        	// parse and execute command
-//	        	Parser parser = new Parser();
-//	        	UserInput userCommand = parser.parse(userInput);
-//	        	executeCommand(userCommand);
-//	
-//	        	// update the history and storage file
-//	        	storage.save(listOfTasks);
-//        	}
-//
-//        }        
-//    }
+    public static void main(String[] args) {
+        // get existing tasks from storage
+    	listOfTasks = storage.load();
+    	
+        // get and execute new tasks
+        while (true) {
+        	String userInput = getUserInput();
+
+        	if (userInput.equalsIgnoreCase("help")) {
+        		System.out.println(MESSAGE_HELP);
+        	} else {
+	        	// parse and execute command
+	        	readAndExecuteCommands(userInput);
+	        	// update the history and storage file
+	        	storage.save(listOfTasks);
+        	}
+
+        }        
+    }
 	
 	/** 
 	 *  @param userInput
