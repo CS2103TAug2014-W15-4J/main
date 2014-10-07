@@ -14,7 +14,6 @@ import model.DeadlineTask;
 import model.FixedTask;
 import model.FloatingTask;
 import model.RepeatedTask;
-import model.Task;
 import model.TaskList;
 
 
