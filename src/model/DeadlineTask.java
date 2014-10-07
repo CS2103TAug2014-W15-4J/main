@@ -11,7 +11,7 @@ public class DeadlineTask extends Task {
 	public DeadlineTask(String description, Date dl) {
 		super(description);
 		deadline = dl;
-		this.taskType = Type.Deadline;
+		this.taskType = Type.DEADLINE;
 	}
 	
 	@Override

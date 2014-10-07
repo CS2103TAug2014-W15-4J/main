@@ -18,7 +18,7 @@ public class FixedTask extends Task {
 		// TODO Auto-generated constructor stub
 		this.startTime = startTime;
 		this.endTime = endTime;
-		this.taskType = Type.Fixed;
+		this.taskType = Type.FIXED;
 	}
 
 	public Date getStartTime() {
