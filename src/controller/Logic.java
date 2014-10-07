@@ -147,6 +147,12 @@ public class Logic {
     			// is fixed task
     			} else {
     				
+    				if (dateList.size() == 2) {
+    					Date startDate = dateList.get(0);
+    					Date endDate = dateList.get(1);
+    					return addTask(desc, startDate, endDate);
+    				}
+    				System.out.println();
     				return null;
     				
     			}
@@ -280,7 +286,12 @@ public class Logic {
     	Task newTask = new RepeatedTask(description, time, repeatDate);
     	listOfTasks.addToList(newTask);
     	return MESSAGE_TASK_ADDED;
-        
+    }
+    
+    private static String addTask(String description, Date startTime, Date endTime) {
+    	Task newTask = new FixedTask(description, startTime, endTime);
+    	listOfTasks.addToList(newTask);
+    	return MESSAGE_TASK_ADDED;
     }
     
     
@@ -388,7 +399,7 @@ public class Logic {
     		if (task.getType() == Task.Type.FIXED) {
     			FixedTask fixedTask = (FixedTask) task;
     			taskDisplay.append("Start: "+dateFormat.format(fixedTask.getStartTime()));
-    			taskDisplay.append("\nDue: "+dateFormat.format(fixedTask.getDeadline()+"\n"));
+    			taskDisplay.append("\nDue: "+dateFormat.format(fixedTask.getDeadline())+"\n");
     		}
     		if (task.getType() == Task.Type.REPEATED) {
     			RepeatedTask repeatedTask = (RepeatedTask) task;
