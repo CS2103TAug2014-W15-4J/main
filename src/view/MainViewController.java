@@ -4,6 +4,7 @@ import controller.Logic;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javafx.animation.Animation;
@@ -30,6 +31,8 @@ public class MainViewController extends VBox {
 		}
 	}));
 	
+	private static String input;
+	
     @FXML 
     private TextField textField;
     
@@ -41,6 +44,10 @@ public class MainViewController extends VBox {
     
     @FXML
     private VBox toDo;
+    
+    private ArrayList<String> toDoTaskList;
+    
+    private ArrayList<String> toBeCompletedTaskList;
 
     public MainViewController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
@@ -52,6 +59,9 @@ public class MainViewController extends VBox {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+        
+        toDoTaskList = new ArrayList<String>();
+        toBeCompletedTaskList = new ArrayList<String>();
     }
 
     public String getText() {
@@ -69,10 +79,21 @@ public class MainViewController extends VBox {
     public void display() {
     	Label displayForToBeCompleted = new Label();
     	Label displayForToDo = new Label();
-    	displayForToBeCompleted.setText(getInput());
-    	displayForToDo.setText(getInput());
-    	toBeCompleted.getChildren().add(displayForToBeCompleted);
-    	toDo.getChildren().add(displayForToDo);
+    	input = getInput();
+//    	System.out.println(input);
+    	
+//    	displayForToBeCompleted.setText(getInput());
+//    	displayForToDo.setText(getInput());
+//    	toBeCompleted.getChildren().add(displayForToBeCompleted);
+//    	toDo.getChildren().add(displayForToDo);
+    	
+    	if (!toDoTaskList.isEmpty()) {
+    		
+    	}
+    }
+    
+    public String getCommand() {
+    	return input;
     }
     
     @FXML

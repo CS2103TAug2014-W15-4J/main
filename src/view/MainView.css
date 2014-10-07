@@ -8,16 +8,16 @@
 }
 
 #uclear {
-	-fx-label-padding: 5.0 0 0 15.0;
+	-fx-label-padding: 5.0 0 0 10.0;
 }
 
 #assert {
 	-fx-font-weight: bold;
-	-fx-label-padding: 0 0 0 18.0;
+	-fx-label-padding: 0 0 0 13.0;
 }
 
 #date {
 	-fx-font-weight: bold;
-	-fx-label-padding: 0 20.0 0 0;
+	-fx-label-padding: 0 10.0 0 0;
 }
 
