@@ -45,6 +45,17 @@ public abstract class Task {
 	    // task override for repeated / fixed / deadline tasks
 	    
     }
+
+	public Date getDeadline() {
+	    // TODO Auto-generated method stub
+		return null;
+	    
+    }
+
+	public Date getDoneDate() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
 	
 	public Type getType() {
 		return taskType;

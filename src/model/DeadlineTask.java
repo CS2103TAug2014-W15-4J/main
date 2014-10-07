@@ -14,6 +14,7 @@ public class DeadlineTask extends Task {
 		this.taskType = Type.Deadline;
 	}
 	
+	@Override
 	public Date getDeadline() {
 		return deadline;
 	}
