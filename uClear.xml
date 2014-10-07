@@ -1,0 +1,10 @@
+<CompleteList>
+  <TaskList>
+    <FloatingTask>
+      <description>go to school</description>
+      <isDone>false</isDone>
+      <taskType>FLOAT</taskType>
+    </FloatingTask>
+  </TaskList>
+  <TasksCount>1</TasksCount>
+</CompleteList>

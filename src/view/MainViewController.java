@@ -22,6 +22,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Controller for the GUI
+ * 
+ * @author Wang Zhipeng
+ *
+ */
+
 public class MainViewController extends VBox {
 	
 	private static final String MESSAGE_NO_TASK = "Good! All tasks are clear!";

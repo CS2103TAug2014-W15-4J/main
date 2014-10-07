@@ -9,6 +9,13 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 
 
+/**
+ * Main view (GUI) of uClear
+ * 
+ * @author Wang Zhipeng
+ *
+ */
+
 public class MainView extends Application {
 	
 	@Override
