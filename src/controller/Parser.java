@@ -86,6 +86,15 @@ public class Parser {
 		input.addCommand(CMD.EXIT);
 		return input;
 	}
+	/**
+	 *
+	 * @param content
+	 * @return UserInput
+	 * 
+	 *     for help command
+	 * 
+	 *
+	 */
 	
 	private UserInput parseHelp(String content) {
 		if (content != null && !content.equals("")) {
@@ -126,6 +135,16 @@ public class Parser {
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @return UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for repeated task for add command or edit command
+	 */
 
 	private UserInput parseRepeated(UserInput input, String content,
 			ParseTime times) {
@@ -149,6 +168,16 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @return UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for deadline task for add command or edit command
+	 */
+
 	private UserInput parseDeadline(UserInput input, String content,
 			ParseTime times) {
 		String description = content.replaceAll(times.getText(), "").trim();
@@ -167,6 +196,17 @@ public class Parser {
 			return input;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @param content
+	 * @param times
+	 * @param taskType
+	 * @return  UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for fixed tasks for parseAdd and parseEdit
+	 */
 
 	private UserInput parseFixed(UserInput input, String content,
 			ParseTime times, TaskType taskType) {
@@ -185,6 +225,15 @@ public class Parser {
 			return input;
 		}
 	}
+	
+	/**
+	 *
+	 * @param input
+	 * @param content
+	 * @return  UserInput for parseAdd or parseEdit
+	 * 
+	 * this is for floating task for parseAdd or parseEdit
+	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
 		if (content != null && !content.equals(""))
@@ -192,6 +241,14 @@ public class Parser {
 		input.beFloat();
 		return input;
 	}
+	
+	/**
+	 * 
+	 * @param content
+	 * @return TaskType
+	 * 
+	 * this is for check what kind of command by keywords
+	 */
 
 	private TaskType taskType(String content) {
 		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
