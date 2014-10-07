@@ -12,21 +12,13 @@ public class Body {
     	Logic.listOfTasks = storage.load();
     	
         // get and execute new tasks
+    	// get and execute new tasks
         while (true) {
         	String userInput = Logic.getUserInput();
-
-        	if (userInput.equalsIgnoreCase("help")) {
-        		System.out.println(Logic.help);
-        	} else {
-	        	// parse and execute command
-	        	Parser parser = new Parser();
-	        	UserInput userCommand = parser.parse(userInput);
-	        	Logic.executeCommand(userCommand);
-	
-	        	// update the history and storage file
-	        	storage.save(Logic.listOfTasks);
-        	}
-
-        }
+        	// parse and execute command
+        	System.out.println(Logic.readAndExecuteCommands(userInput));
+        	// update the history and storage file
+        	storage.save(Logic.listOfTasks);
+        }        
 	}
 }
