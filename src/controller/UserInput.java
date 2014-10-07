@@ -23,13 +23,16 @@ import java.util.List;
  *          addDoneID(List<Integer>)/getDoneID(); 
  * showCommand:
  *          addShow(string)/getShowCommand();
+ * tagCommand:
+ *          addTagID(string)/getTagID();getDescription();
+ * 
  * 
  * @author Lu Yuehan
  *
  */
 public class UserInput {
 	public enum CMD {
-		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP
+		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG
 	};
 
 	private boolean valid = true;
@@ -37,7 +40,7 @@ public class UserInput {
 
 	private List<Integer> ID = new ArrayList<Integer>();
 
-	private int editID = 0;
+	private int callingID = 0;
 	private String afterCommand = null;
 	private String repeatDate = null;
 
@@ -66,7 +69,11 @@ public class UserInput {
 	}
 
 	public int getEditID() {
-		return editID;
+		return callingID;
+	}
+	
+	public int getTagID() {
+		return callingID;
 	}
 
 	public List<Date> getDate() {
@@ -134,7 +141,11 @@ public class UserInput {
 	}
 
 	public void addEditID(int number) {
-		editID = number;
+		callingID = number;
+	}
+	
+	public void addTagID(int number) {
+		callingID = number;
 	}
 	
 	public void addEditCommand(String command) {

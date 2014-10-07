@@ -10,7 +10,7 @@ import controller.UserInput.CMD;
 
 public class Parser {
 	enum TaskType {
-		FLOAT, REPEAT, FIX_ONETIME, FIX_TWOTIMES, DEADLINE
+		FLOAT, REPEAT, FIX, DEADLINE
 	};
 
 	private static final String CMD_ADD = "add";
@@ -24,10 +24,9 @@ public class Parser {
 	private static final String CMD_SHOW = "show";
 	private static final String CMD_HELP = "help";
 	private static final String CMD_EXIT = "exit";
+	private static final String CMD_TAG = "tag";
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
-	private static final Integer ONETIME = 1;
-	private static final Integer TWOTIMES = 2;
 
 	/**
 	 * @param input
@@ -44,30 +43,32 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
-			case CMD_EXIT :
-				return parseExit(content);
-			case CMD_HELP :
-				return parseHelp(content);
-			case CMD_ADD :
-				return parseAdd(content);
-			case CMD_DELETE :
-				return parseDelete(content);
-			case CMD_CLEAR :
-				return parseClear(content);
-			case CMD_SEARCH :
-				return parseSearch(content);
-			case CMD_EDIT :
-				return parseEdit(content);
-			case CMD_DONE :
-				return parseDone(content);
-			case CMD_COMPLETE :
-				return parseDone(content);
-			case CMD_FINISH :
-				return parseDone(content);
-			case CMD_SHOW :
-				return parseShow(content);
-			default :
-				return errorCommand();
+		case CMD_EXIT:
+			return parseExit(content);
+		case CMD_HELP:
+			return parseHelp(content);
+		case CMD_ADD:
+			return parseAdd(content);
+		case CMD_DELETE:
+			return parseDelete(content);
+		case CMD_CLEAR:
+			return parseClear(content);
+		case CMD_SEARCH:
+			return parseSearch(content);
+		case CMD_EDIT:
+			return parseEdit(content);
+		case CMD_DONE:
+			return parseDone(content);
+		case CMD_COMPLETE:
+			return parseDone(content);
+		case CMD_FINISH:
+			return parseDone(content);
+		case CMD_SHOW:
+			return parseShow(content);
+		case CMD_TAG:
+			return parseTag(content);
+		default:
+			return errorCommand();
 		}
 	}
 
@@ -86,16 +87,17 @@ public class Parser {
 		input.addCommand(CMD.EXIT);
 		return input;
 	}
+
 	/**
 	 *
 	 * @param content
 	 * @return UserInput
 	 * 
-	 *     for help command
+	 *         for help command
 	 * 
 	 *
 	 */
-	
+
 	private UserInput parseHelp(String content) {
 		if (content != null && !content.equals("")) {
 			return errorCommand();
@@ -118,24 +120,29 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		UserInput input = new UserInput();
+		UserInput temp = null;
 		input.addCommand(CMD.ADD);
-		switch (taskType(content)) {
-			case DEADLINE :
-				return parseDeadline(input, content, times);
-			case REPEAT :
-				return parseRepeated(input, content, times);
-			default : {
-				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-				if (input.getValid())
-					return input;
-				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-				if (input.getValid())
-					return input;
-				return parseFloat(input, content);
+		int timeSize = times.getDates().size();
+		switch (taskType(content, times)) {
+		case DEADLINE:
+			return parseDeadline(input, content, times);
+		case REPEAT:
+			return parseRepeated(input, content, times);
+		case FLOAT:
+			return parseFloat(input, content);
+		default: {
+			if (timeSize == 1 || timeSize == 2) {
+				temp = parseFixed(input, content, times);
+				if (temp.getValid())
+					return temp;
+				else
+					return parseFloat(input, content);
 			}
+			return parseFloat(input, content);
+		}
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param input
@@ -143,13 +150,13 @@ public class Parser {
 	 * @param times
 	 * @return UserInput for parseAdd or parseEdit
 	 * 
-	 * this is for repeated task for add command or edit command
+	 *         this is for repeated task for add command or edit command
 	 */
 
 	private UserInput parseRepeated(UserInput input, String content,
 			ParseTime times) {
-		String description = content.replaceAll(times.getText(), "").trim();
-		description = content.replaceAll(" (?i)every", "").trim();
+		String description = times.getText().replaceAll(" (?i)every", "")
+				.trim();
 		if (input.getCommand() == CMD.ADD)
 			if (description == null || description.equals("")) {
 				return errorCommand();
@@ -157,11 +164,12 @@ public class Parser {
 		List<Date> dates = times.getDates();
 		if (!times.isRepeated())
 			return errorCommand();
-		if (dates.size() != ONETIME)
+		if (dates.size() != 1)
 			return errorCommand();
 		else {
 			input.add(description);
 			input.beRepeated();
+
 			input.addDate(dates);
 			input.addRepeatDate(times.getText().trim());
 			return input;
@@ -175,19 +183,18 @@ public class Parser {
 	 * @param times
 	 * @return UserInput for parseAdd or parseEdit
 	 * 
-	 * this is for deadline task for add command or edit command
+	 *         this is for deadline task for add command or edit command
 	 */
 
 	private UserInput parseDeadline(UserInput input, String content,
 			ParseTime times) {
-		String description = content.replaceAll(times.getText(), "").trim();
-		description = content.replaceAll(" (?i)by", "").trim();
+		String description = times.getText().replaceAll(" (?i)by", "").trim();
 		if (input.getCommand() == CMD.ADD)
 			if (description == null || description.equals("")) {
 				return errorCommand();
 			}
 		List<Date> dates = times.getDates();
-		if (dates.size() != ONETIME)
+		if (dates.size() != 1)
 			return errorCommand();
 		else {
 			input.add(description);
@@ -196,43 +203,38 @@ public class Parser {
 			return input;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param input
 	 * @param content
 	 * @param times
 	 * @param taskType
-	 * @return  UserInput for parseAdd or parseEdit
+	 * @return UserInput for parseAdd or parseEdit
 	 * 
-	 * this is for fixed tasks for parseAdd and parseEdit
+	 *         this is for fixed tasks for parseAdd and parseEdit
 	 */
 
 	private UserInput parseFixed(UserInput input, String content,
-			ParseTime times, TaskType taskType) {
-		String description = content.replaceAll(times.getText(), "").trim();
+			ParseTime times) {
+		String description = times.getText();
 		if (input.getCommand() == CMD.ADD)
 			if (description == null || description.equals("")) {
 				return errorCommand();
 			}
 		List<Date> dates = times.getDates();
-		if (!(taskType == TaskType.FIX_ONETIME && dates.size() == ONETIME)
-				|| !(taskType == TaskType.FIX_TWOTIMES && dates.size() == TWOTIMES))
-			return errorCommand();
-		else {
-			input.add(description);
-			input.addDate(dates);
-			return input;
-		}
+		input.add(description);
+		input.addDate(dates);
+		return input;
 	}
-	
+
 	/**
 	 *
 	 * @param input
 	 * @param content
-	 * @return  UserInput for parseAdd or parseEdit
+	 * @return UserInput for parseAdd or parseEdit
 	 * 
-	 * this is for floating task for parseAdd or parseEdit
+	 *         this is for floating task for parseAdd or parseEdit
 	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
@@ -241,16 +243,16 @@ public class Parser {
 		input.beFloat();
 		return input;
 	}
-	
+
 	/**
 	 * 
 	 * @param content
 	 * @return TaskType
 	 * 
-	 * this is for check what kind of command by keywords
+	 *         this is for check what kind of command by keywords
 	 */
 
-	private TaskType taskType(String content) {
+	private TaskType taskType(String content, ParseTime times) {
 		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
 		Matcher matcher = pattern.matcher(content);
 		if (matcher.matches())
@@ -259,7 +261,10 @@ public class Parser {
 		matcher = pattern.matcher(content);
 		if (matcher.matches())
 			return TaskType.REPEAT;
-		return TaskType.FLOAT;
+		if (times.getDates().size() == 0)
+			return TaskType.FLOAT;
+		else
+			return TaskType.FIX;
 	}
 
 	/**
@@ -330,36 +335,41 @@ public class Parser {
 			input.addCommand(CMD.EDIT);
 			input = parseEditCommand(input, contentString);
 			content = input.getDescription();
-			input.add(null);
+			input.add("");
 			input = parseEditTaskAndTime(input, content);
 		}
 		return input;
 	}
 
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
-		content = content.toLowerCase();
 		if (content == null || content.equals(""))
 			return input;
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
-		switch (taskType(content)) {
-			case DEADLINE :
-				return parseDeadline(input, content, times);
-			case REPEAT :
-				return parseRepeated(input, content, times);
-			default : {
-				input = parseFixed(input, content, times, TaskType.FIX_ONETIME);
-				if (input.getValid())
-					return input;
-				input = parseFixed(input, content, times, TaskType.FIX_TWOTIMES);
-				if (input.getValid())
-					return input;
-				return parseFloat(input, content);
+		UserInput temp = null;
+		int timeSize = times.getDates().size();
+		switch (taskType(content, times)) {
+		case DEADLINE:
+			return parseDeadline(input, content, times);
+		case REPEAT:
+			return parseRepeated(input, content, times);
+		case FLOAT:
+			return parseFloat(input, content);
+		default: {
+			if (timeSize == 1 || timeSize == 2) {
+				temp = parseFixed(input, content, times);
+				if (temp.getValid())
+					return temp;
+				else
+					return parseFloat(input, content);
 			}
+			return parseFloat(input, content);
+		}
 		}
 	}
 
 	private UserInput parseEditCommand(UserInput input, String content) {
+		input.add(content);
 		if (content.toLowerCase().contains(EDIT_NOTIME)) {
 			input.addEditCommand(EDIT_NOTIME);
 			content = content.replaceAll("(?i)" + EDIT_NOTIME, "").trim();
@@ -396,8 +406,12 @@ public class Parser {
 	 */
 
 	private UserInput parseSearch(String content) {
-		// TODO Auto-generated method stub
-		return null;
+		if (content == null || content.equals(""))
+			return errorCommand();
+		UserInput input = new UserInput();
+		input.addCommand(CMD.SEARCH);
+		input.add(content);
+		return input;
 	}
 
 	/**
@@ -423,6 +437,28 @@ public class Parser {
 		input.addCommand(CMD.DONE);
 		input.add(null);
 		input.addDoneID(number);
+		return input;
+	}
+	
+	private UserInput parseTag(String content) {
+		if (content == null || content.equals("")) {
+			
+			return errorCommand();
+		}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
+			return errorCommand();
+		}
+		String IDString = contentSplit[0].trim();
+		String tag = contentSplit[1].trim();
+		UserInput input = new UserInput();
+		if (!trueNumberFormat(IDString)) {
+			return errorCommand();
+		} else {
+			input.addTagID(Integer.valueOf(IDString));
+			input.addCommand(CMD.TAG);
+			input.add(tag);
+		}
 		return input;
 	}
 

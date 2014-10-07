@@ -41,7 +41,7 @@ public class ParseTime {
 		  isRecurreing = group.isRecurring();
 		  recursUntil = group.getRecursUntil();
 		  dateList.addAll(dates);
-		  text = group.getText();
+		  text = input.replaceAll(group.getText(), "").trim();
 		}
 	}
 
