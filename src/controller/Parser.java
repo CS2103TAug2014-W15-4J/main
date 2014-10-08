@@ -155,6 +155,8 @@ public class Parser {
 
 	private UserInput parseRepeated(UserInput input, String content,
 			ParseTime times) {
+		if(times.timeNull())
+			return errorCommand();
 		String description = times.getText().replaceAll(" (?i)every", "")
 				.trim();
 		if (input.getCommand() == CMD.ADD)
@@ -188,6 +190,8 @@ public class Parser {
 
 	private UserInput parseDeadline(UserInput input, String content,
 			ParseTime times) {
+		if(times.timeNull())
+			return errorCommand();
 		String description = times.getText().replaceAll(" (?i)by", "").trim();
 		if (input.getCommand() == CMD.ADD)
 			if (description == null || description.equals("")) {
@@ -217,6 +221,8 @@ public class Parser {
 
 	private UserInput parseFixed(UserInput input, String content,
 			ParseTime times) {
+		if(times.timeNull())
+			return errorCommand();
 		String description = times.getText();
 		if (input.getCommand() == CMD.ADD)
 			if (description == null || description.equals("")) {

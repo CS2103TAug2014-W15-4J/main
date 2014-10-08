@@ -16,6 +16,7 @@ public class ParseTime {
 	private List<Date> dateList = new ArrayList<Date>();
     private	boolean isRecurreing = false;
 	private Date recursUntil = null;
+	private String time = null;
 	private String text = null;
 	
 	public List<Date> getDates(){
@@ -29,10 +30,15 @@ public class ParseTime {
 	public Date recursUntil(){
 		return recursUntil;
 	}
-	
-	public String getText(){
-		return text;
+	public boolean timeNull(){
+		if(time == null)
+			return true;
+		return false;
 	}
+	public String getText(){
+		return text.replaceAll(time, "").trim();
+	}
+	
 	public void parseTime(String input){
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(input);
@@ -41,7 +47,8 @@ public class ParseTime {
 		  isRecurreing = group.isRecurring();
 		  recursUntil = group.getRecursUntil();
 		  dateList.addAll(dates);
-		  text = input.replaceAll(group.getText(), "").trim();
+		  time = group.getText();
+		  text=input;
 		}
 	}
 
