@@ -3,6 +3,11 @@ uClear
 
 CS2103T Project of team W15-4j
 
+Current Stage
+====
+
+Milestone V0.1
+
 User Guide
 ====
 ###Adding tasks
@@ -198,4 +203,5 @@ show <tag>
            to 18 today / tomorrow(or tmr) / Monday(or Mon)
 5.	\<time\> on \<date\> to \<time\> on \<date\> 
 	e.g. 14 on 9 Sep to 18 on 10 Sep 2014
+
 
