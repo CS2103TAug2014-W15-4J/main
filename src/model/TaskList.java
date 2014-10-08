@@ -108,6 +108,7 @@ public class TaskList {
 					if (newRepeatTask != null) {
 						this.addToList(newRepeatTask);
 					}
+
 				}
 			}
 		}

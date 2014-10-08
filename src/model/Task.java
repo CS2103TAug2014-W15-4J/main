@@ -32,7 +32,7 @@ public abstract class Task {
 		return tags;
 	}
 	
-	public Task markDone() {
+	public Task markDone() throws Exception {
 		isDone = true;
 		return null;
 	}

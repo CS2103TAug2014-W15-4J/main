@@ -44,11 +44,16 @@ public class RepeatedTask extends Task {
 	}
 
 	@Override
-    public Task markDone() {
-	    Task taskToRepeat = new RepeatedTask(this.description, this.deadline, this.period);
-	    this.setDoneDate();
-	    super.markDone();
-	    return taskToRepeat;
+    public Task markDone() throws Exception {
+		if (!this.getIsDone()) {
+		    Task taskToRepeat = new RepeatedTask(this.description, this.deadline, this.period);
+		    this.setDoneDate();
+		    super.markDone();
+		    return taskToRepeat;
+		    
+		} else {
+			throw new Exception();
+		}
     }
 
 }
