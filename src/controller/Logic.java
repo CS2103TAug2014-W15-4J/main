@@ -299,16 +299,18 @@ public class Logic {
     	return MESSAGE_TASK_ADDED;
     }
     
-    private static String addTask(String description, Date time, String repeatDate) {
-    	Task newTask = new RepeatedTask(description, time, repeatDate);
-    	listOfTasks.addToList(newTask);
-    	return MESSAGE_TASK_ADDED;
+    private static String addTask(String description, Date time,
+                                  String repeatDate) {
+        Task newTask = new RepeatedTask(description, time, repeatDate);
+        listOfTasks.addToList(newTask);
+        return MESSAGE_TASK_ADDED;
     }
     
-    private static String addTask(String description, Date startTime, Date endTime) {
-    	Task newTask = new FixedTask(description, startTime, endTime);
-    	listOfTasks.addToList(newTask);
-    	return MESSAGE_TASK_ADDED;
+    private static String addTask(String description, Date startTime,
+                                  Date endTime) {
+        Task newTask = new FixedTask(description, startTime, endTime);
+        listOfTasks.addToList(newTask);
+        return MESSAGE_TASK_ADDED;
     }
     
     
@@ -344,7 +346,7 @@ public class Logic {
     
     private static String editTask(int taskIndex, String desc, Date time) {
     	try {
-    		listOfTasks.editTaskDescription(taskIndex,desc);
+    		listOfTasks.editTaskDescription(taskIndex, desc);
     		listOfTasks.editTaskDeadline(taskIndex, time);
     		return MESSAGE_TASK_EDITED;
     		
@@ -365,17 +367,18 @@ public class Logic {
     	}
     }
     
-    private static String editTask(int taskIndex, String desc, Date startDate, Date endDate) {
-    	try {
-    		listOfTasks.editTaskDescription(taskIndex, desc);
-    		listOfTasks.editTaskStartDate(taskIndex, startDate);
-    		listOfTasks.editTaskDeadline(taskIndex, endDate);
-    		return MESSAGE_TASK_EDITED;
-    		
-    	} catch (Exception e) {
-    		return MESSAGE_INVALID_EDIT;
-    	}
-    	
+    private static String editTask(int taskIndex, String desc, Date startDate,
+                                   Date endDate) {
+        try {
+            listOfTasks.editTaskDescription(taskIndex, desc);
+            listOfTasks.editTaskStartDate(taskIndex, startDate);
+            listOfTasks.editTaskDeadline(taskIndex, endDate);
+            return MESSAGE_TASK_EDITED;
+            
+        } catch (Exception e) {
+            return MESSAGE_INVALID_EDIT;
+        }
+        
     }
 
     /*
@@ -435,22 +438,29 @@ public class Logic {
     	StringBuilder taskDisplay = new StringBuilder();
     	taskDisplay.append("Current tasks:\n");
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    	for (int i=0; i<listOfTasks.getNumberOfTasks(); i++) {
+        for (int i = 0; i < listOfTasks.getNumberOfTasks(); i++) {
     		Task task = listOfTasks.get(i);
-    		taskDisplay.append((i+1) + ". " + task.getDescription()+"\n");
+            taskDisplay.append((i + 1) + ". " + task.getDescription() + "\n");
     		if (task.getType() == Task.Type.DEADLINE) {
     			DeadlineTask deadlineTask = (DeadlineTask) task;
-    			taskDisplay.append("Due: "+dateFormat.format(deadlineTask.getDeadline())+"\n");
+                taskDisplay.append("Due: " +
+                                   dateFormat.format(deadlineTask.getDeadline()) +
+                                   "\n");
     		}
     		if (task.getType() == Task.Type.FIXED) {
     			FixedTask fixedTask = (FixedTask) task;
-    			taskDisplay.append("Start: "+dateFormat.format(fixedTask.getStartTime()));
-    			taskDisplay.append("\nDue: "+dateFormat.format(fixedTask.getDeadline())+"\n");
+                taskDisplay.append("Start: " +
+                                   dateFormat.format(fixedTask.getStartTime()));
+                taskDisplay.append("\nDue: " +
+                                   dateFormat.format(fixedTask.getDeadline()) +
+                                   "\n");
     		}
     		if (task.getType() == Task.Type.REPEATED) {
     			RepeatedTask repeatedTask = (RepeatedTask) task;
-    			taskDisplay.append("Due: "+dateFormat.format(repeatedTask.getDeadline()));
-    			taskDisplay.append("\nRepeat: "+repeatedTask.getRepeatPeriod()+"\n");
+                taskDisplay.append("Due: " +
+                                   dateFormat.format(repeatedTask.getDeadline()));
+                taskDisplay.append("\nRepeat: " +
+                                   repeatedTask.getRepeatPeriod() + "\n");
     		}
     		if (task.getIsDone()) {
     			taskDisplay.append("Status: Done");
@@ -458,7 +468,7 @@ public class Logic {
     			taskDisplay.append("Status: Ongoing");
     		}
     		
-    		if (i!=listOfTasks.getNumberOfTasks() - 1) {
+            if (i != listOfTasks.getNumberOfTasks() - 1) {
     			taskDisplay.append("\n\n");
     		} else {
     			taskDisplay.append("\n");

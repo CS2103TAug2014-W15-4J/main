@@ -16,7 +16,7 @@ import java.util.List;
  *                        /getDescription();getDate();isFloat() or isRepeated or isDeadline();
  * editCommad;
  *          addDate(List<Date>);addEdit(int,String)
- *                      /getEditID();getDescription();getDate();getEditCommandijG (the description and date need to be changed) 
+ *                      /getEditID();getDescription();getDate();getEditCommandï¿½iï¿½jï¿½G (the description and date need to be changed) 
  * deleteCommand:
  *          addDeleteID(List<Integer>)/getDeleteID(); 
  * doneCommand:
@@ -112,7 +112,7 @@ public class UserInput {
 		valid = false;
 	}
 	
-	public void addCommand(CMD userCommand){
+	public void addCommand(CMD userCommand) {
 		command = userCommand;		
 	}
 
@@ -120,7 +120,7 @@ public class UserInput {
 		description = userDescription;
 	}
 	
-	public void beFloat(){
+	public void beFloat() {
 		floating = true;
 	}
 
