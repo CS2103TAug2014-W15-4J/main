@@ -31,7 +31,7 @@ public class Parser {
 	/**
 	 * @param input
 	 * @return UserInput after parsing
-	 * 
+	 *
 	 *         this differs different kinds of command
 	 **/
 
@@ -43,39 +43,39 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
-		case CMD_EXIT:
-			return parseExit(content);
-		case CMD_HELP:
-			return parseHelp(content);
-		case CMD_ADD:
-			return parseAdd(content);
-		case CMD_DELETE:
-			return parseDelete(content);
-		case CMD_CLEAR:
-			return parseClear(content);
-		case CMD_SEARCH:
-			return parseSearch(content);
-		case CMD_EDIT:
-			return parseEdit(content);
-		case CMD_DONE:
-			return parseDone(content);
-		case CMD_COMPLETE:
-			return parseDone(content);
-		case CMD_FINISH:
-			return parseDone(content);
-		case CMD_SHOW:
-			return parseShow(content);
-		case CMD_TAG:
-			return parseTag(content);
-		default:
-			return errorCommand();
+			case CMD_EXIT :
+				return parseExit(content);
+			case CMD_HELP :
+				return parseHelp(content);
+			case CMD_ADD :
+				return parseAdd(content);
+			case CMD_DELETE :
+				return parseDelete(content);
+			case CMD_CLEAR :
+				return parseClear(content);
+			case CMD_SEARCH :
+				return parseSearch(content);
+			case CMD_EDIT :
+				return parseEdit(content);
+			case CMD_DONE :
+				return parseDone(content);
+			case CMD_COMPLETE :
+				return parseDone(content);
+			case CMD_FINISH :
+				return parseDone(content);
+			case CMD_SHOW :
+				return parseShow(content);
+			case CMD_TAG :
+				return parseTag(content);
+			default :
+				return errorCommand();
 		}
 	}
 
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering exit command
 	 */
 
@@ -92,9 +92,9 @@ public class Parser {
 	 *
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         for help command
-	 * 
+	 *
 	 *
 	 */
 
@@ -110,13 +110,14 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering add command(temporally floating only)
 	 */
 
 	private UserInput parseAdd(String content) {
-		if (content == null || content.equals(""))
+		if (content == null || content.equals("")) {
 			return errorCommand();
+		}
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		UserInput input = new UserInput();
@@ -124,83 +125,89 @@ public class Parser {
 		input.addCommand(CMD.ADD);
 		int timeSize = times.getDates().size();
 		switch (taskType(content, times)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		case FLOAT:
-			return parseFloat(input, content);
-		default: {
-			if (timeSize == 1 || timeSize == 2) {
-				temp = parseFixed(input, content, times);
-				if (temp.getValid())
-					return temp;
-				else
-					return parseFloat(input, content);
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			case FLOAT :
+				return parseFloat(input, content);
+			default : {
+				if (timeSize == 1 || timeSize == 2) {
+					temp = parseFixed(input, content, times);
+					if (temp.getValid()) {
+						return temp;
+					} else {
+						return parseFloat(input, content);
+					}
+				}
+				return parseFloat(input, content);
 			}
-			return parseFloat(input, content);
-		}
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input
 	 * @param content
 	 * @param times
 	 * @return UserInput for parseAdd or parseEdit
-	 * 
+	 *
 	 *         this is for repeated task for add command or edit command
 	 */
 
 	private UserInput parseRepeated(UserInput input, String content,
-			ParseTime times) {
-		if(times.timeNull())
+	                                ParseTime times) {
+		if (times.timeNull()) {
 			return errorCommand();
+		}
 		String description = times.getText().replaceAll(" (?i)every", "")
-				.trim();
-		if (input.getCommand() == CMD.ADD)
+		                          .trim();
+		if (input.getCommand() == CMD.ADD) {
 			if (description == null || description.equals("")) {
 				return errorCommand();
 			}
+		}
 		List<Date> dates = times.getDates();
-		if (!times.isRepeated())
+		if (!times.isRepeated()) {
 			return errorCommand();
-		if (dates.size() != 1)
+		}
+		if (dates.size() != 1) {
 			return errorCommand();
-		else {
+		} else {
 			input.add(description);
 			input.beRepeated();
 
 			input.addDate(dates);
-			input.addRepeatDate(times.getText().trim());
+			input.addRepeatDate(times.getTime());
 			return input;
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input
 	 * @param content
 	 * @param times
 	 * @return UserInput for parseAdd or parseEdit
-	 * 
+	 *
 	 *         this is for deadline task for add command or edit command
 	 */
 
 	private UserInput parseDeadline(UserInput input, String content,
-			ParseTime times) {
-		if(times.timeNull())
+	                                ParseTime times) {
+		if (times.timeNull()) {
 			return errorCommand();
+		}
 		String description = times.getText().replaceAll(" (?i)by", "").trim();
-		if (input.getCommand() == CMD.ADD)
+		if (input.getCommand() == CMD.ADD) {
 			if (description == null || description.equals("")) {
 				return errorCommand();
 			}
+		}
 		List<Date> dates = times.getDates();
-		if (dates.size() != 1)
+		if (dates.size() != 1) {
 			return errorCommand();
-		else {
+		} else {
 			input.add(description);
 			input.beDeadline();
 			input.addDate(dates);
@@ -209,25 +216,27 @@ public class Parser {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input
 	 * @param content
 	 * @param times
 	 * @param taskType
 	 * @return UserInput for parseAdd or parseEdit
-	 * 
+	 *
 	 *         this is for fixed tasks for parseAdd and parseEdit
 	 */
 
 	private UserInput parseFixed(UserInput input, String content,
-			ParseTime times) {
-		if(times.timeNull())
+	                             ParseTime times) {
+		if (times.timeNull()) {
 			return errorCommand();
+		}
 		String description = times.getText();
-		if (input.getCommand() == CMD.ADD)
+		if (input.getCommand() == CMD.ADD) {
 			if (description == null || description.equals("")) {
 				return errorCommand();
 			}
+		}
 		List<Date> dates = times.getDates();
 		input.add(description);
 		input.addDate(dates);
@@ -239,44 +248,48 @@ public class Parser {
 	 * @param input
 	 * @param content
 	 * @return UserInput for parseAdd or parseEdit
-	 * 
+	 *
 	 *         this is for floating task for parseAdd or parseEdit
 	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
-		if (content != null && !content.equals(""))
+		if (content != null && !content.equals("")) {
 			input.add(content);
+		}
 		input.beFloat();
 		return input;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param content
 	 * @return TaskType
-	 * 
+	 *
 	 *         this is for check what kind of command by keywords
 	 */
 
 	private TaskType taskType(String content, ParseTime times) {
 		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
 		Matcher matcher = pattern.matcher(content);
-		if (matcher.matches())
+		if (matcher.matches()) {
 			return TaskType.DEADLINE;
+		}
 		pattern = Pattern.compile(".+ (?i)every(?-i) .+");
 		matcher = pattern.matcher(content);
-		if (matcher.matches())
+		if (matcher.matches()) {
 			return TaskType.REPEAT;
-		if (times.getDates().size() == 0)
+		}
+		if (times.getDates().size() == 0) {
 			return TaskType.FLOAT;
-		else
+		} else {
 			return TaskType.FIX;
+		}
 	}
 
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering delete command
 	 */
 
@@ -302,7 +315,7 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering clearing command
 	 */
 
@@ -319,7 +332,7 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering edit command(temporally floating only)
 	 */
 
@@ -348,29 +361,31 @@ public class Parser {
 	}
 
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
-		if (content == null || content.equals(""))
+		if (content == null || content.equals("")) {
 			return input;
+		}
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		UserInput temp = null;
 		int timeSize = times.getDates().size();
 		switch (taskType(content, times)) {
-		case DEADLINE:
-			return parseDeadline(input, content, times);
-		case REPEAT:
-			return parseRepeated(input, content, times);
-		case FLOAT:
-			return parseFloat(input, content);
-		default: {
-			if (timeSize == 1 || timeSize == 2) {
-				temp = parseFixed(input, content, times);
-				if (temp.getValid())
-					return temp;
-				else
-					return parseFloat(input, content);
+			case DEADLINE :
+				return parseDeadline(input, content, times);
+			case REPEAT :
+				return parseRepeated(input, content, times);
+			case FLOAT :
+				return parseFloat(input, content);
+			default : {
+				if (timeSize == 1 || timeSize == 2) {
+					temp = parseFixed(input, content, times);
+					if (temp.getValid()) {
+						return temp;
+					} else {
+						return parseFloat(input, content);
+					}
+				}
+				return parseFloat(input, content);
 			}
-			return parseFloat(input, content);
-		}
 		}
 	}
 
@@ -391,13 +406,14 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering show command(temporally show all only)
 	 */
 
 	private UserInput parseShow(String content) {
-		if (content != null && !content.equals(""))
+		if (content != null && !content.equals("")) {
 			return errorCommand();
+		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.SHOW);
 		input.add(null);
@@ -407,13 +423,14 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering search command(not begin yet)
 	 */
 
 	private UserInput parseSearch(String content) {
-		if (content == null || content.equals(""))
+		if (content == null || content.equals("")) {
 			return errorCommand();
+		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.SEARCH);
 		input.add(content);
@@ -423,7 +440,7 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return UserInput
-	 * 
+	 *
 	 *         this is for entering mark done command
 	 */
 
@@ -445,10 +462,10 @@ public class Parser {
 		input.addDoneID(number);
 		return input;
 	}
-	
+
 	private UserInput parseTag(String content) {
 		if (content == null || content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -471,7 +488,7 @@ public class Parser {
 	/**
 	 * @param content
 	 * @return whether the content contents numbers only
-	 * 
+	 *
 	 *         this is for checking if the contents are only numbers in done and
 	 *         delete command
 	 */
@@ -489,9 +506,9 @@ public class Parser {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return UserInput
-	 * 
+	 *
 	 *         give the error command
 	 */
 

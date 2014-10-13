@@ -19,36 +19,40 @@ public class ParseTime {
 	private String time = null;
 	private String text = null;
 	
-	public List<Date> getDates(){
+	public List<Date> getDates() {
 		return dateList;
 	}
 	
-	public boolean isRepeated(){
+	public boolean isRepeated() {
 		return isRecurreing;
 	}
 	
-	public Date recursUntil(){
+	public Date recursUntil() {
 		return recursUntil;
 	}
-	public boolean timeNull(){
-		if(time == null)
+	public boolean timeNull() {
+		if (time == null) {
 			return true;
+		}
 		return false;
 	}
-	public String getText(){
+	public String getTime() {
+		return time;
+	}
+	public String getText() {
 		return text.replaceAll(time, "").trim();
 	}
 	
-	public void parseTime(String input){
+	public void parseTime(String input) {
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(input);
-		for(DateGroup group:groups) {
-		  List<Date> dates = group.getDates();
-		  isRecurreing = group.isRecurring();
-		  recursUntil = group.getRecursUntil();
-		  dateList.addAll(dates);
-		  time = group.getText();
-		  text=input;
+		for (DateGroup group : groups) {
+            List<Date> dates = group.getDates();
+            isRecurreing = group.isRecurring();
+            recursUntil = group.getRecursUntil();
+            dateList.addAll(dates);
+            time = group.getText();
+            text = input;
 		}
 	}
 

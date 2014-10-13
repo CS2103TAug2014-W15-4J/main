@@ -24,7 +24,7 @@ public class StorageTest {
 	public void testEmpty() {
 		Storage store = new Storage("test.xml");
 		TaskList tasks = new TaskList();
-		store.save(tasks,"test.xml");
+		store.save(tasks, "test.xml");
 		TaskList listFromFile = store.load();
 		assertEquals(0, listFromFile.getNumberOfTasks());
 	}
@@ -33,30 +33,30 @@ public class StorageTest {
 	public void testMultipleTypesTask() {
 		Storage store = new Storage("test.xml");
 		TaskList tasks = new TaskList();
-		for (int i=0;i<100;i++) {
+        for (int i = 0; i < 100; i++) {
 			tasks.addToList(new FloatingTask("test"+i));
 		}
-		store.save(tasks,"test.xml");
+		store.save(tasks, "test.xml");
 		
 		TaskList listFromFile = store.load();
 		assertEquals(100, listFromFile.getNumberOfTasks());
 		store.close();
 		
 		store = new Storage("test.xml");
-		for (int i=0;i<50;i++) {
-			tasks.addToList(new FixedTask("test"+i, new Date(), new Date()));
+        for (int i = 0; i < 50; i++) {
+            tasks.addToList(new FixedTask("test" + i, new Date(), new Date()));
 		}
-		store.save(tasks,"test.xml");
+		store.save(tasks, "test.xml");
 		listFromFile = store.load();
 		assertEquals(150, listFromFile.getNumberOfTasks());
 		
 		store.close();
 		
 		store = new Storage("test.xml");
-		for (int i=0;i<60;i++) {
-			tasks.addToList(new DeadlineTask("test"+i, new Date()));
+        for (int i = 0; i < 60; i++) {
+            tasks.addToList(new DeadlineTask("test" + i, new Date()));
 		}
-		store.save(tasks,"test.xml");
+        store.save(tasks, "test.xml");
 		listFromFile = store.load();
 		assertEquals(210, listFromFile.getNumberOfTasks());
 		

@@ -18,7 +18,8 @@ public class RepeatedTask extends Task {
 	    this.taskType = Type.REPEATED;
     }
 
-	public Date getDeadline() {
+	@Override
+    public Date getDeadline() {
 		return deadline;
 	}
 	
@@ -26,7 +27,8 @@ public class RepeatedTask extends Task {
 		return period;
 	}
 	
-	public void setDeadline(Date dl) {
+	@Override
+    public void setDeadline(Date dl) {
 		deadline = dl;
 	}
 	
@@ -44,11 +46,18 @@ public class RepeatedTask extends Task {
 	}
 
 	@Override
-    public Task markDone() {
-	    Task taskToRepeat = new RepeatedTask(this.description, this.deadline, this.period);
-	    this.setDoneDate();
-	    super.markDone();
-	    return taskToRepeat;
+    public Task markDone() throws Exception {
+		if (!this.getIsDone()) {
+            Task taskToRepeat = new RepeatedTask(this.description,
+                                                 this.deadline,
+                                                 this.period);
+		    this.setDoneDate();
+		    super.markDone();
+		    return taskToRepeat;
+		    
+		} else {
+			throw new Exception();
+		}
     }
 
 }
