@@ -36,7 +36,7 @@ public class TaskList {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
 			throw new Exception();
 		} else {
-			this.tasks.get(taskIndex-1).setDescription(description);
+            this.tasks.get(taskIndex - 1).setDescription(description);
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class TaskList {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
 			throw new Exception();
 		} else {
-			this.tasks.get(taskIndex-1).setDeadline(time);
+            this.tasks.get(taskIndex - 1).setDeadline(time);
 		}   
     }
 	
@@ -52,7 +52,7 @@ public class TaskList {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
 			throw new Exception();
 		} else {
-			this.tasks.get(taskIndex-1).setStartTime(startDate);
+            this.tasks.get(taskIndex - 1).setStartTime(startDate);
 		}
 	    
     }
@@ -73,14 +73,14 @@ public class TaskList {
 	public void deleteFromList(List<Integer> taskIndexList) throws Exception {
 
 		Collections.sort(taskIndexList);
-		for (int i=taskIndexList.size()-1; i>=0; i--) {
+        for (int i = taskIndexList.size() - 1; i >= 0; i--) {
 			int indexToRemove = taskIndexList.get(i);
 			
 			if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
 				throw new Exception();
 
 			} else {
-				this.tasks.remove(indexToRemove-1);
+                this.tasks.remove(indexToRemove - 1);
 				this.totalTasks--;
 			}
 		}
@@ -97,14 +97,15 @@ public class TaskList {
 			throw new Exception();
 			
 		} else {
-			for (int i=0; i<taskIndexList.size(); i++) {
+            for (int i = 0; i < taskIndexList.size(); i++) {
 				int taskToMarkDone = taskIndexList.get(i);
 				
 				if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
 					throw new Exception();
 					
 				} else {
-					Task newRepeatTask = this.tasks.get(taskToMarkDone-1).markDone();
+                    Task newRepeatTask = this.tasks.get(taskToMarkDone - 1)
+                                                   .markDone();
 					if (newRepeatTask != null) {
 						this.addToList(newRepeatTask);
 					}
@@ -122,12 +123,12 @@ public class TaskList {
 	@Override
 	public String toString() {
 		String output = "";
-		int i=1;
+        int i = 1;
 		for (Task task : this.tasks) {
-			output+=i;
-			output+=": ";
-			output+= task.getDescription();
-			output+="\n";
+            output += i;
+            output += ": ";
+            output += task.getDescription();
+            output += "\n";
 			i++;
 		}
 		return output;
@@ -137,8 +138,8 @@ public class TaskList {
 	// this method is only for testing purpose
 	// generate 50 dummy tasks
 	public void test() {
-		for (int i=0;i<50;i++) {
-			this.tasks.add(new FloatingTask("No."+i));
+        for (int i = 0; i < 50; i++) {
+            this.tasks.add(new FloatingTask("No." + i));
 		}
 	}
 
