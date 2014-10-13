@@ -178,7 +178,7 @@ public class Parser {
 			input.beRepeated();
 
 			input.addDate(dates);
-			input.addRepeatDate(times.getText().trim());
+			input.addRepeatDate(times.getTime());
 			return input;
 		}
 	}

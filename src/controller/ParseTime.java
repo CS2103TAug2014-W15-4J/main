@@ -36,6 +36,9 @@ public class ParseTime {
 		}
 		return false;
 	}
+	public String getTime() {
+		return time;
+	}
 	public String getText() {
 		return text.replaceAll(time, "").trim();
 	}
