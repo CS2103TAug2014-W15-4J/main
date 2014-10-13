@@ -44,16 +44,19 @@ public class Storage {
 	private BufferedWriter writer;
 	private XStream xstream;
 	
+	private String file_name;
 	/**
 	 * Constructor
 	 * 
 	 */
 	public Storage() {
-		this.initilize(TASK_FILE);
+		this.file_name = TASK_FILE;
+		this.initilize(file_name);
 	}
 	
 	public Storage(String filename) {
-		this.initilize(filename);
+		this.file_name = filename;
+		this.initilize(file_name);
 	}
 	
 	/**
@@ -63,7 +66,7 @@ public class Storage {
 	 */
 	public String save(TaskList tasks) {
 		try {
-			this.writer = new BufferedWriter(new FileWriter(TASK_FILE, false));
+			this.writer = new BufferedWriter(new FileWriter(this.file_name, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
