@@ -18,12 +18,14 @@ import javafx.scene.Scene;
 
 public class MainView extends Application {
 	
+	MainViewController mainViewControl;
+	
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		
 //		Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
 		
-		MainViewController mainViewControl = new MainViewController();
+		mainViewControl = new MainViewController();
 		mainViewControl.setText("Enter Command here...");
 		mainViewControl.setDateLabel();
 //		mainViewControl.display();
@@ -39,6 +41,10 @@ public class MainView extends Application {
         scene.getStylesheets().add(MainView.class.getResource("MainView.css").toExternalForm());
         primaryStage.show();
 		
+	}
+	
+	public MainViewController getController() {
+		return this.mainViewControl;
 	}
 
 	public static void main(String[] args) {
