@@ -21,6 +21,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * Controller for the GUI
  * 
@@ -33,6 +36,8 @@ public class MainViewController extends VBox {
 	private static final String MESSAGE_NO_TASK = "Good! All tasks are clear!";
 	private static final String MESSAGE_TASKS_EXIST = "Oops! %s to be completed!";
 	
+	final static Logger logForMainViewController = Logger.getLogger(MainViewController.class.getName());
+	
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
@@ -41,6 +46,7 @@ public class MainViewController extends VBox {
 			date.setText(dateFormat.format(cal.getTime()));
 		}
 	}));
+	
 	
     @FXML 
     private TextField textField;
@@ -70,10 +76,16 @@ public class MainViewController extends VBox {
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
+        	logForMainViewController.log(Level.SEVERE, "Time out! Run time exception!");
             throw new RuntimeException(exception);
         }
         
+        logForMainViewController.log(Level.INFO, "Load MainView.fxml successfully!");
+        
         Logic.initialize();
+        
+        logForMainViewController.log(Level.INFO, "Initialize successfully!");
+        
         toBeCompleted.getChildren().add(displayTaskList);
         
         setTaskListView();
@@ -103,9 +115,13 @@ public class MainViewController extends VBox {
     	
 //    		String feedback = Logic.readAndExecuteCommands(input);
     		Logic.readAndExecuteCommands(input);
+    		logForMainViewController.log(Level.INFO, "Execute command complete!");
     	
     		setTaskListView();
     		determinePopMessage();
+    		
+    		logForMainViewController.log(Level.INFO, "Set the view successfully!");
+    		
     		Logic.saveTaskList();
     	}
     	
@@ -122,8 +138,12 @@ public class MainViewController extends VBox {
     private void determinePopMessage() {
 		if(tasks.equals("")) {
 			popMessage.setText(MESSAGE_NO_TASK);
+			
+			logForMainViewController.log(Level.INFO, "No existing task!");	
 		} else {
 			popMessage.setText(String.format(MESSAGE_TASKS_EXIST, countTasks));
+			
+			logForMainViewController.log(Level.INFO, "Load existing task!");
 		}
     }
     
