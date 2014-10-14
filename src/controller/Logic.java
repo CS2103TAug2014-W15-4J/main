@@ -87,15 +87,15 @@ public class Logic {
         while (true) {
             
             
-        	String userInput = getUserInput();
-
-	        	// parse and execute command
-	        	System.out.println(readAndExecuteCommands(userInput));
+            String userInput = getUserInput();
             
-	        	// update the history and storage file
-	        	storage.save(listOfTasks);
-
-
+            // parse and execute command
+            System.out.println(readAndExecuteCommands(userInput));
+            
+            // update the history and storage file
+            storage.save(listOfTasks);
+            
+            
         }        
     }
     
@@ -142,7 +142,9 @@ public class Logic {
     		String desc = userCommand.getDescription();
     		List<Date> dateList = userCommand.getDate();
     		
-    		if ((desc == null) || (desc.isEmpty())) {
+    		assert (desc != null);
+    		
+    		if (desc.isEmpty()) {
     			return MESSAGE_INVALID_DESCRIPTION;
     			
     		} else {
@@ -197,14 +199,12 @@ public class Logic {
     		Task taskToEdit = listOfTasks.get(editID-1);
     		Task.Type taskType = taskToEdit.getType();
     		
+    		assert (desc != null);
     		
     		if (editCommand != null) {
     			// additional functions
     			// editCommand --> no-repeat / no-time
     			return null;
-    			
-    		} else if (desc == null) {
-    			return MESSAGE_INVALID_EDIT;
     			
     		} else if (taskType == Task.Type.FLOAT) {
     			if (desc.isEmpty()) {
