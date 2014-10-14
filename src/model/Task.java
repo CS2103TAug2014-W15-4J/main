@@ -1,6 +1,12 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
+
+import exception.TaskDoneException;
+import exception.TaskInvalidDateException;
+import exception.TaskTagException;
 
 /**
  *  This class models a Task object
@@ -11,13 +17,14 @@ public abstract class Task {
 		FLOAT, DEADLINE, FIXED, REPEATED
 	}
 	protected String description;
-	protected String[] tags;
+	protected List<String> tags;
 	protected boolean isDone;
 	protected Type taskType;
 	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
+		this.tags = new ArrayList<String>();
 	}
 	
 	public void setDescription(String desc) {
@@ -28,11 +35,24 @@ public abstract class Task {
 		return description;
 	}
 	
-	public String[] getTags() {
+	public List<String> getTags() {
 		return tags;
 	}
 	
-	public Task markDone() throws Exception {
+	public void addTag(String tag) {
+	    tags.add(tag);
+	}
+	
+	public void deleteTag(String tag) throws TaskTagException {
+	    if (tags.contains(tag)) {
+	        tags.remove(tag);
+	        
+	    } else {
+	        throw new TaskTagException();
+	    }
+	}
+	
+	public Task markDone() throws TaskDoneException {
 		isDone = true;
 		return null;
 	}
@@ -41,15 +61,19 @@ public abstract class Task {
 		return this.isDone;
 	}
 
-	public void setDeadline(Date time) {
-	    // sub task override for repeated / fixed / deadline tasks
+	public void setDeadline(Date time) throws TaskInvalidDateException {
+	    // sub class override for repeated / fixed / deadline tasks
+	    // else trying to add date to otherwise non date task, error
+	    
+	    throw new TaskInvalidDateException();
 	    
     }
 
-	public Date getDeadline() {
-	    // TODO Auto-generated method stub
-		return null;
+	public Date getDeadline() throws TaskInvalidDateException {
+	    // sub class override, 
+	    // else exception
 	    
+	    throw new TaskInvalidDateException(); 
     }
 
 	public Date getDoneDate() {

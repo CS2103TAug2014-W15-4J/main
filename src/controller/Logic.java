@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
+import exception.TaskInvalidIdException;
+import exception.TaskDoneException;
+import exception.TaskInvalidDateException;
 import model.TaskList;
 import model.Task;
 import model.DeadlineTask;
@@ -20,10 +23,12 @@ import model.FixedTask;
 
 
 public class Logic {
+
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
     static TaskList listOfTasks;
+    
     
     static String MESSAGE_TASK_ADDED = "Task added successfully.";
     static String MESSAGE_TASK_EDITED = "Task edited successfully.";
@@ -31,23 +36,24 @@ public class Logic {
     static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
     static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
     
-    static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
-    
     static String MESSAGE_PROGRAM_REDO = "redo successful.";
     static String MESSAGE_PROGRAM_UNDO = "undo successful.";
     static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
     
-    static String MESSAGE_INVALID_ADD_ = "";
-    static String MESSAGE_INVALID_ADD_EMPTY_DESCRIPTION = "Error adding task: no description entered";
-    static String MESSAGE_INVALID_ADD_DATE_ERROR = "Error adding task: date error";
-    static String MESSAGE_INVALID_EDIT = "Error editing task.";
-    static String MESSAGE_INVALID_EDIT_DATE_ERROR = "Error editing task: date error";
-    static String MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION = "Error editing task: empty description";
+    static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
+
+    static String MESSAGE_INVALID_EDIT = "Invalid edit.";
     static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
-    static String MESSAGE_INVALID_MARKED_DONE = "Error marking task(s) done.";
+    static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
     static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
     static String MESSAGE_INVALID_REDO = "No next operation to redo.";
+    
     static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
+    static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
+    static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+    static String MESSAGE_INVALID_DATE = "Invalid date(s).";
+    static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
+    
     
     
 	static String MESSAGE_HELP = "Current list of available commands: \n" + 
@@ -61,15 +67,19 @@ public class Logic {
     
 	static Storage storage = new Storage(); 
     public static void main(String[] args) {
+        
         // get existing tasks from storage
     	listOfTasks = storage.load();
     	
         // get and execute new tasks
         while (true) {
+            
+            
         	String userInput = getUserInput();
 
 	        	// parse and execute command
 	        	System.out.println(readAndExecuteCommands(userInput));
+            
 	        	// update the history and storage file
 	        	storage.save(listOfTasks);
 
@@ -121,7 +131,7 @@ public class Logic {
     		List<Date> dateList = userCommand.getDate();
     		
     		if ((desc == null) || (desc.isEmpty())) {
-    			return MESSAGE_INVALID_ADD_EMPTY_DESCRIPTION;
+    			return MESSAGE_INVALID_DESCRIPTION;
     			
     		} else {
     			if (userCommand.isFloat()) {
@@ -133,7 +143,7 @@ public class Logic {
     					return addTask(desc, date);
     					
     				} else {
-    					return MESSAGE_INVALID_ADD_DATE_ERROR;
+    					return MESSAGE_INVALID_DATE_NUMBER;
     				}
     			} else if (userCommand.isRepeated()) {
     				
@@ -143,7 +153,7 @@ public class Logic {
     					return addTask(desc, date, repeatDate);
     				
     				} else {
-    					return MESSAGE_INVALID_ADD_DATE_ERROR;
+    					return MESSAGE_INVALID_DATE_NUMBER;
     				}
     				
     			// is fixed task
@@ -155,7 +165,7 @@ public class Logic {
     					return addTask(desc, startDate, endDate);
     					
     				} else {
-    					return MESSAGE_INVALID_ADD_DATE_ERROR;
+    					return MESSAGE_INVALID_DATE_NUMBER;
     				}
     			}
     		}
@@ -181,7 +191,7 @@ public class Logic {
     			
     		} else if (taskType == Task.Type.FLOAT) {
     			if (desc.isEmpty()) {
-    				return MESSAGE_INVALID_EDIT_EMPTY_DESCRIPTION;
+    				return MESSAGE_INVALID_DESCRIPTION;
 
     			} else {
     				return editTask(editID, desc);
@@ -201,7 +211,7 @@ public class Logic {
 					return editTask(editID, date);
 					
 				} else {
-					return MESSAGE_INVALID_EDIT_DATE_ERROR;
+					return MESSAGE_INVALID_DATE_NUMBER;
 				}
     			
     		} else if (taskType == Task.Type.REPEATED) {
@@ -218,7 +228,7 @@ public class Logic {
     				return editTask(editID, date);
     				
     			} else {
-    				return MESSAGE_INVALID_EDIT_DATE_ERROR;
+    				return MESSAGE_INVALID_DATE_NUMBER;
 				}
     			
     		} else if (taskType == Task.Type.FIXED) {
@@ -237,7 +247,7 @@ public class Logic {
     				return editTask(editID, desc);
     				
     			} else {
-    				return MESSAGE_INVALID_EDIT;
+    				return MESSAGE_INVALID_DATE_NUMBER;
     			}
     			
     		} else {
@@ -328,8 +338,8 @@ public class Logic {
 	        listOfTasks.editTaskDescription(taskIndex, description);
 	        return MESSAGE_TASK_EDITED;
 	        
-        } catch (Exception e) {
-	        return MESSAGE_INVALID_EDIT;
+        } catch (TaskInvalidIdException e) {
+	        return MESSAGE_INVALID_TASKID;
         }
     }
     
@@ -338,8 +348,11 @@ public class Logic {
 	    	listOfTasks.editTaskDeadline(taskIndex, time);
 	    	return MESSAGE_TASK_EDITED;
 	    	
-        } catch (Exception e) {
-	        return MESSAGE_INVALID_EDIT;
+        } catch (TaskInvalidIdException e) {
+	        return MESSAGE_INVALID_TASKID;
+	        
+        } catch (TaskInvalidDateException e) {
+            return MESSAGE_INVALID_DATE;
         }
 
     }
@@ -350,21 +363,32 @@ public class Logic {
     		listOfTasks.editTaskDeadline(taskIndex, time);
     		return MESSAGE_TASK_EDITED;
     		
-    	} catch (Exception e) {
-    		return MESSAGE_INVALID_EDIT;
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
+            
+        } catch (TaskInvalidDateException e) {
+            return MESSAGE_INVALID_DATE;
     	}
 
     }
     
     private static String editTask(int taskIndex, Date startDate, Date endDate) {
+    	
     	try {
     		listOfTasks.editTaskStartDate(taskIndex, startDate);
     		listOfTasks.editTaskDeadline(taskIndex, endDate);
     		return MESSAGE_TASK_EDITED;
     		
-    	} catch (Exception e) {
-    		return MESSAGE_INVALID_EDIT;
+            } catch (TaskInvalidIdException e) {
+                return MESSAGE_INVALID_TASKID;
+                
+            } catch (TaskInvalidDateException e) {
+                return MESSAGE_INVALID_DATE;
     	}
+    		
+
+    		
+    	 
     }
     
     private static String editTask(int taskIndex, String desc, Date startDate,
@@ -375,8 +399,11 @@ public class Logic {
             listOfTasks.editTaskDeadline(taskIndex, endDate);
             return MESSAGE_TASK_EDITED;
             
-        } catch (Exception e) {
-            return MESSAGE_INVALID_EDIT;
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
+            
+        } catch (TaskInvalidDateException e) {
+            return MESSAGE_INVALID_DATE;
         }
         
     }
@@ -398,22 +425,16 @@ public class Logic {
      *  this method will delete the specified task(s) from the file
      */
     private static String deleteTask(List<Integer> taskIndexList) {
-    	if (taskIndexList.size() == 0) {
-    		return MESSAGE_INVALID_DELETE;
     		
-    	} else {
     		try { 
     			listOfTasks.deleteFromList(taskIndexList);
     			return MESSAGE_TASK_DELETED;
     			
-    		} catch (Exception e) {
-    			return MESSAGE_INVALID_DELETE;
-    			
-    			
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
     			
     		}
     	}
-    }
     
     /**
      *  @return feedback that task list is cleared
@@ -485,17 +506,15 @@ public class Logic {
      *  this method marks that specified task(s) has been done
      */
     private static String markDone(List<Integer> taskIndexList) {
-    	if (taskIndexList.size() == 0) {
-    		return MESSAGE_INVALID_MARKED_DONE;
-    	
-    	} else {
     		try {
     			listOfTasks.markTaskDone(taskIndexList);
     			return MESSAGE_TASK_MARKED_DONE;
     			
-    		} catch (Exception e) {
+        } catch (TaskDoneException e) {
     			return MESSAGE_INVALID_MARKED_DONE;
-    		}
+            
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
     	}
     }
     

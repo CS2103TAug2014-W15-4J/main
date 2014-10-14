@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import exception.TaskDoneException;
+
 public class RepeatedTask extends Task {
 	@XStreamAlias("Deadline")
 	private Date deadline;
@@ -46,7 +48,7 @@ public class RepeatedTask extends Task {
 	}
 
 	@Override
-    public Task markDone() throws Exception {
+    public Task markDone() throws TaskDoneException {
 		if (!this.getIsDone()) {
             Task taskToRepeat = new RepeatedTask(this.description,
                                                  this.deadline,
@@ -56,7 +58,7 @@ public class RepeatedTask extends Task {
 		    return taskToRepeat;
 		    
 		} else {
-			throw new Exception();
+			throw new TaskDoneException();
 		}
     }
 

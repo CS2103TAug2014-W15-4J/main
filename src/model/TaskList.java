@@ -7,6 +7,10 @@ import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import exception.TaskDoneException;
+import exception.TaskInvalidDateException;
+import exception.TaskInvalidIdException;
+
 public class TaskList {
 	
 	@XStreamAlias("TaskList")
@@ -32,25 +36,30 @@ public class TaskList {
 		this.totalTasks++;
 	}
 	
-	public void editTaskDescription(int taskIndex, String description) throws IndexInvalidException {
+
+	public void editTaskDescription(int taskIndex, String description) throws TaskInvalidIdException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new IndexInvalidException("Error indedx for editing!");
+			throw new TaskInvalidIdException("Error index for editing!");
+
 		} else {
             this.tasks.get(taskIndex - 1).setDescription(description);
 		}
 	}
 	
-	public void editTaskDeadline(int taskIndex, Date time) throws IndexInvalidException {
+
+	public void editTaskDeadline(int taskIndex, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new IndexInvalidException("Error indedx for editing!");
+			throw new TaskInvalidIdException("Error index for editing!");
+			
 		} else {
             this.tasks.get(taskIndex - 1).setDeadline(time);
 		}   
     }
-	
-	public void editTaskStartDate(int taskIndex, Date startDate) throws IndexInvalidException {
+
+	public void editTaskStartDate(int taskIndex, Date startDate) throws TaskInvalidIdException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new IndexInvalidException("Error indedx for editing!");
+			throw new TaskInvalidIdException("Error index for editing!");
+
 		} else {
             this.tasks.get(taskIndex - 1).setStartTime(startDate);
 		}
@@ -70,20 +79,26 @@ public class TaskList {
 
 
 	
-	public void deleteFromList(List<Integer> taskIndexList) throws IndexInvalidException {
-
-		Collections.sort(taskIndexList);
-        for (int i = taskIndexList.size() - 1; i >= 0; i--) {
-			int indexToRemove = taskIndexList.get(i);
-			
-			if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
-				throw new IndexInvalidException("Error indedx for editing!");
-
-			} else {
-                this.tasks.remove(indexToRemove - 1);
-				this.totalTasks--;
-			}
-		}
+	
+	public void deleteFromList(List<Integer> taskIndexList) throws TaskInvalidIdException {
+	    if (taskIndexList.isEmpty()) {
+	        throw new TaskInvalidIdException("nothing to delete");
+	        
+	    } else {
+	        Collections.sort(taskIndexList);
+	        for (int i = taskIndexList.size() - 1; i >= 0; i--) {
+	            int indexToRemove = taskIndexList.get(i);
+	            
+	            if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
+	                
+	                throw new TaskInvalidIdException("Error index for editing!");
+	                
+	            } else {
+	                this.tasks.remove(indexToRemove - 1);
+	                this.totalTasks--;
+	            }
+	        }
+	    }
 	}
 	
 	public void clearList() {
@@ -91,23 +106,23 @@ public class TaskList {
 		this.totalTasks = 0;
 	}
 
-	public void markTaskDone(List<Integer> taskIndexList) throws Exception {
+	public void markTaskDone(List<Integer> taskIndexList) throws TaskDoneException, TaskInvalidIdException {
 		
 		if (taskIndexList.isEmpty()) {
-			throw new IndexInvalidException("Error indedx for editing!");
+			throw new TaskInvalidIdException("Error index for editing!");
+			
 		} else {
             for (int i = 0; i < taskIndexList.size(); i++) {
 				int taskToMarkDone = taskIndexList.get(i);
 				
 				if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
-					throw new IndexInvalidException("Error indedx for editing!");
+					throw new TaskInvalidIdException("Error index for editing!");
 					
 				} else {
                     Task newRepeatTask = this.tasks.get(taskToMarkDone - 1).markDone();
 					if (newRepeatTask != null) {
 						this.addToList(newRepeatTask);
 					}
-
 				}
 			}
 		}
@@ -118,13 +133,6 @@ public class TaskList {
 		return this.totalTasks;
 	}
 	
-	class IndexInvalidException extends IndexOutOfBoundsException{
-		public IndexInvalidException() {
-		}
-		public IndexInvalidException(String message) {
-			super(message);
-		}
-	}
 	
 	@Override
 	public String toString() {

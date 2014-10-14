@@ -13,6 +13,8 @@ import model.TaskList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import exception.TaskInvalidDateException;
+
 public class TaskListTest {
 
 	@BeforeClass
@@ -65,7 +67,7 @@ public class TaskListTest {
 		assertEquals(0, tasks.count());
 	}
 	
-	public void testEditingTask() {
+	public void testEditingTask() throws TaskInvalidDateException {
 		TaskList tasks = new TaskList();
 		// editing floating task
 		FloatingTask floatTask = new FloatingTask("lowercase");
