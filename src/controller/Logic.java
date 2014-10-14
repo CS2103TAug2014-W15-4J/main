@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
+import controller.UserInput.RepeatDate;
 import exception.TaskInvalidIdException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
+import exception.TaskTagDuplicateException;
 import model.TaskList;
 import model.Task;
 import model.DeadlineTask;
@@ -35,6 +37,7 @@ public class Logic {
     static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
     static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
     static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
+    static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
     
     static String MESSAGE_PROGRAM_REDO = "redo successful.";
     static String MESSAGE_PROGRAM_UNDO = "undo successful.";
@@ -45,9 +48,14 @@ public class Logic {
     static String MESSAGE_INVALID_EDIT = "Invalid edit.";
     static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
     static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+  
+    static String MESSAGE_INVALID_TAG = "No such tag to remove."; 
+    static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+
     static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
     static String MESSAGE_INVALID_REDO = "No next operation to redo.";
     
+
     static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
     static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
     static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
@@ -69,7 +77,8 @@ public class Logic {
     public static void main(String[] args) {
         
         // get existing tasks from storage
-    	listOfTasks = storage.load();
+//        listOfTasks = storage.load();
+        listOfTasks = new TaskList();
     	
         // get and execute new tasks
         while (true) {
@@ -149,7 +158,11 @@ public class Logic {
     				
     				if (dateList.size() == 1) {
     					Date date = dateList.get(0);
-    					String repeatDate = userCommand.repeatDate();
+    					RepeatDate repeatDate = userCommand.repeatDate();
+    					
+    					System.out.println(date);
+    					System.out.println(repeatDate);
+    					System.out.println(desc);
     					return addTask(desc, date, repeatDate);
     				
     				} else {
@@ -269,6 +282,9 @@ public class Logic {
     	} else if (userCommand.getCommand() == UserInput.CMD.DONE) {
     		return markDone(userCommand.getDoneID());
     		
+    	} else if (userCommand.getCommand() == UserInput.CMD.TAG) {
+    	    return tagTask(userCommand.getTagID(), userCommand.getDescription());
+    		
     	} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
     		// search function here.
     		return null;
@@ -310,7 +326,8 @@ public class Logic {
     }
     
     private static String addTask(String description, Date time,
-                                  String repeatDate) {
+                                  RepeatDate repeatDate) {
+        
         Task newTask = new RepeatedTask(description, time, repeatDate);
         listOfTasks.addToList(newTask);
         return MESSAGE_TASK_ADDED;
@@ -482,7 +499,26 @@ public class Logic {
                                    dateFormat.format(repeatedTask.getDeadline()));
                 taskDisplay.append("\nRepeat: " +
                                    repeatedTask.getRepeatPeriod() + "\n");
+
     		}
+    		
+            if (task.getTags().isEmpty()) {
+                taskDisplay.append("Tags: None\n");
+            } else {
+                String tagDisplay = "";
+                List<String> tags = task.getTags();
+                for (int j = 0; j < tags.size(); j++) {
+                    if (j == 0) {
+                        tagDisplay = tags.get(0);
+                    } else {
+                        tagDisplay += ", " + tags.get(j);
+                    }
+                }
+ 
+                taskDisplay.append("Tags: " + tagDisplay + "\n");
+            }
+
+    		
     		if (task.getIsDone()) {
     			taskDisplay.append("Status: Done");
     		} else {
@@ -501,7 +537,7 @@ public class Logic {
     
     /** 
      *  @param taskIndexList
-     *  @return feedback whether strings are marked done
+     *  @return feedback string whether tasks are marked done successfully
      *  
      *  this method marks that specified task(s) has been done
      */
@@ -517,6 +553,28 @@ public class Logic {
             return MESSAGE_INVALID_TASKID;
     	}
     }
+    
+    /** 
+     * 
+     *  @param taskIndexToTag
+     *  @param tag
+     *  @return feedback string on tagging of tasks.
+     *  
+     *  this method assigns the tag (non case-sensitive) to a specified task
+     */
+    private static String tagTask(int taskIndexToTag, String tag) {
+        try {
+            listOfTasks.tagTask(taskIndexToTag, tag);
+            return MESSAGE_TASK_TAGGED;
+            
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
+           
+        } catch (TaskTagDuplicateException e) {
+            return MESSAGE_INVALID_TAG_DUPLICATE;
+        }
+    }
+
     
     
     /**
@@ -566,6 +624,16 @@ public class Logic {
         System.out.print("Enter command: ");
         String userInput = scanner.nextLine();
         return userInput;
+    }
+    
+    /**
+     *  this method creates an empty task list for operations to be done on.
+     *  
+     *  this method is for testing purposes only
+     */
+    public static void setEmptyTaskList() {
+       listOfTasks = new TaskList();
+        
     }
     
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
+import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 
 /**
@@ -39,8 +40,13 @@ public abstract class Task {
 		return tags;
 	}
 	
-	public void addTag(String tag) {
-	    tags.add(tag);
+	public void addTag(String tag) throws TaskTagDuplicateException {
+	    if (tags.contains(tag.toLowerCase())) {
+	        throw new TaskTagDuplicateException();
+	        
+	    } else {
+	        tags.add(tag);
+	    }
 	}
 	
 	public void deleteTag(String tag) throws TaskTagException {
