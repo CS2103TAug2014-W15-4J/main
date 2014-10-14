@@ -12,6 +12,7 @@ import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
 import exception.TaskTagDuplicateException;
+import exception.TaskTagException;
 
 public class TaskList {
     
@@ -153,8 +154,30 @@ public class TaskList {
             }
         }
     }
+
+
+    public void untagTask(int taskIndexToUntag, String tag) throws TaskInvalidIdException, TaskTagException {
+        if ((taskIndexToUntag > totalTasks) || (taskIndexToUntag <= 0)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToTag = tasks.get(taskIndexToUntag - 1);
+            taskToTag.deleteTag(tag);
+            
+            if (tags.get(tag.toLowerCase()).size() == 1) {
+                tags.remove(tag.toLowerCase());
+                
+            } else {
+                List<Task> tagTaskList = tags.remove(tag.toLowerCase());
+                tagTaskList.remove(taskToTag);
+                tags.put(tag.toLowerCase(), tagTaskList);
+            }
+            
+        }
+        
+    }
     
-    public int count() {
+	public int count() {
         return this.totalTasks;
     }
     

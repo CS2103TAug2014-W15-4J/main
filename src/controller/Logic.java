@@ -11,6 +11,7 @@ import exception.TaskInvalidIdException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskTagDuplicateException;
+import exception.TaskTagException;
 import model.TaskList;
 import model.Task;
 import model.DeadlineTask;
@@ -26,6 +27,7 @@ import model.FixedTask;
 
 public class Logic {
 
+
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
@@ -38,6 +40,7 @@ public class Logic {
     static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
     static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
     static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
+    static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
     
     static String MESSAGE_PROGRAM_REDO = "redo successful.";
     static String MESSAGE_PROGRAM_UNDO = "undo successful.";
@@ -49,7 +52,7 @@ public class Logic {
     static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
     static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
   
-    static String MESSAGE_INVALID_TAG = "No such tag to remove."; 
+    static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
     static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
 
     static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
@@ -163,7 +166,8 @@ public class Logic {
     					System.out.println(date);
     					System.out.println(repeatDate);
     					System.out.println(desc);
-    					return addTask(desc, date, repeatDate);
+    					//return addTask(desc, date, repeatDate);
+    					return null;
     				
     				} else {
     					return MESSAGE_INVALID_DATE_NUMBER;
@@ -284,6 +288,9 @@ public class Logic {
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.TAG) {
     	    return tagTask(userCommand.getTagID(), userCommand.getDescription());
+    		
+    	} else if (userCommand.getCommand() == UserInput.CMD.UNTAG) {
+    	    return untagTask(userCommand.getTagID(), userCommand.getDescription());
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
     		// search function here.
@@ -572,6 +579,19 @@ public class Logic {
            
         } catch (TaskTagDuplicateException e) {
             return MESSAGE_INVALID_TAG_DUPLICATE;
+        }
+    }
+
+    private static String untagTask(int taskIndexToUntag, String tag) {
+        try {
+            listOfTasks.untagTask(taskIndexToUntag, tag);
+            return MESSAGE_TASK_UNTAGGED;
+            
+        } catch (TaskInvalidIdException e) {
+            return MESSAGE_INVALID_TASKID;
+           
+        } catch (TaskTagException e) {
+            return MESSAGE_INVALID_TAG_DELETE;
         }
     }
 
