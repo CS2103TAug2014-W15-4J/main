@@ -116,8 +116,16 @@ public class TaskList {
 
     }
 
-	public int getNumberOfTasks() {
+	public int count() {
 		return this.totalTasks;
+	}
+	
+	class IndexInvalidException extends IndexOutOfBoundsException{
+		public IndexInvalidException() {
+		}
+		public IndexInvalidException(String message) {
+			super(message);
+		}
 	}
 	
 	@Override
@@ -133,17 +141,5 @@ public class TaskList {
 		}
 		return output;
 	}
-	
-	
-	// this method is only for testing purpose
-	// generate 50 dummy tasks
-	public void test() {
-        for (int i = 0; i < 50; i++) {
-            this.tasks.add(new FloatingTask("No." + i));
-		}
-	}
-
-	
-	
 
 }
