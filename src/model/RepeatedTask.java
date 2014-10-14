@@ -1,23 +1,45 @@
 package model;
 
 import java.util.Date;
+import java.util.Calendar;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import controller.UserInput.RepeatDate;
 import exception.TaskDoneException;
 
 public class RepeatedTask extends Task {
 	@XStreamAlias("Deadline")
 	private Date deadline;
 	@XStreamAlias("Period")
+	private RepeatDate repeatPeriod;
 	private String period;
 	private Date doneDate;
 
-	public RepeatedTask(String description, Date time, String repeatDate) {
+	public static String[] namesOfDays =  {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+	private void updatePeriodString() {
+	    
+	    Date time = deadline;
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(time);
+	    
+	    if (repeatPeriod == RepeatDate.DAILY) {
+	        period = "daily";
+	        
+	    } else if (repeatPeriod == RepeatDate.WEEKLY) {
+	        period = namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
+	        
+	    } else if (repeatPeriod == RepeatDate.MONTHLY) {
+	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of the month";
+	    }
+	}
+	public RepeatedTask(String description, Date time, RepeatDate repeatDate) {
 	    super(description);
 	    deadline = time;
-	    period = repeatDate;
-	    this.taskType = Type.REPEATED;
+	    repeatPeriod = repeatDate;
+	    
+	    updatePeriodString();
     }
 
 	@Override
@@ -34,8 +56,9 @@ public class RepeatedTask extends Task {
 		deadline = dl;
 	}
 	
-	public void setRepeatPeriod(String repeatPeriod) {
-		period = repeatPeriod;
+	public void setRepeatPeriod(RepeatDate repeatP) {
+		repeatPeriod = repeatP;
+		updatePeriodString();
 	}
 	
 	private void setDoneDate() {
@@ -52,7 +75,7 @@ public class RepeatedTask extends Task {
 		if (!this.getIsDone()) {
             Task taskToRepeat = new RepeatedTask(this.description,
                                                  this.deadline,
-                                                 this.period);
+                                                 this.repeatPeriod);
 		    this.setDoneDate();
 		    super.markDone();
 		    return taskToRepeat;

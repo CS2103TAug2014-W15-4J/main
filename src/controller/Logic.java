@@ -80,8 +80,8 @@ public class Logic {
     public static void main(String[] args) {
         
         // get existing tasks from storage
-//        listOfTasks = storage.load();
-        listOfTasks = new TaskList();
+        listOfTasks = storage.load();
+//        listOfTasks = new TaskList();
     	
         // get and execute new tasks
         while (true) {
@@ -166,8 +166,8 @@ public class Logic {
     					System.out.println(date);
     					System.out.println(repeatDate);
     					System.out.println(desc);
-    					//return addTask(desc, date, repeatDate);
-    					return null;
+    					return addTask(desc, date, repeatDate);
+    					
     				
     				} else {
     					return MESSAGE_INVALID_DATE_NUMBER;
