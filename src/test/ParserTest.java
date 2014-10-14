@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import controller.Parser;
 import controller.UserInput;
+import controller.UserInput.RepeatDate;
 
 public class ParserTest {
 
@@ -29,12 +30,14 @@ public class ParserTest {
 		assertTrue(input.isDeadline());
 		assertFalse(input.isFloat());
 		
-		String test3 = "add go to sleep by 11 Oct";
+		String test3 = "add go to sleep every 2pm daily";
 		input = parser.parse(test3);
 		assertTrue(input.getValid());
 		assertEquals(UserInput.CMD.ADD,input.getCommand());
-		assertTrue(input.isDeadline());
+		assertFalse(input.isDeadline());
 		assertFalse(input.isFloat());
+		assertTrue(input.isRepeated());
+		assertEquals(input.repeatDate(),RepeatDate.DAILY);
 		
 		String test4 = "edit 2";
 		input = parser.parse(test4);
