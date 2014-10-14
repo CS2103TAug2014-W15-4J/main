@@ -26,6 +26,7 @@ public class Parser {
 	private static final String CMD_HELP = "help";
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_TAG = "tag";
+	private static final String CMD_UNTAG = "untag";
 	private static final String CMD_UNDO = "undo";
 	private static final String CMD_REDO = "redo";
 
@@ -75,6 +76,8 @@ public class Parser {
 			return parseUndo(content);
 		case CMD_REDO:
 			return parseRedo(content);
+		case CMD_UNTAG:
+			return parseUntag(content);
 		default:
 			return errorCommand();
 		}
@@ -529,6 +532,30 @@ public class Parser {
 			input.addCommand(CMD.TAG);
 			input.add(tag);
 		}
+		return input;
+	}
+	/**
+	 * Untag command parsing
+	 * @param content
+	 * @return
+	 */
+	
+	private UserInput parseUntag(String content) {
+		if (!trueNumberFormat(content)) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		String[] numberInString = content.split(" ");
+		int length = numberInString.length;
+		List<Integer> number = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			if (!numberInString[i].equals("")) {
+				number.add(Integer.valueOf(numberInString[i].trim()));
+			}
+		}
+		input.addCommand(CMD.UNTAG);
+		input.add(null);
+		input.addDeleteID(number);
 		return input;
 	}
 
