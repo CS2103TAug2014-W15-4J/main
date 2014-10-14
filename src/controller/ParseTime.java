@@ -30,12 +30,7 @@ public class ParseTime {
 	public Date recursUntil() {
 		return recursUntil;
 	}
-	public boolean timeNull() {
-		if (time == null) {
-			return true;
-		}
-		return false;
-	}
+	
 	public String getTime() {
 		return time;
 	}

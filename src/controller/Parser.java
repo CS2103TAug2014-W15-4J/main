@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controller.UserInput.CMD;
+import controller.UserInput.RepeatDate;
 
 public class Parser {
 	enum TaskType {
@@ -25,6 +26,9 @@ public class Parser {
 	private static final String CMD_HELP = "help";
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_TAG = "tag";
+	private static final String CMD_UNDO = "undo";
+	private static final String CMD_REDO = "redo";
+
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
 
@@ -43,33 +47,69 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		switch (command.toLowerCase()) {
-			case CMD_EXIT :
-				return parseExit(content);
-			case CMD_HELP :
-				return parseHelp(content);
-			case CMD_ADD :
-				return parseAdd(content);
-			case CMD_DELETE :
-				return parseDelete(content);
-			case CMD_CLEAR :
-				return parseClear(content);
-			case CMD_SEARCH :
-				return parseSearch(content);
-			case CMD_EDIT :
-				return parseEdit(content);
-			case CMD_DONE :
-				return parseDone(content);
-			case CMD_COMPLETE :
-				return parseDone(content);
-			case CMD_FINISH :
-				return parseDone(content);
-			case CMD_SHOW :
-				return parseShow(content);
-			case CMD_TAG :
-				return parseTag(content);
-			default :
-				return errorCommand();
+		case CMD_EXIT:
+			return parseExit(content);
+		case CMD_HELP:
+			return parseHelp(content);
+		case CMD_ADD:
+			return parseAdd(content);
+		case CMD_DELETE:
+			return parseDelete(content);
+		case CMD_CLEAR:
+			return parseClear(content);
+		case CMD_SEARCH:
+			return parseSearch(content);
+		case CMD_EDIT:
+			return parseEdit(content);
+		case CMD_DONE:
+			return parseDone(content);
+		case CMD_COMPLETE:
+			return parseDone(content);
+		case CMD_FINISH:
+			return parseDone(content);
+		case CMD_SHOW:
+			return parseShow(content);
+		case CMD_TAG:
+			return parseTag(content);
+		case CMD_UNDO:
+			return parseUndo(content);
+		case CMD_REDO:
+			return parseRedo(content);
+		default:
+			return errorCommand();
 		}
+	}
+
+	/**
+	 * redo command parsing
+	 * 
+	 * @param content
+	 * @return UserInput
+	 */
+
+	private UserInput parseRedo(String content) {
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.REDO);
+		return input;
+	}
+
+	/**
+	 * undo command parsing
+	 * 
+	 * @param content
+	 * @return UserInput
+	 */
+
+	private UserInput parseUndo(String content) {
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.UNDO);
+		return input;
 	}
 
 	/**
@@ -121,27 +161,17 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		UserInput input = new UserInput();
-		UserInput temp = null;
 		input.addCommand(CMD.ADD);
-		int timeSize = times.getDates().size();
 		switch (taskType(content, times)) {
-			case DEADLINE :
-				return parseDeadline(input, content, times);
-			case REPEAT :
-				return parseRepeated(input, content, times);
-			case FLOAT :
-				return parseFloat(input, content);
-			default : {
-				if (timeSize == 1 || timeSize == 2) {
-					temp = parseFixed(input, content, times);
-					if (temp.getValid()) {
-						return temp;
-					} else {
-						return parseFloat(input, content);
-					}
-				}
-				return parseFloat(input, content);
-			}
+		case DEADLINE:
+			return parseDeadline(input, content, times);
+		case REPEAT:
+			return parseRepeated(input, content);
+		case FLOAT:
+			return parseFloat(input, content);
+		default: {
+			return parseFixed(input, content, times);
+		}
 		}
 	}
 
@@ -155,30 +185,52 @@ public class Parser {
 	 *         this is for repeated task for add command or edit command
 	 */
 
-	private UserInput parseRepeated(UserInput input, String content,
-	                                ParseTime times) {
-		if (times.timeNull()) {
-			return errorCommand();
+	private UserInput parseRepeated(UserInput input, String content) {
+		ParseTime times = new ParseTime();
+		String description = null;
+		String repeatDate = null;
+		String tempContent = null;
+		try {
+			String[] contentSplit = content.split(" ");
+			repeatDate = contentSplit[contentSplit.length - 1];
+		} catch (NullPointerException e1) {
+			return parseFloat(input, content);
 		}
-		String description = times.getText().replaceAll(" (?i)every", "")
-		                          .trim();
+		switch (repeatDate.toLowerCase()) {
+		case "daily":
+			input.addRepeatDate(RepeatDate.DAILY);
+			break;
+		case "weekly":
+			input.addRepeatDate(RepeatDate.WEEKLY);
+			break;
+		case "monthly":
+			input.addRepeatDate(RepeatDate.MONTHLY);
+			break;
+		default:
+			return parseFloat(input, content);
+		}
+		tempContent = content.replaceAll("(?i)daily|weekly|monthly", "").trim();
+		times.parseTime(tempContent);
+		try {
+			description = times.getText().replaceAll(" (?i)every", "").trim();
+		} catch (NullPointerException e2) {
+			return parseFloat(input, content);
+		}
 		if (input.getCommand() == CMD.ADD) {
-			if (description == null || description.equals("")) {
-				return errorCommand();
+			if (description.equals("")) {
+				return parseFloat(input, content);
 			}
 		}
 		List<Date> dates = times.getDates();
 		if (!times.isRepeated()) {
-			return errorCommand();
+			return parseFloat(input, content);
 		}
 		if (dates.size() != 1) {
-			return errorCommand();
+			return parseFloat(input, content);
 		} else {
 			input.add(description);
 			input.beRepeated();
-
 			input.addDate(dates);
-			input.addRepeatDate(times.getTime());
 			return input;
 		}
 	}
@@ -194,19 +246,21 @@ public class Parser {
 	 */
 
 	private UserInput parseDeadline(UserInput input, String content,
-	                                ParseTime times) {
-		if (times.timeNull()) {
-			return errorCommand();
+			ParseTime times) {
+		String description = null;
+		try {
+			description = times.getText().replaceAll(" (?i)by", "").trim();
+		} catch (NullPointerException e) {
+			return parseFloat(input, content);
 		}
-		String description = times.getText().replaceAll(" (?i)by", "").trim();
 		if (input.getCommand() == CMD.ADD) {
-			if (description == null || description.equals("")) {
-				return errorCommand();
+			if (description.equals("")) {
+				return parseFloat(input, content);
 			}
 		}
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
-			return errorCommand();
+			return parseFloat(input, content);
 		} else {
 			input.add(description);
 			input.beDeadline();
@@ -227,17 +281,20 @@ public class Parser {
 	 */
 
 	private UserInput parseFixed(UserInput input, String content,
-	                             ParseTime times) {
-		if (times.timeNull()) {
-			return errorCommand();
+			ParseTime times) {
+		String description = null;
+		try {
+			description = times.getText();
+		} catch (NullPointerException e) {
+			return parseFloat(input, content);
 		}
-		String description = times.getText();
 		if (input.getCommand() == CMD.ADD) {
-			if (description == null || description.equals("")) {
-				return errorCommand();
+			if (description.equals("")) {
+				return parseFloat(input, content);
 			}
 		}
 		List<Date> dates = times.getDates();
+		assert dates.size() == 1 || dates.size() == 2;
 		input.add(description);
 		input.addDate(dates);
 		return input;
@@ -274,7 +331,7 @@ public class Parser {
 		if (matcher.matches()) {
 			return TaskType.DEADLINE;
 		}
-		pattern = Pattern.compile(".+ (?i)every(?-i) .+");
+		pattern = Pattern.compile(".+ (?i)every .+ daily|weekly|monthly(?-i)");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
@@ -366,26 +423,16 @@ public class Parser {
 		}
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
-		UserInput temp = null;
-		int timeSize = times.getDates().size();
 		switch (taskType(content, times)) {
-			case DEADLINE :
-				return parseDeadline(input, content, times);
-			case REPEAT :
-				return parseRepeated(input, content, times);
-			case FLOAT :
-				return parseFloat(input, content);
-			default : {
-				if (timeSize == 1 || timeSize == 2) {
-					temp = parseFixed(input, content, times);
-					if (temp.getValid()) {
-						return temp;
-					} else {
-						return parseFloat(input, content);
-					}
-				}
-				return parseFloat(input, content);
-			}
+		case DEADLINE:
+			return parseDeadline(input, content, times);
+		case REPEAT:
+			return parseRepeated(input, content);
+		case FLOAT:
+			return parseFloat(input, content);
+		default: {
+			return parseFixed(input, content, times);
+		}
 		}
 	}
 

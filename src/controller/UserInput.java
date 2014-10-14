@@ -16,7 +16,7 @@ import java.util.List;
  *                        /getDescription();getDate();isFloat() or isRepeated or isDeadline();
  * editCommad;
  *          addDate(List<Date>);addEdit(int,String)
- *                      /getEditID();getDescription();getDate();getEditCommand�i�j�G (the description and date need to be changed) 
+ *                      /getEditID();getDescription();getDate();getEditCommand�ｿｽi�ｿｽj�ｿｽG (the description and date need to be changed) 
  * deleteCommand:
  *          addDeleteID(List<Integer>)/getDeleteID(); 
  * doneCommand:
@@ -32,7 +32,10 @@ import java.util.List;
  */
 public class UserInput {
 	public enum CMD {
-		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG
+		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG,UNDO,REDO
+	};
+	public enum RepeatDate {
+		DAILY,WEEKLY,MONTHLY
 	};
 
 	private boolean valid = true;
@@ -42,7 +45,7 @@ public class UserInput {
 
 	private int callingID = 0;
 	private String afterCommand = null;
-	private String repeatDate = null;
+	private RepeatDate repeatDate = null;
 
 	private String description = null;
 
@@ -92,7 +95,7 @@ public class UserInput {
 		return description;
 	}
 
-	public String repeatDate() {
+	public RepeatDate repeatDate() {
 		return repeatDate;
 	}
 
@@ -156,7 +159,7 @@ public class UserInput {
 		afterCommand = command;
 	}
 
-	public void addRepeatDate(String content) {
+	public void addRepeatDate(RepeatDate content) {
 		repeatDate = content;
 	}
 
