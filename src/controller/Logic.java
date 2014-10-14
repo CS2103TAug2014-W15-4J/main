@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import controller.UserInput.RepeatDate;
 import exception.TaskInvalidIdException;
@@ -27,12 +28,10 @@ import model.FixedTask;
 
 public class Logic {
 
-
     static Scanner scanner = new Scanner(System.in);
     static Stack<UserInput> undoStack = new Stack<UserInput>();
     static Stack<UserInput> redoStack = new Stack<UserInput>();
     static TaskList listOfTasks;
-    
     
     static String MESSAGE_TASK_ADDED = "Task added successfully.";
     static String MESSAGE_TASK_EDITED = "Task edited successfully.";
@@ -65,8 +64,6 @@ public class Logic {
     static String MESSAGE_INVALID_DATE = "Invalid date(s).";
     static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
     
-    
-    
 	static String MESSAGE_HELP = "Current list of available commands: \n" + 
                                  "- add a task              : add <description>\n" +
 			                     "- edit a task description : edit <taskID> <description>\n" +
@@ -77,6 +74,8 @@ public class Logic {
                                  "- exit the program        : exit";
     
 	static Storage storage = new Storage(); 
+	static Logger log = Logger.getLogger("controller.logic");
+	
     public static void main(String[] args) {
         
         // get existing tasks from storage
@@ -86,11 +85,13 @@ public class Logic {
         // get and execute new tasks
         while (true) {
             
-            
+            log.info("Getting user input");
             String userInput = getUserInput();
             
             // parse and execute command
             System.out.println(readAndExecuteCommands(userInput));
+            
+            log.info("Execution complete.");
             
             // update the history and storage file
             storage.save(listOfTasks);
@@ -119,10 +120,15 @@ public class Logic {
 	 *  and executes the command given, returning the feedback string at the end.  
 	 */
 	public static String readAndExecuteCommands(String userInput) {
+	    
+	    log.info("Processing user input: start parsing.");
 		// parse and execute command
 		Parser parser = new Parser();
 		UserInput userCommand = parser.parse(userInput);
+		
+		log.info("Done parsing. Executing command..");
 		return executeCommand(userCommand);
+		
 	}
     
     /** 
