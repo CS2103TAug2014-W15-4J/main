@@ -113,7 +113,7 @@ public class MainViewController extends VBox {
     
     private void setTaskListView() {
     	taskList = Logic.getTaskList();
-		countTasks = taskList.getNumberOfTasks();
+		countTasks = taskList.count();
 		tasks = taskList.toString();
 	
 		displayTaskList.setText(tasks);

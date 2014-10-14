@@ -26,7 +26,7 @@ public class StorageTest {
 		TaskList tasks = new TaskList();
 		store.save(tasks, "test.xml");
 		TaskList listFromFile = store.load();
-		assertEquals(0, listFromFile.getNumberOfTasks());
+		assertEquals(0, listFromFile.count());
 	}
 	
 	@Test
@@ -39,7 +39,7 @@ public class StorageTest {
 		store.save(tasks, "test.xml");
 		
 		TaskList listFromFile = store.load();
-		assertEquals(100, listFromFile.getNumberOfTasks());
+		assertEquals(100, listFromFile.count());
 		store.close();
 		
 		store = new Storage("test.xml");
@@ -48,7 +48,7 @@ public class StorageTest {
 		}
 		store.save(tasks, "test.xml");
 		listFromFile = store.load();
-		assertEquals(150, listFromFile.getNumberOfTasks());
+		assertEquals(150, listFromFile.count());
 		
 		store.close();
 		
@@ -58,7 +58,7 @@ public class StorageTest {
 		}
         store.save(tasks, "test.xml");
 		listFromFile = store.load();
-		assertEquals(210, listFromFile.getNumberOfTasks());
+		assertEquals(210, listFromFile.count());
 		
 	}
 

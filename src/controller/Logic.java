@@ -430,7 +430,7 @@ public class Logic {
      * 
      */
     private static String display() {
-    	if (listOfTasks.getNumberOfTasks() == 0) {
+    	if (listOfTasks.count() == 0) {
     		// empty task list
     		return MESSAGE_EMPTY_TASK_LIST;
     	}
@@ -438,7 +438,7 @@ public class Logic {
     	StringBuilder taskDisplay = new StringBuilder();
     	taskDisplay.append("Current tasks:\n");
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        for (int i = 0; i < listOfTasks.getNumberOfTasks(); i++) {
+        for (int i = 0; i < listOfTasks.count(); i++) {
     		Task task = listOfTasks.get(i);
             taskDisplay.append((i + 1) + ". " + task.getDescription() + "\n");
     		if (task.getType() == Task.Type.DEADLINE) {
@@ -468,7 +468,7 @@ public class Logic {
     			taskDisplay.append("Status: Ongoing");
     		}
     		
-            if (i != listOfTasks.getNumberOfTasks() - 1) {
+            if (i != listOfTasks.count() - 1) {
     			taskDisplay.append("\n\n");
     		} else {
     			taskDisplay.append("\n");
