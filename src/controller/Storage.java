@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -26,6 +28,7 @@ import model.TaskList;
  */
 public class Storage {
 	
+	
 	// XML tag for Model Class 
 	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatingTask";
 	private static final String ALIAS_CLASS_FIXED_TASK = "FixedTask";
@@ -35,8 +38,10 @@ public class Storage {
 
 
 	private static final String TASK_FILE = "uClear.xml";
-	
+	private static final String MESSAGE_SUCCESS = "Success";
 	private static final String ERROR_IO = "Error when trying to read/write the file.";
+	
+	private static Logger logger = Logger.getLogger("Storage");
 	
 	// These two Reader and Writer are used to access and manipulate the given
 	// text file
@@ -65,14 +70,17 @@ public class Storage {
 	 * @return a feedback message
 	 */
 	public String save(TaskList tasks) {
+		logger.log(Level.INFO, "Going to save tasks on hard disk");
 		try {
 			this.writer = new BufferedWriter(new FileWriter(this.file_name, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
+			logger.log(Level.WARNING, "I/O error when saving tasks.");
 			throw new Error(ERROR_IO);
 		}
-		return "Success";
+		logger.log(Level.INFO, "Saving complete.");
+		return MESSAGE_SUCCESS;
 	}
 	
 	/**
@@ -82,14 +90,17 @@ public class Storage {
 	 * @return a feedback message
 	 */
 	public String save(TaskList tasks, String filename) {
+		logger.log(Level.INFO, "Going to save tasks on hard disk");
 		try {
 			this.writer = new BufferedWriter(new FileWriter(filename, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
+			logger.log(Level.WARNING, "I/O error when saving tasks.");
 			throw new Error(ERROR_IO);
 		}
-		return "Success";
+		logger.log(Level.INFO, "Saving complete.");
+		return MESSAGE_SUCCESS;
 	}
 	
 	/**
@@ -97,6 +108,7 @@ public class Storage {
 	 * @return a TaskList object
 	 */
 	public TaskList load() {
+		logger.log(Level.INFO, "Going to load tasks from data file.");
 		String input = null;
 		StringBuilder xml = new StringBuilder(); 
 		try {
@@ -104,9 +116,11 @@ public class Storage {
 				xml.append(input);
 			}
 		} catch (IOException e) {
+			logger.log(Level.WARNING, "I/O error when loading tasks.");
 			throw new Error(ERROR_IO);
 		}
 //		System.out.println(xml.toString());
+		logger.log(Level.INFO, "Loading completed.");
 		return (TaskList)xstream.fromXML(xml.toString());
 	}
 	

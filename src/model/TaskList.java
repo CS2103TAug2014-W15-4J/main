@@ -8,7 +8,7 @@ import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 public class TaskList {
-
+	
 	@XStreamAlias("TaskList")
 	private ArrayList<Task> tasks;
 	@XStreamAlias("TasksCount")
@@ -32,25 +32,25 @@ public class TaskList {
 		this.totalTasks++;
 	}
 	
-	public void editTaskDescription(int taskIndex, String description) throws Exception {
+	public void editTaskDescription(int taskIndex, String description) throws IndexInvalidException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new Exception();
+			throw new IndexInvalidException("Error indedx for editing!");
 		} else {
             this.tasks.get(taskIndex - 1).setDescription(description);
 		}
 	}
 	
-	public void editTaskDeadline(int taskIndex, Date time) throws Exception {
+	public void editTaskDeadline(int taskIndex, Date time) throws IndexInvalidException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new Exception();
+			throw new IndexInvalidException("Error indedx for editing!");
 		} else {
             this.tasks.get(taskIndex - 1).setDeadline(time);
 		}   
     }
 	
-	public void editTaskStartDate(int taskIndex, Date startDate) throws Exception {
+	public void editTaskStartDate(int taskIndex, Date startDate) throws IndexInvalidException {
 		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
-			throw new Exception();
+			throw new IndexInvalidException("Error indedx for editing!");
 		} else {
             this.tasks.get(taskIndex - 1).setStartTime(startDate);
 		}
@@ -70,14 +70,14 @@ public class TaskList {
 
 
 	
-	public void deleteFromList(List<Integer> taskIndexList) throws Exception {
+	public void deleteFromList(List<Integer> taskIndexList) throws IndexInvalidException {
 
 		Collections.sort(taskIndexList);
         for (int i = taskIndexList.size() - 1; i >= 0; i--) {
 			int indexToRemove = taskIndexList.get(i);
 			
 			if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
-				throw new Exception();
+				throw new IndexInvalidException("Error indedx for editing!");
 
 			} else {
                 this.tasks.remove(indexToRemove - 1);
@@ -94,18 +94,16 @@ public class TaskList {
 	public void markTaskDone(List<Integer> taskIndexList) throws Exception {
 		
 		if (taskIndexList.isEmpty()) {
-			throw new Exception();
-			
+			throw new IndexInvalidException("Error indedx for editing!");
 		} else {
             for (int i = 0; i < taskIndexList.size(); i++) {
 				int taskToMarkDone = taskIndexList.get(i);
 				
 				if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
-					throw new Exception();
+					throw new IndexInvalidException("Error indedx for editing!");
 					
 				} else {
-                    Task newRepeatTask = this.tasks.get(taskToMarkDone - 1)
-                                                   .markDone();
+                    Task newRepeatTask = this.tasks.get(taskToMarkDone - 1).markDone();
 					if (newRepeatTask != null) {
 						this.addToList(newRepeatTask);
 					}
