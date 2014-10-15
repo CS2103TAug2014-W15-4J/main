@@ -581,22 +581,24 @@ public class Parser {
 	
 	private UserInput parseUntag(String content) {
 		log.info("entering delete command");
-		if (!trueNumberFormat(content)) {
-			
+		if (content == null || content.equals("")) {
+
 			return errorCommand();
 		}
-		UserInput input = new UserInput();
-		String[] numberInString = content.split(" ");
-		int length = numberInString.length;
-		List<Integer> number = new ArrayList<Integer>();
-		for (int i = 0; i < length; i++) {
-			if (!numberInString[i].equals("")) {
-				number.add(Integer.valueOf(numberInString[i].trim()));
-			}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
+			return errorCommand();
 		}
-		input.addCommand(CMD.UNTAG);
-		input.add(null);
-		input.addDeleteID(number);
+		String IDString = contentSplit[0].trim();
+		String contentString = contentSplit[1].trim();
+		UserInput input = new UserInput();
+		if (!trueNumberFormat(IDString)) {
+			return errorCommand();
+		} else {
+			input.addEditID(Integer.valueOf(IDString));
+			input.addCommand(CMD.UNTAG);
+			input.add(contentString);
+		}
 		log.info("exit command");
 		return input;
 	}
