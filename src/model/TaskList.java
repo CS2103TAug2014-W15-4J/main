@@ -204,6 +204,9 @@ public class TaskList {
         if ((taskIndexToUntag > totalTasks) || (taskIndexToUntag <= 0)) {
             throw new TaskInvalidIdException();
             
+        } else if (tag.isEmpty()) {
+            untagTaskAll(taskIndexToUntag);
+            
         } else {
             Task taskToTag = tasks.get(taskIndexToUntag - 1);
             taskToTag.deleteTag(tag);
@@ -216,7 +219,24 @@ public class TaskList {
                 tagTaskList.remove(taskToTag);
                 tags.put(tag.toLowerCase(), tagTaskList);
             }
+        }
+    }
+    
+    private void untagTaskAll(int taskIndexToUntag) throws TaskTagException {
+        Task taskToUntag = tasks.get(taskIndexToUntag - 1);
+        List<String> taskTags = taskToUntag.getTags();
+        
+        if (taskTags.isEmpty()) {
+            throw new TaskTagException("No tags to remove");
+        }
+        
+        while (!taskTags.isEmpty()) {
+            String tag = taskTags.remove(0);
             
+            assert tags.get(tag.toLowerCase()).contains(taskToUntag);
+            
+            tags.get(tag.toLowerCase()).remove(taskToUntag);
+            taskToUntag.deleteTag(tag);
         }
         
     }
