@@ -34,7 +34,7 @@ public class StorageTest {
 		Storage store = new Storage("test.xml");
 		TaskList tasks = new TaskList();
         for (int i = 0; i < 100; i++) {
-			tasks.addToList(new FloatingTask("test"+i));
+			tasks.addToList("No. "+i);
 		}
 		store.save(tasks, "test.xml");
 		
@@ -44,7 +44,7 @@ public class StorageTest {
 		
 		store = new Storage("test.xml");
         for (int i = 0; i < 50; i++) {
-            tasks.addToList(new FixedTask("test" + i, new Date(), new Date()));
+            tasks.addToList("test" + i, new Date(), new Date());
 		}
 		store.save(tasks, "test.xml");
 		listFromFile = store.load();
@@ -54,7 +54,7 @@ public class StorageTest {
 		
 		store = new Storage("test.xml");
         for (int i = 0; i < 60; i++) {
-            tasks.addToList(new DeadlineTask("test" + i, new Date()));
+            tasks.addToList("test" + i, new Date());
 		}
         store.save(tasks, "test.xml");
 		listFromFile = store.load();

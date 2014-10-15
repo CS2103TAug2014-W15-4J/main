@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -182,39 +181,5 @@ public class Storage {
 		} catch (Exception e) {
 			throw new Error(ERROR_IO);
 		}	
-	}
-	
-	
-	public static void main(String[] args) {
-//		testSave();
-//		testLoad();
-	}
-
-	
-	/*************
-	 * Testing
-	 *************/
-
-	
-	/**
-	 * Test save method
-	 */
-	public static void testSave() {
-		TaskList a = new TaskList();
-		a.addToList(new FloatingTask("going to school"));
-		a.addToList(new FixedTask("test", new Date(), new Date()));
-		Storage storge = new Storage("test.xml");
-		System.out.println(storge.serialize(a));
-		storge.save(a, "test.xml");
-		storge.close();
-	}
-	
-	/**
-	 * Test load method
-	 */
-	public static void testLoad() {
-		Storage storge = new Storage("test.xml");
-		TaskList a = storge.load();
-		System.out.println(a.toString());
 	}
 }

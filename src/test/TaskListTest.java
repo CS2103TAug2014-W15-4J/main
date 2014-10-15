@@ -26,7 +26,7 @@ public class TaskListTest {
 		TaskList tasks = new TaskList();
 		// generate 50 dummy task and add them
 		 for (int i = 0; i < 50; i++) {
-	            tasks.addToList(new FloatingTask("No." + i));
+	            tasks.addToList("No." + i);
 		}
 		assertEquals(50, tasks.count());
 	}
@@ -36,7 +36,7 @@ public class TaskListTest {
 		TaskList tasks = new TaskList();
 		// generate 50 dummy task and add them
 		 for (int i = 0; i < 50; i++) {
-	            tasks.addToList(new FloatingTask("No." + i));
+	            tasks.addToList("No." + i);
 		}
 		assertEquals(50, tasks.count());
 		
@@ -70,8 +70,7 @@ public class TaskListTest {
 	public void testEditingTask() throws TaskInvalidDateException {
 		TaskList tasks = new TaskList();
 		// editing floating task
-		FloatingTask floatTask = new FloatingTask("lowercase");
-		tasks.addToList(floatTask);
+		tasks.addToList("lowercase");
 		tasks.editTaskDescription(1, "UPPERCASE");
 		assertEquals("UPPERCASE", tasks.get(0).getDescription());
 		
@@ -80,8 +79,7 @@ public class TaskListTest {
 		Date dateA = new Date(100);
 		Date dateB = new Date(200);
 		Date dateC = new Date(300);
-		FixedTask fixedTask = new FixedTask("lowercase", dateA, dateB);
-		tasks.addToList(fixedTask);
+		tasks.addToList("lowercase", dateA, dateB);
 		tasks.editTaskStartDate(1, dateC);
 		assertEquals(dateC, tasks.get(0).getDeadline());
 	}
