@@ -113,8 +113,10 @@ public class MainViewController extends VBox {
     		Stage stage = (Stage) getScene().getWindow();
     		stage.close();
     	} else {
-    	
+    		
+    		// Feedback from Logic
     		String feedback = Logic.readAndExecuteCommands(input);
+    
     		logForMainViewController.log(Level.INFO, "Execute command complete!");    		
     		
     		fadeFeedback(feedback);
