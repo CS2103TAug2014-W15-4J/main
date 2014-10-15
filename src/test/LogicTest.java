@@ -49,21 +49,21 @@ public class LogicTest {
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         
         assertEquals(feedback, MESSAGE_ADD_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing");
         
         // test the adding of a deadline task
         feedback = Logic.readAndExecuteCommands("add testing by 13 Oct 2014 4pm");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW); 
         
         assertEquals(feedback, MESSAGE_ADD_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing");
         
         // test the adding of a fixed task
         feedback = Logic.readAndExecuteCommands("add meeting 4pm 14 Oct 2014 to 6pm 14 Oct 2014");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         
         assertEquals(feedback, MESSAGE_ADD_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing");
     }
     
     @Test
@@ -78,21 +78,21 @@ public class LogicTest {
         Logic.readAndExecuteCommands("add meeting 4pm 14 Oct 2014 to 6pm 14 Oct 2014");
         
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing");
         
         // test the editing of description
         feedback = Logic.readAndExecuteCommands("edit 1 edited description");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         
         assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. edited description\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. edited description\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing");
         
         // test the editing of time for deadline task
         feedback = Logic.readAndExecuteCommands("edit 2 8 October 2013 3pm");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         
         assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. edited description\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2013-10-08 15:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. edited description\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2013-10-08 15:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing");
         
     }
     
@@ -117,13 +117,13 @@ public class LogicTest {
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         
         assertEquals(feedback, MESSAGE_DELETE_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n3. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n3. lalalalala\nTags: None\nStatus: Ongoing");
         
         // testing of delete for multiple tasks
         feedback = Logic.readAndExecuteCommands("delete 1 2");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         assertEquals(feedback, MESSAGE_DELETE_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. lalalalala\nTags: None\nStatus: Ongoing");
 
     }
     
@@ -146,13 +146,13 @@ public class LogicTest {
         feedback = Logic.readAndExecuteCommands("done 2");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         assertEquals(feedback, MESSAGE_DONE_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Done\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Done\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing");
 
         // testing of marking done for multiple tasks
         feedback = Logic.readAndExecuteCommands("done 1 3");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         assertEquals(feedback, MESSAGE_DONE_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Done\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Done\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Done\n\n4. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Done\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Done\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Done\n\n4. lalalalala\nTags: None\nStatus: Ongoing");
         
     }
     
@@ -168,13 +168,13 @@ public class LogicTest {
         feedback = Logic.readAndExecuteCommands("tag 2 thiss");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         assertEquals(feedback, MESSAGE_TAG_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: thiss\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: thiss\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing");
         
         // testing to add another tag
         feedback = Logic.readAndExecuteCommands("tag 2 third");
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
         assertEquals(feedback, MESSAGE_TAG_SUCCESS);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: thiss, third\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: thiss, third\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing");
         
         // testing to add a repeated tag
         feedback = Logic.readAndExecuteCommands("tag 2 third");
@@ -189,7 +189,7 @@ public class LogicTest {
         Logic.readAndExecuteCommands("add lalalalala");
         
         show = Logic.readAndExecuteCommands(COMMAND_SHOW);
-        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing\n");
+        assertEquals(show, "Current tasks:\n1. testing floatingtask\nTags: None\nStatus: Ongoing\n\n2. testing\nDue: 2014-10-13 16:00\nTags: None\nStatus: Ongoing\n\n3. meeting\nStart: 2014-10-14 16:00\nDue: 2014-10-14 18:00\nTags: None\nStatus: Ongoing\n\n4. lalalalala\nTags: None\nStatus: Ongoing");
 
     }
 }
