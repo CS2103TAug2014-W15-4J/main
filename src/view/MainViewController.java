@@ -199,6 +199,7 @@ public class MainViewController extends VBox {
     
     public void fadeFeedback(String feedback) {
     	popMessage.setText(feedback);
+    	assert(feedback!=null);
     	
     	FadeTransition ft = new FadeTransition(Duration.millis(3000), popMessage);
     	ft.setFromValue(1.0);

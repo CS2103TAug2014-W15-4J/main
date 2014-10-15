@@ -33,6 +33,8 @@ public class MainView extends Application {
 //		Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
 		
 		mainViewControl = new MainViewController();
+		assert(mainViewControl!=null);
+		
 		mainViewControl.setText("Enter Command here...");
 		mainViewControl.setDateLabel();
         
