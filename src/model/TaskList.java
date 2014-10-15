@@ -47,7 +47,7 @@ public class TaskList {
         return this.tasks.get(index);
     }
     
-    private void addToList(Task task) {
+    public void addToList(Task task) {
         this.tasks.add(task);
         this.totalTasks++;
     }
