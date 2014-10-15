@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.*?>
 
 <fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
-<VBox prefHeight="620.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="620.0" prefWidth="383.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <GridPane prefHeight="125.0" prefWidth="434.0" style="-fx-background-color: #66ccff;">
+      <GridPane prefHeight="125.0" prefWidth="383.0" style="-fx-background-color: #66ccff;">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -40,13 +40,13 @@
             </Label>
          </children>
       </GridPane>
-      <VBox prefHeight="498.0" prefWidth="434.0">
-         <children>
-            <VBox fx:id="toBeCompleted" prefHeight="490.0" prefWidth="434.0" />
-         </children></VBox>
+      <ScrollPane prefHeight="498.0" prefWidth="383.0" hbarPolicy="AS_NEEDED" hmax="1.0" pannable="false" vbarPolicy="AS_NEEDED">
+         <content>
+            <VBox fx:id="toBeCompleted" prefHeight="490.0" prefWidth="383.0" />
+         </content></ScrollPane>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #55bbee;">
          <children>
-            <TextField fx:id="textField" prefHeight="42.0" prefWidth="434.0" id="textfield" onAction="#onEnter">
+            <TextField fx:id="textField" prefHeight="42.0" prefWidth="383.0" id="textfield" onAction="#onEnter">
             </TextField>
          </children>
       </VBox>

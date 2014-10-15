@@ -40,7 +40,7 @@ public class MainView extends Application {
         
 //      Scene scene = new Scene(root, 434, 620);
 		Scene scene = new Scene(mainViewControl);
-		primaryStage.setWidth(450); 
+		primaryStage.setWidth(383); 
 		primaryStage.setHeight(620); 
 		logForMainView.log(Level.INFO, "Set size of window successfully!");
         
