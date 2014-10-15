@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 import controller.UserInput.CMD;
 import controller.UserInput.RepeatDate;
@@ -32,7 +33,7 @@ public class Parser {
 
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
-
+	private static Logger log = Logger.getLogger("controller.parser");
 	/**
 	 * @param input
 	 * @return UserInput after parsing
@@ -47,6 +48,7 @@ public class Parser {
 		if (inputSplit.length == 2) {
 			content = inputSplit[1].trim();
 		}
+		log.info("parse main function");
 		switch (command.toLowerCase()) {
 		case CMD_EXIT:
 			return parseExit(content);
@@ -91,12 +93,15 @@ public class Parser {
 	 */
 
 	private UserInput parseRedo(String content) {
+		log.info("entering redo command");
 		if (content != null && !content.equals("")) {
+		    
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.REDO);
-		return input;
+		log.info("exit redo command");
+		return input;	
 	}
 
 	/**
@@ -107,11 +112,14 @@ public class Parser {
 	 */
 
 	private UserInput parseUndo(String content) {
+		log.info("entering undo command");
 		if (content != null && !content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.UNDO);
+		log.info("exit undo command");
 		return input;
 	}
 
@@ -123,11 +131,14 @@ public class Parser {
 	 */
 
 	private UserInput parseExit(String content) {
+		log.info("entering exit command");
 		if (content != null && !content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.EXIT);
+		log.info("exit exit command");
 		return input;
 	}
 
@@ -142,11 +153,14 @@ public class Parser {
 	 */
 
 	private UserInput parseHelp(String content) {
+		log.info("entering help command");
 		if (content != null && !content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.HELP);
+		log.info("exit help command");
 		return input;
 	}
 
@@ -158,7 +172,9 @@ public class Parser {
 	 */
 
 	private UserInput parseAdd(String content) {
+		log.info("entering add command");
 		if (content == null || content.equals("")) {
+			
 			return errorCommand();
 		}
 		ParseTime times = new ParseTime();
@@ -189,6 +205,7 @@ public class Parser {
 	 */
 
 	private UserInput parseRepeated(UserInput input, String content) {
+		log.info("repeated task found");
 		ParseTime times = new ParseTime();
 		String description = null;
 		String repeatDate = null;
@@ -250,6 +267,7 @@ public class Parser {
 
 	private UserInput parseDeadline(UserInput input, String content,
 			ParseTime times) {
+		log.info("dealine task found");
 		String description = null;
 		try {
 			description = times.getText().replaceAll(" (?i)by", "").trim();
@@ -285,6 +303,7 @@ public class Parser {
 
 	private UserInput parseFixed(UserInput input, String content,
 			ParseTime times) {
+		log.info("fixed task found");
 		String description = null;
 		try {
 			description = times.getText();
@@ -313,6 +332,7 @@ public class Parser {
 	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
+		log.info("floating task found");
 		if (content != null && !content.equals("")) {
 			input.add(content);
 		}
@@ -354,7 +374,9 @@ public class Parser {
 	 */
 
 	private UserInput parseDelete(String content) {
+		log.info("entering delete command");
 		if (!trueNumberFormat(content)) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -369,6 +391,7 @@ public class Parser {
 		input.addCommand(CMD.DELETE);
 		input.add(null);
 		input.addDeleteID(number);
+		log.info("exit delete command");
 		return input;
 	}
 
@@ -380,12 +403,15 @@ public class Parser {
 	 */
 
 	private UserInput parseClear(String content) {
+		log.info("entering clear command");
 		if (content != null && !content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.CLEAR);
 		input.add(null);
+		log.info("exit command");
 		return input;
 	}
 
@@ -397,7 +423,9 @@ public class Parser {
 	 */
 
 	private UserInput parseEdit(String content) {
+		log.info("entering edit command");
 		if (content == null || content.equals("")) {
+			
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -417,6 +445,7 @@ public class Parser {
 			input.add("");
 			input = parseEditTaskAndTime(input, content);
 		}
+		log.info("exit command");
 		return input;
 	}
 
@@ -461,12 +490,15 @@ public class Parser {
 	 */
 
 	private UserInput parseShow(String content) {
+		log.info("entering show command");
 		if (content != null && !content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.SHOW);
 		input.add(null);
+		log.info("exit command");
 		return input;
 	}
 
@@ -478,12 +510,15 @@ public class Parser {
 	 */
 
 	private UserInput parseSearch(String content) {
+		log.info("entering search command");
 		if (content == null || content.equals("")) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.SEARCH);
 		input.add(content);
+		log.info("exit command");
 		return input;
 	}
 
@@ -495,7 +530,9 @@ public class Parser {
 	 */
 
 	private UserInput parseDone(String content) {
+		log.info("entering done command");
 		if (!trueNumberFormat(content)) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -510,12 +547,14 @@ public class Parser {
 		input.addCommand(CMD.DONE);
 		input.add(null);
 		input.addDoneID(number);
+		log.info("exit command");
 		return input;
 	}
 
 	private UserInput parseTag(String content) {
+		log.info("entering tag command");
 		if (content == null || content.equals("")) {
-
+			
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -532,6 +571,7 @@ public class Parser {
 			input.addCommand(CMD.TAG);
 			input.add(tag);
 		}
+		log.info("exit command");
 		return input;
 	}
 	/**
@@ -541,7 +581,9 @@ public class Parser {
 	 */
 	
 	private UserInput parseUntag(String content) {
+		log.info("entering delete command");
 		if (!trueNumberFormat(content)) {
+			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -556,6 +598,7 @@ public class Parser {
 		input.addCommand(CMD.UNTAG);
 		input.add(null);
 		input.addDeleteID(number);
+		log.info("exit command");
 		return input;
 	}
 
@@ -589,6 +632,7 @@ public class Parser {
 	private UserInput errorCommand() {
 		UserInput input = new UserInput();
 		input.unvalidation();
+		log.info("error command");
 		return input;
 	}
 
