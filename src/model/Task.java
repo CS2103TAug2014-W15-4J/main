@@ -21,11 +21,13 @@ public abstract class Task {
 	protected List<String> tags;
 	protected boolean isDone;
 	protected Type taskType;
+	protected Date addedTime;
 	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
 		this.tags = new ArrayList<String>();
+		this.addedTime = new Date(System.currentTimeMillis());
 	}
 	
 	public void setDescription(String desc) {
