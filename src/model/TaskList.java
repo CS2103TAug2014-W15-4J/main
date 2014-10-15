@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,10 +91,15 @@ public class TaskList {
      * 
      * - CHANGE ONE TO TWO LIST --> Timed and untimed.
      * 
+     * JS wrote:
+     * How about default by Deadline.
+     * If type "display by abc"
+     * Then just output the list, but the internal data structure donesn't change since 
+     * we just create a list for output only?
+     * -> In this case, isDisplayedByAddTime is redundant.
+     * 
      */
-    
-    
-    
+   
     public Task get(int index) {
         return this.tasksTimed.get(index);
     }
@@ -102,14 +109,22 @@ public class TaskList {
         this.totalTasks++;
     }
     
+    /**
+     * Adding a floating task
+     * @param description the description of the task
+     */
     public void addToList(String description) {
     	Task newTask = new FloatingTask(description);
-    	this.tasksTimed.add(newTask);
+    	this.tasksUntimed.add(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A floating task added");
     }
     
-    
+    /**
+     * Add a deadline task
+     * @param description the description of the task
+     * @param time the deadline of the task
+     */
     public void addToList(String description, Date time) {
     	Task newTask = new DeadlineTask(description, time);
     	this.tasksTimed.add(newTask);
@@ -117,6 +132,12 @@ public class TaskList {
         logger.log(Level.INFO, "A deadline task added");
     }
     
+    /**
+     * Add a Repeated Task
+     * @param description the description of the task
+     * @param time the deadline of the task
+     * @param repeatDate the repeat frequency
+     */
     public void addToList(String description, Date time,
                                   RepeatDate repeatDate) {
         Task newTask = new RepeatedTask(description, time, repeatDate);
@@ -125,6 +146,12 @@ public class TaskList {
         logger.log(Level.INFO, "A repeated task added");
     }
     
+	/**
+	 * Add a fixed(timed) task
+	 * @param description the description of the task
+	 * @param startTime the start time of the task
+	 * @param endTime the deadline of the task
+	 */
     public void addToList(String description, Date startTime,
                                   Date endTime) {
         Task newTask = new FixedTask(description, startTime, endTime);
@@ -137,8 +164,9 @@ public class TaskList {
     public void editTaskDescription(int taskIndex, String description) throws TaskInvalidIdException {
         if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
             throw new TaskInvalidIdException("Error index for editing!");
-            
         } else {
+        	// This one!!!!!!!!!
+        	// not really inside the timed task list
             this.tasksTimed.get(taskIndex - 1).setDescription(description);
         }
     }
@@ -147,7 +175,6 @@ public class TaskList {
     public void editTaskDeadline(int taskIndex, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
         if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
             throw new TaskInvalidIdException("Error index for editing!");
-            
         } else {
             this.tasksTimed.get(taskIndex - 1).setDeadline(time);
         }   
@@ -174,9 +201,6 @@ public class TaskList {
     }
      */
     
-    
-    
-    
     public void deleteFromList(List<Integer> taskIndexList) throws TaskInvalidIdException {
         if (taskIndexList.isEmpty()) {
             throw new TaskInvalidIdException("nothing to delete");
@@ -199,6 +223,7 @@ public class TaskList {
     }
     
     public void clearList() {
+    	this.tasksUntimed.clear();
         this.tasksTimed.clear();
         this.totalTasks = 0;
         this.taskFinished = 0;
@@ -301,14 +326,38 @@ public class TaskList {
         }
     }
     
+    public PriorityQueue<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
+    	PriorityQueue<Task> output;
+    	if (isDisplayedByAddTime) {
+    		// using comparator AddedDateComparator
+    		output = new PriorityQueue<Task>(this.count(), new AddedDateComparator());
+    	} else {
+    		// using comparator DeadlineComparator
+    		output = new PriorityQueue<Task>(this.count(), new DeadlineComparator());
+    	}
+		// add all tasks from Timed task list and Untimed task list to the output list
+		output.addAll(tasksTimed);
+		output.addAll(tasksUntimed);
+		return output;
+
+    }
+    
 	public int count() {
         return this.totalTasks;
+    }
+	
+	public int countTimedTask() {
+        return this.tasksTimed.size();
+    }
+	
+	public int countUntimedTask() {
+        return this.tasksUntimed.size();
     }
 	
 	public int countFinished() {
         return this.taskFinished;
     }
-    
+	
     
     @Override
     public String toString() {
@@ -329,7 +378,7 @@ public class TaskList {
     // generate 50 dummy tasks
     public void test() {
         for (int i = 0; i < 50; i++) {
-            this.tasksTimed.add(new FloatingTask("No." + i));
+            this.tasksUntimed.add(new FloatingTask("No." + i));
         }
     }
 
