@@ -109,9 +109,14 @@ public class MainViewController extends VBox {
     	
     	String input = getInput();
     	
-    	if (input.equals("exit")) {
+    	if (input.trim().toLowerCase().equals("exit")) {
     		Stage stage = (Stage) getScene().getWindow();
     		stage.close();
+    	
+    	} else if (input.trim().toLowerCase().equals("show")) {
+    		
+    		displayTaskList.setText(Logic.getDisplayInfo());
+    		
     	} else {
     		
     		// Feedback from Logic
