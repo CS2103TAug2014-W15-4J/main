@@ -42,8 +42,7 @@
       </GridPane>
       <VBox prefHeight="498.0" prefWidth="434.0">
          <children>
-            <VBox fx:id="toBeCompleted" prefHeight="245.0" prefWidth="434.0" />
-            <VBox fx:id="toDo" prefHeight="238.0" prefWidth="434.0" />
+            <VBox fx:id="toBeCompleted" prefHeight="490.0" prefWidth="434.0" />
          </children></VBox>
       <VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="63.0" prefWidth="434.0" style="-fx-padding: 10; -fx-background-color: #55bbee;">
          <children>
