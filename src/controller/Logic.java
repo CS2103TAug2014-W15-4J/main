@@ -11,6 +11,7 @@ import controller.UserInput.RepeatDate;
 import exception.TaskInvalidIdException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
+import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 import model.TaskList;
@@ -40,6 +41,7 @@ public class Logic {
     static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
     static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
     static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+    static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
     
     static String MESSAGE_PROGRAM_REDO = "redo successful.";
     static String MESSAGE_PROGRAM_UNDO = "undo successful.";
@@ -53,6 +55,7 @@ public class Logic {
   
     static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
     static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+    static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
 
     static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
     static String MESSAGE_INVALID_REDO = "No next operation to redo.";
@@ -127,8 +130,8 @@ public class Logic {
 		UserInput userCommand = parser.parse(userInput);
 		
 		log.info("Done parsing. Executing command..");
-		return executeCommand(userCommand);
-		
+
+		return executeCommand(userCommand);		
 	}
     
     /** 
@@ -286,6 +289,9 @@ public class Logic {
     		// call the UI to display the corresponding tasks here eventually
     		return display();
     		
+//    	} else if (userCommand.getCommand() == UserInput.CMD.SHOWTAG) {
+//    	    return displayTasksWithTag(userCommand.getDescription());
+    	    
     	} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
     		return clearTaskList();
 
@@ -541,7 +547,7 @@ public class Logic {
             if (i != listOfTasks.count() - 1) {
     			taskDisplay.append("\n\n");
     		} else {
-    			taskDisplay.append("\n");
+
     		}
     	}
         taskDisplay.append("\nProgress: "+(listOfTasks.count() - listOfTasks.countFinished())+" Unfinished / "+listOfTasks.count()+" Total\n");
@@ -600,6 +606,100 @@ public class Logic {
         } catch (TaskTagException e) {
             return MESSAGE_INVALID_TAG_DELETE;
         }
+    }
+    
+    private static String displayTasksWithTag(String tag) {
+        try {
+            return String .format(MESSAGE_TASKTAG_RETURNED,
+                                  tag,
+                                  displayTasks(getTasksWithTag(tag)));
+            
+        } catch (TaskNoSuchTagException e) {
+            return MESSAGE_INVALID_TAG_NONEXISTENT;
+        }
+    }
+    
+    private static List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
+        
+        List<Task> tasks = listOfTasks.getTasksWithTag(tag);
+        return tasks;   
+    }
+    
+    private static String displayTasks(List<Task> taskList) {
+        
+        int taskListSize = taskList.size();
+        int taskCount = 1;
+        
+        assert (taskListSize != 0);
+        
+        StringBuilder taskDisplay = new StringBuilder();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        
+        while (!taskList.isEmpty()) {
+            Task task = taskList.remove(0);
+            taskListSize--;
+            taskDisplay.append(taskCount + ". " + task.getDescription() + "\n");
+
+            if (task.getType() == Task.Type.DEADLINE) {
+                DeadlineTask deadlineTask = (DeadlineTask) task;
+                taskDisplay.append("Due: " +
+                                   dateFormat.format(deadlineTask.getDeadline()) +
+                                   "\n");
+            }
+            
+            if (task.getType() == Task.Type.FIXED) {
+                FixedTask fixedTask = (FixedTask) task;
+                taskDisplay.append("Start: " +
+                                   dateFormat.format(fixedTask.getStartTime()));
+                taskDisplay.append("\nDue: " +
+                                   dateFormat.format(fixedTask.getDeadline()) +
+                                   "\n");
+            }
+            
+            if (task.getType() == Task.Type.REPEATED) {
+                RepeatedTask repeatedTask = (RepeatedTask) task;
+                taskDisplay.append("Due: " +
+                                   dateFormat.format(repeatedTask.getDeadline()));
+                taskDisplay.append("\nRepeat: " +
+                                   repeatedTask.getRepeatPeriod() + "\n");
+
+            }
+            
+            if (task.getTags().isEmpty()) {
+                taskDisplay.append("Tags: None\n");
+            } else {
+                String tagDisplay = "";
+                List<String> tags = task.getTags();
+                for (int j = 0; j < tags.size(); j++) {
+                    if (j == 0) {
+                        tagDisplay = tags.get(0);
+                    } else {
+                        tagDisplay += ", " + tags.get(j);
+                    }
+                }
+ 
+                taskDisplay.append("Tags: " + tagDisplay + "\n");
+            }
+
+            
+            if (task.getIsDone()) {
+                taskDisplay.append("Status: Done");
+            } else {
+                taskDisplay.append("Status: Ongoing");
+            }
+            
+            if (taskListSize != 0) {
+                taskDisplay.append("\n\n");
+                
+            } else {
+                
+            }
+            
+            taskCount++;
+        }
+        
+        return taskDisplay.toString();
+    
     }
 
     

@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
+import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 
@@ -183,6 +184,16 @@ public class TaskList {
             
         }
         
+    }
+    
+    public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
+        if (tags.containsKey(tag.toLowerCase())) {
+            List<Task> taskListOfTag = tags.get(tag.toLowerCase());
+            return taskListOfTag;
+            
+        } else {
+            throw new TaskNoSuchTagException();
+        }
     }
     
 	public int count() {
