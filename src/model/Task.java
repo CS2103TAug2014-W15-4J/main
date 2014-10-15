@@ -82,6 +82,10 @@ public abstract class Task {
 	    // else exception
 	    
 	    throw new TaskInvalidDateException(); 
+    }	
+	
+	public Date getAddedTime() {
+		return this.addedTime;
     }
 
 	public Date getDoneDate() {
