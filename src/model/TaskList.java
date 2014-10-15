@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import controller.UserInput.RepeatDate;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
@@ -15,7 +18,8 @@ import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 
 public class TaskList {
-    
+    private static Logger logger = Logger.getLogger("TaskList");
+	
     @XStreamAlias("TaskList")
     private ArrayList<Task> tasks;
     @XStreamAlias("TasksCount")
@@ -42,9 +46,40 @@ public class TaskList {
         return this.tasks.get(index);
     }
     
-    public void addToList(Task task) {
+    private void addToList(Task task) {
         this.tasks.add(task);
         this.totalTasks++;
+    }
+    
+    public void addToList(String description) {
+    	Task newTask = new FloatingTask(description);
+    	this.tasks.add(newTask);
+        this.totalTasks++;
+        logger.log(Level.INFO, "A floating task added");
+    }
+    
+    
+    public void addToList(String description, Date time) {
+    	Task newTask = new DeadlineTask(description, time);
+    	this.tasks.add(newTask);
+        this.totalTasks++;
+        logger.log(Level.INFO, "A deadline task added");
+    }
+    
+    public void addToList(String description, Date time,
+                                  RepeatDate repeatDate) {
+        Task newTask = new RepeatedTask(description, time, repeatDate);
+        this.tasks.add(newTask);
+        this.totalTasks++;
+        logger.log(Level.INFO, "A repeated task added");
+    }
+    
+    public void addToList(String description, Date startTime,
+                                  Date endTime) {
+        Task newTask = new FixedTask(description, startTime, endTime);
+        this.tasks.add(newTask);
+        this.totalTasks++;
+        logger.log(Level.INFO, "A fixed task added");
     }
     
     
