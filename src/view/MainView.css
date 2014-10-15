@@ -1,10 +1,10 @@
 .root {
-	-fx-font-family: "Arial Black";
+	-fx-font-family: "Arial";
 }
 
 #textfield {
 	-fx-background-color: white;
-	-fx-font-size: 20px;
+	-fx-font-size: 18px;
 }
 
 #uclear {
@@ -12,12 +12,14 @@
 }
 
 #assert {
-	-fx-font-weight: bold;
 	-fx-label-padding: 0 0 0 13.0;
 }
 
 #date {
-	-fx-font-weight: bold;
 	-fx-label-padding: 0 10.0 0 0;
 }
 
+#toBeCompleted {
+	-fx-padding: 10	10;
+	-fx-font-size: 15px;
+}
