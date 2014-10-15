@@ -23,12 +23,13 @@ public class ParserTest {
 		assertTrue(input.isFloat());
 		assertFalse(input.isDeadline());
 		
-		String test2 = "add go to sleep by tomorrow";
+		String test2 = "add go to sleep tomorrow";
 		input = parser.parse(test2);
 		assertTrue(input.getValid());
 		assertEquals(UserInput.CMD.ADD,input.getCommand());
-		assertTrue(input.isDeadline());
+		assertFalse(input.isDeadline());
 		assertFalse(input.isFloat());
+		assertEquals(input.getDate().size(),1);
 		
 		String test3 = "add go to sleep every 2pm daily";
 		input = parser.parse(test3);

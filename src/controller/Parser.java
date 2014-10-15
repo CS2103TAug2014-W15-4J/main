@@ -33,7 +33,7 @@ public class Parser {
 
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
-	private static Logger log = Logger.getLogger("controller.parser");
+	private static Logger log = Logger.getLogger("controller.Parser");
 	/**
 	 * @param input
 	 * @return UserInput after parsing
@@ -174,7 +174,6 @@ public class Parser {
 	private UserInput parseAdd(String content) {
 		log.info("entering add command");
 		if (content == null || content.equals("")) {
-			
 			return errorCommand();
 		}
 		ParseTime times = new ParseTime();
@@ -188,9 +187,8 @@ public class Parser {
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
-		default: {
+		default: 
 			return parseFixed(input, content, times);
-		}
 		}
 	}
 
@@ -305,6 +303,8 @@ public class Parser {
 			ParseTime times) {
 		log.info("fixed task found");
 		String description = null;
+		if(times.getDates().size()==1)
+			return parseDeadline(input, description, times);
 		try {
 			description = times.getText();
 		} catch (NullPointerException e) {
@@ -316,7 +316,8 @@ public class Parser {
 			}
 		}
 		List<Date> dates = times.getDates();
-		assert dates.size() == 1 || dates.size() == 2;
+		if(dates.size()!=2)
+			return parseFloat(input, content);
 		input.add(description);
 		input.addDate(dates);
 		return input;
@@ -462,9 +463,8 @@ public class Parser {
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
-		default: {
+		default: 
 			return parseFixed(input, content, times);
-		}
 		}
 	}
 
