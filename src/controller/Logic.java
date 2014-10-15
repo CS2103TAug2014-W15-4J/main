@@ -208,7 +208,7 @@ public class Logic {
     		String editCommand = userCommand.getEditCommand();
     		List<Date> dateList = userCommand.getDate();
     		
-    		Task taskToEdit = listOfTasks.get(editID - 1);
+    		Task taskToEdit = listOfTasks.getTask(editID - 1);
     		Task.Type taskType = taskToEdit.getType();
     		
     		assert (desc != null);
@@ -419,10 +419,6 @@ public class Logic {
             } catch (TaskInvalidDateException e) {
                 return MESSAGE_INVALID_DATE;
     	}
-    		
-
-    		
-    	 
     }
     
     private static String editTask(int taskIndex, String desc, Date startDate,
@@ -439,7 +435,6 @@ public class Logic {
         } catch (TaskInvalidDateException e) {
             return MESSAGE_INVALID_DATE;
         }
-        
     }
 
     /*
@@ -459,16 +454,16 @@ public class Logic {
      *  this method will delete the specified task(s) from the file
      */
     private static String deleteTask(List<Integer> taskIndexList) {
-    		
-    		try { 
-    			listOfTasks.deleteFromList(taskIndexList);
-    			return MESSAGE_TASK_DELETED;
-    			
+        
+        try { 
+            listOfTasks.deleteFromList(taskIndexList);
+            return MESSAGE_TASK_DELETED;
+            
         } catch (TaskInvalidIdException e) {
             return MESSAGE_INVALID_TASKID;
-    			
-    		}
-    	}
+            
+        }
+    }
     
     /**
      *  @return feedback that task list is cleared
@@ -494,7 +489,7 @@ public class Logic {
     	taskDisplay.append("Current tasks:\n");
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         for (int i = 0; i < listOfTasks.count(); i++) {
-    		Task task = listOfTasks.get(i);
+    		Task task = listOfTasks.getTask(i);
             taskDisplay.append((i + 1) + ". " + task.getDescription() + "\n");
     		if (task.getType() == Task.Type.DEADLINE) {
     			DeadlineTask deadlineTask = (DeadlineTask) task;

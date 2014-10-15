@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.logging.Level;
@@ -62,8 +61,8 @@ public class TaskList {
     @XStreamAlias("TaskList")
     private List<Task> tasksTimed;
     private List<Task> tasksUntimed;
-    private List<Task> tasksByAddedTime;
-    private boolean isDisplayedByAddTime;
+    private List<Task> tasksToDisplay;
+    private boolean showDisplayList;
     
     @XStreamAlias("TasksCount")
     private int totalTasks;
@@ -77,10 +76,11 @@ public class TaskList {
     public TaskList() {
         this.tasksTimed = new ArrayList<Task>();
         this.tasksUntimed = new ArrayList<Task>();
+        this.tasksToDisplay = new ArrayList<Task>();
         this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
         this.tags = new HashMap<String, List<Task>>();
         this.taskFinished = 0;
-        this.isDisplayedByAddTime = false;
+        this.showDisplayList = false;
     }
     /**
      * 
@@ -98,14 +98,45 @@ public class TaskList {
      * we just create a list for output only?
      * -> In this case, isDisplayedByAddTime is redundant.
      * 
+     * wm: 
+     * -> yeah, was thinking to just create a list for output by added time.
+     * -> since the default is to output by Deadline. 
+     * -> so when user get display (default), we put in the tasks from timed / untimed list into the list for display
+     * -> when user get display (by time added), we create a new list for display.
+     * -> then i set the showDisplayList (renamed from isDisplayedByAddTime) to true. 
+     *    so next time if user never ask to display (default), and showDisplayList is true, then no need create another list.
+     *    
+     * -> although now im thinking maybe the display (default) no need change the list for display ?? 
+     * -> so can just keep 3 lists (2 for the timed/ untimed, 1 for the display by added time), and display accordingly?
+     * 
      */
    
-    public Task get(int index) {
-        return this.tasksTimed.get(index);
+    
+    
+    public Task getTask(int taskIndex) {
+        if (!showDisplayList) {
+            return tasksToDisplay.get(taskIndex);
+            
+        } else {
+            // get edit id from timed/ untimed list
+            if (taskIndex < tasksTimed.size()) {
+                return tasksTimed.get(taskIndex);
+                
+            } else {
+                return tasksUntimed.get(taskIndex - tasksTimed.size());
+            }           
+        }
+
     }
     
     private void addToList(Task task) {
+        
+        if (task instanceof FloatingTask) {
+            this.tasksUntimed.add(task);
+            
+        } else {
         this.tasksTimed.add(task);
+        }
         this.totalTasks++;
     }
     
@@ -165,9 +196,12 @@ public class TaskList {
         if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
             throw new TaskInvalidIdException("Error index for editing!");
         } else {
-        	// This one!!!!!!!!!
-        	// not really inside the timed task list
-            this.tasksTimed.get(taskIndex - 1).setDescription(description);
+        	if (taskIndex <= tasksTimed.size()) {
+        	    this.tasksTimed.get(taskIndex - 1).setDescription(description);
+        	    
+        	} else {
+        	    this.tasksUntimed.get(taskIndex - 1 - tasksTimed.size()).setDescription(description);
+        	}
         }
     }
     
@@ -208,14 +242,21 @@ public class TaskList {
         } else {
             Collections.sort(taskIndexList);
             for (int i = taskIndexList.size() - 1; i >= 0; i--) {
-                int indexToRemove = taskIndexList.get(i);
+                int indexToRemove = taskIndexList.get(i) - 1;
                 
-                if ((indexToRemove > totalTasks) || (indexToRemove <= 0)) {
+                if ((indexToRemove >= totalTasks) || (indexToRemove < 0)) {
                     
                     throw new TaskInvalidIdException("Error index for editing!");
                     
                 } else {
-                    this.tasksTimed.remove(indexToRemove - 1);
+                    Task taskToRemove = getTask(indexToRemove);
+                    
+                    if (indexToRemove < tasksTimed.size()) {
+                        this.tasksTimed.remove(taskToRemove);
+                        
+                    } else {
+                        this.tasksUntimed.remove(taskToRemove);
+                    }    
                     this.totalTasks--;
                 }
             }
@@ -225,6 +266,7 @@ public class TaskList {
     public void clearList() {
     	this.tasksUntimed.clear();
         this.tasksTimed.clear();
+        this.tasksUntimed.clear();
         this.totalTasks = 0;
         this.taskFinished = 0;
     }
@@ -236,13 +278,21 @@ public class TaskList {
             
         } else {
             for (int i = 0; i < taskIndexList.size(); i++) {
-                int taskToMarkDone = taskIndexList.get(i);
+                int taskIndexToMarkDone = taskIndexList.get(i) - 1;
                 
-                if ((taskToMarkDone > totalTasks) || (taskToMarkDone <= 0)) {
+                if ((taskIndexToMarkDone >= totalTasks) || (taskIndexToMarkDone < 0)) {
                     throw new TaskInvalidIdException("Error index for editing!");
                     
                 } else {
-                    Task newRepeatTask = this.tasksTimed.get(taskToMarkDone - 1).markDone();
+                    Task newRepeatTask;
+                    
+                    if (taskIndexToMarkDone < tasksTimed.size()) {
+                        newRepeatTask = this.tasksTimed.get(taskIndexToMarkDone).markDone();
+                        
+                    } else {
+                        newRepeatTask = this.tasksUntimed.get(taskIndexToMarkDone).markDone();
+                    }
+                    
                     this.taskFinished++;
                     if (newRepeatTask != null) {
                         this.addToList(newRepeatTask);
@@ -250,7 +300,6 @@ public class TaskList {
                 }
             }
         }
-        
     }
     
     public void tagTask(int taskIndexToTag, String tag) throws TaskInvalidIdException, TaskTagDuplicateException {
@@ -258,7 +307,8 @@ public class TaskList {
             throw new TaskInvalidIdException();
             
         } else {
-            Task taskToTag = tasksTimed.get(taskIndexToTag - 1);
+            
+            Task taskToTag = getTask(taskIndexToTag - 1);
             taskToTag.addTag(tag);
             
             if (!tags.containsKey(tag.toLowerCase())) {
@@ -280,10 +330,10 @@ public class TaskList {
             throw new TaskInvalidIdException();
             
         } else if (tag.isEmpty()) {
-            untagTaskAll(taskIndexToUntag);
+            untagTaskAll(taskIndexToUntag - 1);
             
         } else {
-            Task taskToTag = tasksTimed.get(taskIndexToUntag - 1);
+            Task taskToTag = getTask(taskIndexToUntag - 1);
             taskToTag.deleteTag(tag);
             
             if (tags.get(tag.toLowerCase()).size() == 1) {
@@ -298,7 +348,7 @@ public class TaskList {
     }
     
     private void untagTaskAll(int taskIndexToUntag) throws TaskTagException {
-        Task taskToUntag = tasksTimed.get(taskIndexToUntag - 1);
+        Task taskToUntag = getTask(taskIndexToUntag);
         List<String> taskTags = taskToUntag.getTags();
         
         if (taskTags.isEmpty()) {
@@ -313,7 +363,6 @@ public class TaskList {
             tags.get(tag.toLowerCase()).remove(taskToUntag);
             taskToUntag.deleteTag(tag);
         }
-        
     }
     
     public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
