@@ -25,6 +25,9 @@ import javafx.util.Duration;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import exception.LabelNotSetProperlyException;
+import exception.LogicNoFeedbackException;
+
 /**
  * Controller for the GUI
  * 
@@ -69,7 +72,7 @@ public class MainViewController extends VBox {
 	int countTasks;
 	String tasks;
 
-    public MainViewController() {
+    public MainViewController() throws LabelNotSetProperlyException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -105,7 +108,7 @@ public class MainViewController extends VBox {
     	return textField.getText();
     }
     
-    public void display() {
+    public void display() throws LogicNoFeedbackException, LabelNotSetProperlyException {
     	
     	String input = getInput();
     	
@@ -121,6 +124,10 @@ public class MainViewController extends VBox {
     		
     		// Feedback from Logic
     		String feedback = Logic.readAndExecuteCommands(input);
+    		
+    		if (feedback == null) {
+    			throw new LogicNoFeedbackException();
+    		}
     
     		logForMainViewController.log(Level.INFO, "Execute command complete!");    		
     		
@@ -153,8 +160,8 @@ public class MainViewController extends VBox {
 		displayTaskList.setText(tasks);
     }
     
-    private void determinePopMessage() {
-		if(countTasks == 0) {
+    private void determinePopMessage() throws LabelNotSetProperlyException {
+		if (countTasks == 0) {
 			popMessage.setText(MESSAGE_NO_TASK);
 			
 			logForMainViewController.log(Level.INFO, "No existing task!");	
@@ -163,11 +170,16 @@ public class MainViewController extends VBox {
 			
 			logForMainViewController.log(Level.INFO, "Load existing task!");
 		}
+		
+		if (popMessage.getText().equals(MESSAGE_NO_TASK) 
+				|| popMessage.getText().equals(String.format(MESSAGE_TASKS_EXIST, countTasks))) {
+			throw new LabelNotSetProperlyException();
+		}
     }
     
     
     @FXML
-    public void onEnter() {
+    public void onEnter() throws LogicNoFeedbackException, LabelNotSetProperlyException {
     	display();
     	textField.setText("");
     }

@@ -2,6 +2,7 @@ package view;
 
 import java.io.IOException;
 
+
 //import javafx.scene.Parent;
 //import javafx.fxml.FXMLLoader;
 import javafx.application.Application;
@@ -10,6 +11,8 @@ import javafx.scene.Scene;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
+import exception.LabelNotSetProperlyException;
 
 /**
  * Main view (GUI) of uClear
@@ -25,7 +28,7 @@ public class MainView extends Application {
 	final static Logger logForMainView = Logger.getLogger(MainView.class.getName()); 
 	
 	@Override
-	public void start(Stage primaryStage) throws IOException {
+	public void start(Stage primaryStage) throws IOException, LabelNotSetProperlyException {
 		
 //		Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
 		
