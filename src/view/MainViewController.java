@@ -8,6 +8,7 @@ import java.util.Calendar;
 
 import model.TaskList;
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
@@ -113,11 +114,11 @@ public class MainViewController extends VBox {
     		stage.close();
     	} else {
     	
-//    		String feedback = Logic.readAndExecuteCommands(input);
-    		Logic.readAndExecuteCommands(input);
-    		logForMainViewController.log(Level.INFO, "Execute command complete!");
-    	
-    		setTaskListView();
+    		String feedback = Logic.readAndExecuteCommands(input);
+    		logForMainViewController.log(Level.INFO, "Execute command complete!");    		
+    		
+    		fadeFeedback(feedback);
+    		setTaskListView(feedback);
     		determinePopMessage();
     		
     		logForMainViewController.log(Level.INFO, "Set the view successfully!");
@@ -126,17 +127,27 @@ public class MainViewController extends VBox {
     	}
     	
     }
-    
-    private void setTaskListView() {
+
+	private void setTaskListView() {
     	taskList = Logic.getTaskList();
 		countTasks = taskList.count();
 		tasks = taskList.toString();
 	
 		displayTaskList.setText(tasks);
     }
+	
+	private void setTaskListView(String feedback) {
+    	taskList = Logic.getTaskList();
+		countTasks = taskList.count();
+		tasks = taskList.toString();
+		
+		tasks = tasks + "\n" + feedback;
+	
+		displayTaskList.setText(tasks);
+    }
     
     private void determinePopMessage() {
-		if(tasks.equals("")) {
+		if(countTasks == 0) {
 			popMessage.setText(MESSAGE_NO_TASK);
 			
 			logForMainViewController.log(Level.INFO, "No existing task!");	
@@ -165,6 +176,17 @@ public class MainViewController extends VBox {
 
     public StringProperty textProperty() {
         return textField.textProperty();
+    }
+    
+    public void fadeFeedback(String feedback) {
+    	popMessage.setText(feedback);
+    	
+    	FadeTransition ft = new FadeTransition(Duration.millis(3000), popMessage);
+    	ft.setFromValue(1.0);
+    	ft.setToValue(0.1);
+    	ft.setCycleCount(2);
+    	ft.setAutoReverse(true);
+    	ft.play();
     }
     
 }
