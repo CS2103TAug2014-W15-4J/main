@@ -491,13 +491,13 @@ public class Parser {
 
 	private UserInput parseShow(String content) {
 		log.info("entering show command");
-		if (content != null && !content.equals("")) {
-			
-			return errorCommand();
-		}
 		UserInput input = new UserInput();
+		if (content != null && !content.equals("")) {
+			input.addShow("all");
+		}
 		input.addCommand(CMD.SHOW);
 		input.add(null);
+		input.addShow(content);
 		log.info("exit command");
 		return input;
 	}
@@ -512,7 +512,6 @@ public class Parser {
 	private UserInput parseSearch(String content) {
 		log.info("entering search command");
 		if (content == null || content.equals("")) {
-			
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
