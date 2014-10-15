@@ -114,7 +114,7 @@ public class TaskList {
     
     
     public Task getTask(int taskIndex) {
-        if (!showDisplayList) {
+        if (showDisplayList) {
             return tasksToDisplay.get(taskIndex);
             
         } else {

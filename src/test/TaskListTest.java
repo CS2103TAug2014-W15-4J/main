@@ -7,12 +7,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-import model.FixedTask;
-import model.FloatingTask;
 import model.Task;
 import model.TaskList;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import exception.TaskInvalidDateException;
@@ -45,6 +42,7 @@ public class TaskListTest {
 		} catch (IndexOutOfBoundsException e) {
 			System.out.println(e.getMessage());
 		}
+		System.out.println(tasks.count());
 		assertEquals(49, tasks.count());
 		
 		//delete multiple task
@@ -70,7 +68,7 @@ public class TaskListTest {
 		// editing floating task
 		tasks.addToList("lowercase");
 		tasks.editTaskDescription(1, "UPPERCASE");
-		assertEquals("UPPERCASE", tasks.get(0).getDescription());
+		assertEquals("UPPERCASE", tasks.getTask(0).getDescription());
 		
 		tasks.clearList();
 		// editing floating task
@@ -78,8 +76,11 @@ public class TaskListTest {
 		Date dateB = new Date(200);
 		Date dateC = new Date(300);
 		tasks.addToList("lowercase", dateA, dateB);
-		tasks.editTaskStartDate(1, dateC);
-		assertEquals(dateC, tasks.get(0).getDeadline());
+	      System.out.println("ddddd  " + tasks.getTask(0).getDeadline().getTime());
+		tasks.editTaskDeadline(1, dateC);
+		System.out.println("dateC  " + dateC.getTime());
+		System.out.println("ddddd  " + tasks.getTask(0).getDeadline().getTime());
+		assertEquals(dateC, tasks.getTask(0).getDeadline());
 	}
 	
 	@Test
