@@ -113,6 +113,10 @@ public class Logic {
     public static void saveTaskList() {
     	storage.save(listOfTasks);
     }
+    
+    public static String getDisplayInfo() {
+    	return display();
+    }
 	
 	/** 
 	 *  @param userInput
