@@ -171,8 +171,8 @@ public class MainViewController extends VBox {
 			logForMainViewController.log(Level.INFO, "Load existing task!");
 		}
 		
-		if (popMessage.getText().equals(MESSAGE_NO_TASK) 
-				|| popMessage.getText().equals(String.format(MESSAGE_TASKS_EXIST, countTasks))) {
+		if (!popMessage.getText().equals(MESSAGE_NO_TASK) 
+				&& !popMessage.getText().equals(String.format(MESSAGE_TASKS_EXIST, countTasks))) {
 			throw new LabelNotSetProperlyException();
 		}
     }
