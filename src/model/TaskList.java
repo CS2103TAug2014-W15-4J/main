@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,41 @@ import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 
 public class TaskList {
+	/**
+	 * This Comparator is used in outputting task list order by deadline
+	 * 
+	 * @author Jiang Sheng
+	 *
+	 */
+	static class DeadlineComparator implements Comparator<Task> {
+		
+		@Override
+		public int compare(Task o1, Task o2) {
+			try {
+				return o1.getDeadline().compareTo(o2.getDeadline());
+			} catch (TaskInvalidDateException e) {
+				logger.log(Level.WARNING, "Error comparing deadline.");
+			}
+			return 0;
+		}
+		
+	}
+	
+	/**
+	 * This Comparator is used in outputting task list order by added time
+	 * 
+	 * @author Jiang Sheng
+	 *
+	 */
+	static class AddedDateComparator implements Comparator<Task> {
+
+		@Override
+		public int compare(Task o1, Task o2) {
+				return o1.getAddedTime().compareTo(o2.getAddedTime());
+		}
+		
+	}
+	
     private static Logger logger = Logger.getLogger("TaskList");
 	
     @XStreamAlias("TaskList")
