@@ -42,7 +42,7 @@ public class MainViewController extends VBox {
 	
 	final static Logger logForMainViewController = Logger.getLogger(MainViewController.class.getName());
 	
-	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {

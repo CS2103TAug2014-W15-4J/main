@@ -33,14 +33,14 @@
                   <Font size="17.0" />
                </font>
                   </Label>
-            <Label fx:id="date" alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="212.0" text="Date" textFill="WHITE" GridPane.columnIndex="1">
+            <Label fx:id="date" alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="280.0" text="Date" textFill="WHITE" GridPane.columnIndex="1">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
          </children>
       </GridPane>
-      <ScrollPane prefHeight="498.0" prefWidth="383.0" hbarPolicy="AS_NEEDED" hmax="1.0" pannable="false" vbarPolicy="AS_NEEDED">
+      <ScrollPane fitToWidth="true" prefHeight="498.0" prefWidth="383.0" hbarPolicy="AS_NEEDED" hmax="1.0" pannable="false" vbarPolicy="AS_NEEDED">
          <content>
             <VBox fx:id="toBeCompleted" prefHeight="490.0" prefWidth="383.0" />
          </content></ScrollPane>
