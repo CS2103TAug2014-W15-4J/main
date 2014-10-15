@@ -20,12 +20,18 @@ public class TaskList {
     private ArrayList<Task> tasks;
     @XStreamAlias("TasksCount")
     private int totalTasks;
+    @XStreamAlias("Tags")
     private HashMap<String, List<Task>> tags;
+    
+    // count the total number of tasks finished.
+    @XStreamAlias("TotalTaskFinished")
+    private int taskFinished;
     
     public TaskList() {
         this.tasks = new ArrayList<Task>();
         this.totalTasks = this.tasks.size();
         this.tags = new HashMap<String, List<Task>>();
+        this.taskFinished = 0;
     }
     
     public ArrayList<Task> getList() {
@@ -109,6 +115,7 @@ public class TaskList {
     public void clearList() {
         this.tasks.clear();
         this.totalTasks = 0;
+        this.taskFinished = 0;
     }
     
     public void markTaskDone(List<Integer> taskIndexList) throws TaskDoneException, TaskInvalidIdException {
@@ -125,6 +132,7 @@ public class TaskList {
                     
                 } else {
                     Task newRepeatTask = this.tasks.get(taskToMarkDone - 1).markDone();
+                    this.taskFinished++;
                     if (newRepeatTask != null) {
                         this.addToList(newRepeatTask);
                     }
@@ -179,6 +187,10 @@ public class TaskList {
     
 	public int count() {
         return this.totalTasks;
+    }
+	
+	public int countFinished() {
+        return this.taskFinished;
     }
     
     

@@ -544,6 +544,7 @@ public class Logic {
     			taskDisplay.append("\n");
     		}
     	}
+        taskDisplay.append("\nProgress: "+(listOfTasks.count() - listOfTasks.countFinished())+" Unfinished / "+listOfTasks.count()+" Total\n");
     	
     	return taskDisplay.toString();
     }
