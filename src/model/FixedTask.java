@@ -2,8 +2,6 @@ package model;
 
 import java.util.Date;
 
-import model.Task.Type;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 public class FixedTask extends Task {
@@ -35,6 +33,11 @@ public class FixedTask extends Task {
 	
 	public void setDeadline(Date endtime) {
 		this.endTime = endtime;
+	}
+	
+	@Override
+	public String toString() {
+		return this.description + " Start: "+this.startTime + " End: "+endTime;
 	}
 
 }

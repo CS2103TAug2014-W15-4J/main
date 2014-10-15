@@ -84,5 +84,9 @@ public class RepeatedTask extends Task {
 			throw new TaskDoneException();
 		}
     }
+	@Override
+	public String toString() {
+		return this.description +" Deadline: " + this.deadline + " Repeat: " + this.repeatPeriod;
+	}
 
 }

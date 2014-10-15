@@ -7,4 +7,11 @@ public class FloatingTask extends Task {
 		this.taskType = Type.FLOAT;
 	}
 
+	@Override
+	public String toString() {
+		return this.description;
+	}
+	
+	
+
 }

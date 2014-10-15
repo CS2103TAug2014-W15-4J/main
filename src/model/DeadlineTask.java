@@ -23,4 +23,9 @@ public class DeadlineTask extends Task {
 		deadline = dl;
 	}
 
+	@Override
+	public String toString() {
+		return this.description + " Deadline: "+this.deadline;
+	}
+	
 }
