@@ -208,7 +208,7 @@ public class Logic {
     		String editCommand = userCommand.getEditCommand();
     		List<Date> dateList = userCommand.getDate();
     		
-    		Task taskToEdit = listOfTasks.get(editID-1);
+    		Task taskToEdit = listOfTasks.get(editID - 1);
     		Task.Type taskType = taskToEdit.getType();
     		
     		assert (desc != null);

@@ -22,7 +22,11 @@ public class TaskList {
     private static Logger logger = Logger.getLogger("TaskList");
 	
     @XStreamAlias("TaskList")
-    private ArrayList<Task> tasks;
+    private List<Task> tasksTimed;
+    private List<Task> tasksUntimed;
+    private List<Task> tasksByAddedTime;
+    private boolean isDisplayedByAddTime;
+    
     @XStreamAlias("TasksCount")
     private int totalTasks;
     @XStreamAlias("Tags")
@@ -33,28 +37,38 @@ public class TaskList {
     private int taskFinished;
     
     public TaskList() {
-        this.tasks = new ArrayList<Task>();
-        this.totalTasks = this.tasks.size();
+        this.tasksTimed = new ArrayList<Task>();
+        this.tasksUntimed = new ArrayList<Task>();
+        this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
         this.tags = new HashMap<String, List<Task>>();
         this.taskFinished = 0;
+        this.isDisplayedByAddTime = false;
     }
+    /**
+     * 
+     * things to change:
+     * - PQ for display by added time
+     * - by default: sorted by deadline
+     * - dependencies between logic and tasklist.
+     * 
+     * - CHANGE ONE TO TWO LIST --> Timed and untimed.
+     * 
+     */
     
-    public ArrayList<Task> getList() {
-        return this.tasks;
-    }
+    
     
     public Task get(int index) {
-        return this.tasks.get(index);
+        return this.tasksTimed.get(index);
     }
     
     private void addToList(Task task) {
-        this.tasks.add(task);
+        this.tasksTimed.add(task);
         this.totalTasks++;
     }
     
     public void addToList(String description) {
     	Task newTask = new FloatingTask(description);
-    	this.tasks.add(newTask);
+    	this.tasksTimed.add(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A floating task added");
     }
@@ -62,7 +76,7 @@ public class TaskList {
     
     public void addToList(String description, Date time) {
     	Task newTask = new DeadlineTask(description, time);
-    	this.tasks.add(newTask);
+    	this.tasksTimed.add(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A deadline task added");
     }
@@ -70,7 +84,7 @@ public class TaskList {
     public void addToList(String description, Date time,
                                   RepeatDate repeatDate) {
         Task newTask = new RepeatedTask(description, time, repeatDate);
-        this.tasks.add(newTask);
+        this.tasksTimed.add(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A repeated task added");
     }
@@ -78,7 +92,7 @@ public class TaskList {
     public void addToList(String description, Date startTime,
                                   Date endTime) {
         Task newTask = new FixedTask(description, startTime, endTime);
-        this.tasks.add(newTask);
+        this.tasksTimed.add(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A fixed task added");
     }
@@ -89,7 +103,7 @@ public class TaskList {
             throw new TaskInvalidIdException("Error index for editing!");
             
         } else {
-            this.tasks.get(taskIndex - 1).setDescription(description);
+            this.tasksTimed.get(taskIndex - 1).setDescription(description);
         }
     }
     
@@ -99,7 +113,7 @@ public class TaskList {
             throw new TaskInvalidIdException("Error index for editing!");
             
         } else {
-            this.tasks.get(taskIndex - 1).setDeadline(time);
+            this.tasksTimed.get(taskIndex - 1).setDeadline(time);
         }   
     }
     
@@ -108,7 +122,7 @@ public class TaskList {
             throw new TaskInvalidIdException("Error index for editing!");
             
         } else {
-            this.tasks.get(taskIndex - 1).setStartTime(startDate);
+            this.tasksTimed.get(taskIndex - 1).setStartTime(startDate);
         }
         
     }
@@ -141,7 +155,7 @@ public class TaskList {
                     throw new TaskInvalidIdException("Error index for editing!");
                     
                 } else {
-                    this.tasks.remove(indexToRemove - 1);
+                    this.tasksTimed.remove(indexToRemove - 1);
                     this.totalTasks--;
                 }
             }
@@ -149,7 +163,7 @@ public class TaskList {
     }
     
     public void clearList() {
-        this.tasks.clear();
+        this.tasksTimed.clear();
         this.totalTasks = 0;
         this.taskFinished = 0;
     }
@@ -167,7 +181,7 @@ public class TaskList {
                     throw new TaskInvalidIdException("Error index for editing!");
                     
                 } else {
-                    Task newRepeatTask = this.tasks.get(taskToMarkDone - 1).markDone();
+                    Task newRepeatTask = this.tasksTimed.get(taskToMarkDone - 1).markDone();
                     this.taskFinished++;
                     if (newRepeatTask != null) {
                         this.addToList(newRepeatTask);
@@ -183,7 +197,7 @@ public class TaskList {
             throw new TaskInvalidIdException();
             
         } else {
-            Task taskToTag = tasks.get(taskIndexToTag - 1);
+            Task taskToTag = tasksTimed.get(taskIndexToTag - 1);
             taskToTag.addTag(tag);
             
             if (!tags.containsKey(tag.toLowerCase())) {
@@ -208,7 +222,7 @@ public class TaskList {
             untagTaskAll(taskIndexToUntag);
             
         } else {
-            Task taskToTag = tasks.get(taskIndexToUntag - 1);
+            Task taskToTag = tasksTimed.get(taskIndexToUntag - 1);
             taskToTag.deleteTag(tag);
             
             if (tags.get(tag.toLowerCase()).size() == 1) {
@@ -223,7 +237,7 @@ public class TaskList {
     }
     
     private void untagTaskAll(int taskIndexToUntag) throws TaskTagException {
-        Task taskToUntag = tasks.get(taskIndexToUntag - 1);
+        Task taskToUntag = tasksTimed.get(taskIndexToUntag - 1);
         List<String> taskTags = taskToUntag.getTags();
         
         if (taskTags.isEmpty()) {
@@ -264,7 +278,7 @@ public class TaskList {
     public String toString() {
         String output = "";
         int i = 1;
-        for (Task task : this.tasks) {
+        for (Task task : this.tasksTimed) {
             output += i;
             output += ": ";
             output += task.getDescription();
@@ -279,7 +293,7 @@ public class TaskList {
     // generate 50 dummy tasks
     public void test() {
         for (int i = 0; i < 50; i++) {
-            this.tasks.add(new FloatingTask("No." + i));
+            this.tasksTimed.add(new FloatingTask("No." + i));
         }
     }
 
