@@ -16,7 +16,6 @@ import exception.TaskTagException;
 import model.TaskList;
 import model.Task;
 import model.DeadlineTask;
-import model.FloatingTask;
 import model.RepeatedTask;
 import model.FixedTask;
 
@@ -326,30 +325,25 @@ public class Logic {
      *  (floating, deadline, repeated, fixed tasks respectively)
      */
     private static String addTask(String description) {
-    	Task newTask = new FloatingTask(description);
-    	listOfTasks.addToList(newTask);
+    	listOfTasks.addToList(description);
     	return MESSAGE_TASK_ADDED;
     }
     
     
     private static String addTask(String description, Date time) {
-    	Task newTask = new DeadlineTask(description, time);
-    	listOfTasks.addToList(newTask);
+    	listOfTasks.addToList(description, time);
     	return MESSAGE_TASK_ADDED;
     }
     
     private static String addTask(String description, Date time,
                                   RepeatDate repeatDate) {
-        
-        Task newTask = new RepeatedTask(description, time, repeatDate);
-        listOfTasks.addToList(newTask);
+        listOfTasks.addToList(description, time, repeatDate);
         return MESSAGE_TASK_ADDED;
     }
     
     private static String addTask(String description, Date startTime,
                                   Date endTime) {
-        Task newTask = new FixedTask(description, startTime, endTime);
-        listOfTasks.addToList(newTask);
+        listOfTasks.addToList(description, startTime, endTime);
         return MESSAGE_TASK_ADDED;
     }
     
