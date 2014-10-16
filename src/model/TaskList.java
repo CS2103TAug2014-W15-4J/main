@@ -56,6 +56,28 @@ public class TaskList {
 		
 	}
 	
+	static class SortedArrayList extends ArrayList<Task> {
+	    
+	    Comparator<Task> comparator;
+	    public SortedArrayList(Comparator<Task> c) {
+	        this.comparator = c;
+	        
+	    }
+	    
+	    @Override
+	    public boolean add(Task task) {
+	        for (int i=0; i<this.size(); i++) {
+	            int index = Collections.binarySearch(this, task, this.comparator);
+	            if (index < 0) {
+	                index = -(index + 1);
+	            }
+	            super.add(index, task);
+	        }
+            return true;
+	        
+	    }
+	}
+	
     private static Logger logger = Logger.getLogger("TaskList");
 	
     @XStreamAlias("TaskList")
@@ -63,7 +85,7 @@ public class TaskList {
     private List<Task> tasksUntimed;
     private List<Task> tasksToDisplay;
     private boolean showDisplayList;
-    
+
     @XStreamAlias("TasksCount")
     private int totalTasks;
     @XStreamAlias("Tags")
@@ -74,8 +96,8 @@ public class TaskList {
     private int taskFinished;
     
     public TaskList() {
-        this.tasksTimed = new ArrayList<Task>();
-        this.tasksUntimed = new ArrayList<Task>();
+        this.tasksTimed = new SortedArrayList(new DeadlineComparator());
+        this.tasksUntimed = new SortedArrayList(new AddedDateComparator());
         this.tasksToDisplay = new ArrayList<Task>();
         this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
         this.tags = new HashMap<String, List<Task>>();
