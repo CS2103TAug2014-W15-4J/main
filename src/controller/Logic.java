@@ -353,8 +353,13 @@ public class Logic {
     
     private static String addTask(String description, Date startTime,
                                   Date endTime) {
-        listOfTasks.addToList(description, startTime, endTime);
-        return MESSAGE_TASK_ADDED;
+        try {
+            listOfTasks.addToList(description, startTime, endTime);
+            return MESSAGE_TASK_ADDED;
+        } catch (TaskInvalidDateException e) {
+            return e.getMessage();
+        }
+
     }
     
     

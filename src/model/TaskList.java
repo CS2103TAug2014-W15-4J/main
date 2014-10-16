@@ -204,13 +204,21 @@ public class TaskList {
 	 * @param description the description of the task
 	 * @param startTime the start time of the task
 	 * @param endTime the deadline of the task
+	 * @throws TaskInvalidDateException 
 	 */
-    public void addToList(String description, Date startTime,
-                                  Date endTime) {
+    public void addToList(String description, Date startTime, 
+                          Date endTime) throws TaskInvalidDateException {
         Task newTask = new FixedTask(description, startTime, endTime);
-        this.tasksTimed.add(newTask);
-        this.totalTasks++;
-        logger.log(Level.INFO, "A fixed task added");
+        
+        if (!startTime.before(endTime)) {
+            throw new TaskInvalidDateException("Invalid: Start date/time cannot be after end date/time.");
+            
+        } else {
+        
+            this.tasksTimed.add(newTask);
+            this.totalTasks++;
+            logger.log(Level.INFO, "A fixed task added");
+        }
     }
     
     
