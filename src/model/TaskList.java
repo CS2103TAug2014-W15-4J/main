@@ -58,9 +58,10 @@ public class TaskList {
 	
     private static Logger logger = Logger.getLogger("TaskList");
 	
-    @XStreamAlias("TimedTasks")
+    @XStreamAlias("TaskListTimed")
     private List<Task> tasksTimed;
-    @XStreamAlias("UntimedTasks")
+    @XStreamAlias("TaskListUntimed")
+    
     private List<Task> tasksUntimed;
     private List<Task> tasksToDisplay;
     @XStreamAlias("showDisplay")
