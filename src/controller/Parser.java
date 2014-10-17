@@ -214,20 +214,25 @@ public class Parser {
 		} catch (NullPointerException e1) {
 			return parseFloat(input, content);
 		}
-		switch (repeatDate.toLowerCase()) {
-		case "daily":
+		switch (repeatDate.trim().toLowerCase()) {
+		case "daily":{
 			input.addRepeatDate(RepeatDate.DAILY);
+			tempContent = content.replaceAll("(?i)daily", "").trim();
 			break;
-		case "weekly":
+		}
+		case "weekly":{
 			input.addRepeatDate(RepeatDate.WEEKLY);
+			tempContent = content.replaceAll("(?i)weekly", "").trim();
 			break;
-		case "monthly":
+		}
+		case "monthly":{
 			input.addRepeatDate(RepeatDate.MONTHLY);
+			tempContent = content.replaceAll("(?i)monthly", "").trim();
 			break;
+		}
 		default:
 			return parseFloat(input, content);
 		}
-		tempContent = content.replaceAll("(?i)daily|weekly|monthly", "").trim();
 		times.parseTime(tempContent);
 		try {
 			description = times.getText().replaceAll(" (?i)every", "").trim();
@@ -355,7 +360,17 @@ public class Parser {
 		if (matcher.matches()) {
 			return TaskType.DEADLINE;
 		}
-		pattern = Pattern.compile(".+ (?i)every .+ daily|weekly|monthly(?-i)");
+		pattern = Pattern.compile(".+ (?i)every .+ daily(?-i)");
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.REPEAT;
+		}
+		pattern = Pattern.compile(".+ (?i)every .+ weekly(?-i)");
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.REPEAT;
+		}
+		pattern = Pattern.compile(".+ (?i)every .+ monthly(?-i)");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
