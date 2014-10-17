@@ -162,7 +162,7 @@ public class TaskList {
      */
     public void addToList(String description, Date time) {
     	Task newTask = new DeadlineTask(description, time);
-    	this.tasksTimed.add(newTask);
+    	((SortedArrayList) this.tasksTimed).addOrder(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A deadline task added");
     }
@@ -176,7 +176,7 @@ public class TaskList {
     public void addToList(String description, Date time,
                                   RepeatDate repeatDate) {
         Task newTask = new RepeatedTask(description, time, repeatDate);
-        this.tasksTimed.add(newTask);
+        ((SortedArrayList) this.tasksTimed).addOrder(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A repeated task added");
     }
@@ -197,7 +197,7 @@ public class TaskList {
             
         } else {
         
-            this.tasksTimed.add(newTask);
+            ((SortedArrayList) this.tasksTimed).addOrder(newTask);
             this.totalTasks++;
             logger.log(Level.INFO, "A fixed task added");
         }
