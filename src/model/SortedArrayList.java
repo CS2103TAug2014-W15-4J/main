@@ -17,13 +17,17 @@ public class SortedArrayList extends ArrayList<Task> {
     }
     
     public boolean addOrder(Task task) {
-        for (int i=0; i<this.size(); i++) {
+        if (this.size() == 0) {
+            super.add(0, task);
+        } else {
             int index = Collections.binarySearch(this, task, this.comparator);
             if (index < 0) {
                 index = -(index + 1);
             }
             super.add(index, task);
+            
         }
+        
         return true;
        
     }
