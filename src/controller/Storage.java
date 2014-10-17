@@ -15,6 +15,7 @@ import model.DeadlineTask;
 import model.FixedTask;
 import model.FloatingTask;
 import model.RepeatedTask;
+import model.SortedArrayList;
 import model.TaskList;
 
 
@@ -34,6 +35,7 @@ public class Storage {
 	private static final String ALIAS_CLASS_DEADLINE_TASK = "DeadlineTask";
 	private static final String ALIAS_CLASS_REPEATED_TASK = "RepeatedTask";
 	private static final String ALIAS_CLASS_TASKLIST = "CompleteList";
+	private static final String ALIAS_CLASS_SORTED_LIST = "SortedList";
 
 
 	private static final String TASK_FILE = "uClear.xml";
@@ -154,11 +156,14 @@ public class Storage {
 		this.xstream.alias(ALIAS_CLASS_FIXED_TASK, FixedTask.class);
 		this.xstream.alias(ALIAS_CLASS_DEADLINE_TASK, DeadlineTask.class);
 		this.xstream.alias(ALIAS_CLASS_REPEATED_TASK, RepeatedTask.class);
+		this.xstream.alias(ALIAS_CLASS_SORTED_LIST, SortedArrayList.class);
+		
 		this.xstream.processAnnotations(TaskList.class);
 		this.xstream.processAnnotations(FloatingTask.class);
 		this.xstream.processAnnotations(FixedTask.class);
 		this.xstream.processAnnotations(DeadlineTask.class);
 		this.xstream.processAnnotations(RepeatedTask.class);
+		this.xstream.processAnnotations(SortedArrayList.class);
 
 		File inputFile = new File(filename);
 		try {

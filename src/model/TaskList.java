@@ -56,28 +56,6 @@ public class TaskList {
 		
 	}
 	
-	static class SortedArrayList extends ArrayList<Task> {
-	    
-	    Comparator<Task> comparator;
-	    public SortedArrayList(Comparator<Task> c) {
-	        this.comparator = c;
-	        
-	    }
-	    
-	    @Override
-	    public boolean add(Task task) {
-	        for (int i=0; i<this.size(); i++) {
-	            int index = Collections.binarySearch(this, task, this.comparator);
-	            if (index < 0) {
-	                index = -(index + 1);
-	            }
-	            super.add(index, task);
-	        }
-            return true;
-	        
-	    }
-	}
-	
     private static Logger logger = Logger.getLogger("TaskList");
 	
     @XStreamAlias("TimedTasks")
@@ -421,7 +399,6 @@ public class TaskList {
 		output.addAll(tasksTimed);
 		output.addAll(tasksUntimed);
 		return output;
-
     }
     
 	public int count() {
