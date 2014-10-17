@@ -14,6 +14,7 @@ public class RepeatedTask extends Task {
 	@XStreamAlias("Period")
 	private RepeatDate repeatPeriod;
 	private String period;
+	@XStreamAlias("DateDone")
 	private Date doneDate;
 
 	public static String[] namesOfDays =  {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};

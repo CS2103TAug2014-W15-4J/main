@@ -58,10 +58,12 @@ public class TaskList {
 	
     private static Logger logger = Logger.getLogger("TaskList");
 	
-    @XStreamAlias("TaskList")
+    @XStreamAlias("TimedTasks")
     private List<Task> tasksTimed;
+    @XStreamAlias("UntimedTasks")
     private List<Task> tasksUntimed;
     private List<Task> tasksToDisplay;
+    @XStreamAlias("showDisplay")
     private boolean showDisplayList;
     
     @XStreamAlias("TasksCount")
@@ -130,7 +132,8 @@ public class TaskList {
     }
     
     private void addToList(Task task) {
-        
+        Comparator<Task> a = new AddedDateComparator();
+        a.compare(new FloatingTask("haha"), new FloatingTask("hehe"));
         if (task instanceof FloatingTask) {
             this.tasksUntimed.add(task);
             
