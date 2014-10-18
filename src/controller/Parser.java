@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import controller.UserInput.CMD;
@@ -42,6 +43,9 @@ public class Parser {
 	 **/
 
 	public UserInput parse(String input) {
+		// let the logger only display warning log message.
+		log.setLevel(Level.WARNING);
+		
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;

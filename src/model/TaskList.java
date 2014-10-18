@@ -77,6 +77,9 @@ public class TaskList {
     private int taskFinished;
     
     public TaskList() {
+		// let the logger only display warning log message.
+		logger.setLevel(Level.WARNING);
+		
         this.tasksTimed = new SortedArrayList(new DeadlineComparator());
         this.tasksUntimed = new SortedArrayList(new AddedDateComparator());
         this.tasksToDisplay = new ArrayList<Task>();
@@ -85,37 +88,7 @@ public class TaskList {
         this.taskFinished = 0;
         this.showDisplayList = false;
     }
-    /**
-     * 
-     * things to change:
-     * - PQ for display by added time
-     * - by default: sorted by deadline
-     * - dependencies between logic and tasklist.
-     * 
-     * - CHANGE ONE TO TWO LIST --> Timed and untimed.
-     * 
-     * JS wrote:
-     * How about default by Deadline.
-     * If type "display by abc"
-     * Then just output the list, but the internal data structure donesn't change since 
-     * we just create a list for output only?
-     * -> In this case, isDisplayedByAddTime is redundant.
-     * 
-     * wm: 
-     * -> yeah, was thinking to just create a list for output by added time.
-     * -> since the default is to output by Deadline. 
-     * -> so when user get display (default), we put in the tasks from timed / untimed list into the list for display
-     * -> when user get display (by time added), we create a new list for display.
-     * -> then i set the showDisplayList (renamed from isDisplayedByAddTime) to true. 
-     *    so next time if user never ask to display (default), and showDisplayList is true, then no need create another list.
-     *    
-     * -> although now im thinking maybe the display (default) no need change the list for display ?? 
-     * -> so can just keep 3 lists (2 for the timed/ untimed, 1 for the display by added time), and display accordingly?
-     * 
-     */
-   
-    
-    
+
     public Task getTask(int taskIndex) {
         if (showDisplayList) {
             return tasksToDisplay.get(taskIndex);

@@ -149,6 +149,8 @@ public class Storage {
 	 * @param filename the name of the task list to be stored
 	 */
 	private void initilize(String filename) {
+		// let the logger only display warning log message.
+		logger.setLevel(Level.WARNING);
 		
 		this.xstream = new XStream();
 		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);

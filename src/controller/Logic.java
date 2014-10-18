@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import controller.UserInput.RepeatDate;
@@ -79,7 +80,9 @@ public class Logic {
 	static Logger log = Logger.getLogger("controller.logic");
 	
     public static void main(String[] args) {
-        
+		// let the logger only display warning log message.
+		log.setLevel(Level.WARNING);
+		
         // get existing tasks from storage
         listOfTasks = storage.load();
 //        listOfTasks = new TaskList();
