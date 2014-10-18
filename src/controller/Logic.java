@@ -492,69 +492,32 @@ public class Logic {
     		// empty task list
     		return MESSAGE_EMPTY_TASK_LIST;
     	}
-    	
+
     	StringBuilder taskDisplay = new StringBuilder();
     	taskDisplay.append("Current tasks:\n");
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         for (int i = 0; i < listOfTasks.count(); i++) {
     		Task task = listOfTasks.getTask(i);
-            taskDisplay.append((i + 1) + ". " + task.getDescription() + "\n");
-    		if (task.getType() == Task.Type.DEADLINE) {
-    			DeadlineTask deadlineTask = (DeadlineTask) task;
-                taskDisplay.append("Due: " +
-                                   dateFormat.format(deadlineTask.getDeadline()) +
-                                   "\n");
-    		}
-    		if (task.getType() == Task.Type.FIXED) {
-    			FixedTask fixedTask = (FixedTask) task;
-                taskDisplay.append("Start: " +
-                                   dateFormat.format(fixedTask.getStartTime()));
-                taskDisplay.append("\nDue: " +
-                                   dateFormat.format(fixedTask.getDeadline()) +
-                                   "\n");
-    		}
-    		if (task.getType() == Task.Type.REPEATED) {
-    			RepeatedTask repeatedTask = (RepeatedTask) task;
-                taskDisplay.append("Due: " +
-                                   dateFormat.format(repeatedTask.getDeadline()));
-                taskDisplay.append("\nRepeat: " +
-                                   repeatedTask.getRepeatPeriod() + "\n");
-
-    		}
-    		
-            if (task.getTags().isEmpty()) {
-                taskDisplay.append("Tags: None\n");
-            } else {
-                String tagDisplay = "";
-                List<String> tags = task.getTags();
-                for (int j = 0; j < tags.size(); j++) {
-                    if (j == 0) {
-                        tagDisplay = tags.get(0);
-                    } else {
-                        tagDisplay += ", " + tags.get(j);
-                    }
-                }
- 
-                taskDisplay.append("Tags: " + tagDisplay + "\n");
-            }
-
-    		
-    		if (task.getIsDone()) {
-    			taskDisplay.append("Status: Done");
-    		} else {
-    			taskDisplay.append("Status: Ongoing");
-    		}
-    		
-            if (i != listOfTasks.count() - 1) {
-    			taskDisplay.append("\n\n");
-    		} else {
-
-    		}
+            taskDisplay.append((i + 1));
+            taskDisplay.append(". ");
+            taskDisplay.append(task.toString());
+            taskDisplay.append("\n\n");
     	}
-        taskDisplay.append("\nProgress: "+(listOfTasks.count() - listOfTasks.countFinished())+" Unfinished / "+listOfTasks.count()+" Total\n");
+        taskDisplay.append(displayProgress());
     	
     	return taskDisplay.toString();
     }
+    
+    
+    private static String displayProgress() {
+    	StringBuilder display = new StringBuilder();
+    	display.append("\nProgress: ");
+    	display.append(listOfTasks.count() - listOfTasks.countFinished());
+    	display.append(" Unfinished / ");
+    	display.append(listOfTasks.count());
+    	display.append(" Total\n");
+    	return display.toString();
+    }
+    
     
     /** 
      *  @param taskIndexList

@@ -75,7 +75,8 @@ public class RepeatedTask extends Task {
     }
 	@Override
 	public String toString() {
-		return this.description +" Deadline: " + this.deadline + " Repeat: " + this.repeatPeriod;
+		return this.description +"\nDeadline: " + this.dateFormatter.format(this.deadline) + 
+				"\nRepeat: " + this.repeatPeriod + "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 
 }

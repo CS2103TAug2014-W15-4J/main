@@ -25,7 +25,8 @@ public class DeadlineTask extends Task {
 
 	@Override
 	public String toString() {
-		return this.description + " Deadline: "+this.deadline;
+		return this.description + "\nDue: "+ this.dateFormatter.format(this.deadline) 
+				+ "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -23,12 +24,15 @@ public abstract class Task {
 	protected Type taskType;
 	protected Date addedTime;
 	protected Date doneDate;
+	protected SimpleDateFormat dateFormatter;
+	
 	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
 		this.tags = new ArrayList<String>();
 		this.addedTime = new Date(System.currentTimeMillis());
+		this.dateFormatter = new SimpleDateFormat("EEE HH:mm dd/MMM/yyyy");
 	}
 	
 	public void setDescription(String desc) {
@@ -103,6 +107,33 @@ public abstract class Task {
 	    // TODO Auto-generated method stub
 	    
     }
+	
+	public String displayTags() {
+		StringBuilder output = new StringBuilder();
+		if (this.tags.isEmpty()) {
+			output.append("Tags: None");
+        } else {
+            String tagDisplay = "";
+            for (int j = 0; j < tags.size(); j++) {
+                if (j == 0) {
+                    tagDisplay = tags.get(0);
+                } else {
+                    tagDisplay += ", " + tags.get(j);
+                }
+            }
+
+            output.append("Tags: " + tagDisplay);
+        }
+		return output.toString();
+	}
+	
+	public String displayDone() {
+		if (this.isDone) {
+			return "Status: Done";
+		} else {
+			return "Status: Ongoing";
+		}
+	}
 	
 	@Override
     public abstract String toString();

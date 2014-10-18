@@ -9,7 +9,7 @@ public class FloatingTask extends Task {
 
 	@Override
 	public String toString() {
-		return this.description;
+		return this.description + "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 	
 	

@@ -37,7 +37,9 @@ public class FixedTask extends Task {
 	
 	@Override
 	public String toString() {
-		return this.description + " Start: "+this.startTime + " End: "+endTime;
+		return this.description + "\nStart: "+this.dateFormatter.format(this.startTime) + "\nEnd: " +
+				this.dateFormatter.format(this.endTime) + "\n" + this.displayTags() 
+					+ "\n" + this.displayDone();
 	}
 
 }
