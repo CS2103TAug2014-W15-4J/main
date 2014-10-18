@@ -76,17 +76,12 @@ public class TaskListTest {
 		Date dateB = new Date(200);
 		Date dateC = new Date(300);
 		tasks.addToList("lowercase", dateA, dateB);
-	      System.out.println("ddddd  " + tasks.getTask(0).getDeadline().getTime());
 		tasks.editTaskDeadline(1, dateC);
-		System.out.println("dateC  " + dateC.getTime());
-		System.out.println("ddddd  " + tasks.getTask(0).getDeadline().getTime());
 		assertEquals(dateC, tasks.getTask(0).getDeadline());
 	}
 	
 	@Test
-	public void testPrepareDisplayList() {
-		
-		
+	public void testPrepareDisplayList() throws TaskInvalidDateException {
 		TaskList tasks = new TaskList();
 		tasks.addToList("Late", new Date(100), new Date(1000));
 		pause(200); // wait for 0.2s to add the next one
@@ -105,7 +100,6 @@ public class TaskListTest {
 		assertEquals("Early", result.poll().getDescription());
 		assertEquals("Middle", result.poll().getDescription());
 		assertEquals("Late", result.poll().getDescription());
-		
 	}
 	
 	void pause(int ms) {

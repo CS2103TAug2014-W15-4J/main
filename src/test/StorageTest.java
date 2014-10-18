@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import controller.Storage;
+import exception.TaskInvalidDateException;
 
 public class StorageTest {
 	@BeforeClass
@@ -30,7 +31,7 @@ public class StorageTest {
 	}
 	
 	@Test
-	public void testMultipleTypesTask() {
+	public void testMultipleTypesTask() throws TaskInvalidDateException {
 		Storage store = new Storage("test.xml");
 		TaskList tasks = new TaskList();
         for (int i = 0; i < 100; i++) {
@@ -44,7 +45,7 @@ public class StorageTest {
 		
 		store = new Storage("test.xml");
         for (int i = 0; i < 50; i++) {
-            tasks.addToList("test" + i, new Date(), new Date());
+            tasks.addToList("test" + i, new Date(10), new Date(100));
 		}
 		store.save(tasks, "test.xml");
 		listFromFile = store.load();
@@ -59,7 +60,6 @@ public class StorageTest {
         store.save(tasks, "test.xml");
 		listFromFile = store.load();
 		assertEquals(210, listFromFile.count());
-		
 	}
 
 }
