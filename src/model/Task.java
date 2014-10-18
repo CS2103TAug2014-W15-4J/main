@@ -1,6 +1,5 @@
 package model;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -15,24 +14,24 @@ import exception.TaskTagException;
  */
 
 public abstract class Task {
+	protected static final String DATE_FORMAT = "EEE HH:mm dd/MMM/yyyy";
+
 	public enum Type {
 		FLOAT, DEADLINE, FIXED, REPEATED
 	}
+	
 	protected String description;
 	protected List<String> tags;
 	protected boolean isDone;
 	protected Type taskType;
 	protected Date addedTime;
 	protected Date doneDate;
-	protected SimpleDateFormat dateFormatter;
-	
 	
 	public Task(String description) {
 		this.description = description;
 		this.isDone = false;
 		this.tags = new ArrayList<String>();
 		this.addedTime = new Date(System.currentTimeMillis());
-		this.dateFormatter = new SimpleDateFormat("EEE HH:mm dd/MMM/yyyy");
 	}
 	
 	public void setDescription(String desc) {

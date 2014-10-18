@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,8 +38,9 @@ public class FixedTask extends Task {
 	
 	@Override
 	public String toString() {
-		return this.description + "\nStart: "+this.dateFormatter.format(this.startTime) + "\nEnd: " +
-				this.dateFormatter.format(this.endTime) + "\n" + this.displayTags() 
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description + "\nStart: "+ dateFormatter.format(this.startTime) + "\nEnd: " +
+				dateFormatter.format(this.endTime) + "\n" + this.displayTags() 
 					+ "\n" + this.displayDone();
 	}
 

@@ -494,7 +494,7 @@ public class Logic {
     	}
 
     	StringBuilder taskDisplay = new StringBuilder();
-    	taskDisplay.append("Current tasks:\n");
+    	taskDisplay.append("\nCurrent tasks:\n");
         for (int i = 0; i < listOfTasks.count(); i++) {
     		Task task = listOfTasks.getTask(i);
             taskDisplay.append((i + 1));

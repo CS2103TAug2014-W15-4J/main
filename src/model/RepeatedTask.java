@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Calendar;
 
@@ -75,7 +76,8 @@ public class RepeatedTask extends Task {
     }
 	@Override
 	public String toString() {
-		return this.description +"\nDeadline: " + this.dateFormatter.format(this.deadline) + 
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description +"\nDeadline: " + dateFormatter.format(this.deadline) + 
 				"\nRepeat: " + this.repeatPeriod + "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 

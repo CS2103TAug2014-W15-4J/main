@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -25,7 +26,8 @@ public class DeadlineTask extends Task {
 
 	@Override
 	public String toString() {
-		return this.description + "\nDue: "+ this.dateFormatter.format(this.deadline) 
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description + "\nDue: "+ dateFormatter.format(this.deadline) 
 				+ "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 	
