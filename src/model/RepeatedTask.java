@@ -14,10 +14,8 @@ public class RepeatedTask extends Task {
 	@XStreamAlias("Period")
 	private RepeatDate repeatPeriod;
 	private String period;
-	@XStreamAlias("DateDone")
-	private Date doneDate;
 
-	public static String[] namesOfDays =  {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+	public static String[] namesOfDays =  {"DUMMY", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 
 	private void updatePeriodString() {
 	    
@@ -29,10 +27,10 @@ public class RepeatedTask extends Task {
 	        period = "daily";
 	        
 	    } else if (repeatPeriod == RepeatDate.WEEKLY) {
-	        period = namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
+	        period = "every" + namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
 	        
 	    } else if (repeatPeriod == RepeatDate.MONTHLY) {
-	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of the month";
+	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of each month";
 	    }
 	}
 	public RepeatedTask(String description, Date time, RepeatDate repeatDate) {
@@ -62,22 +60,12 @@ public class RepeatedTask extends Task {
 		updatePeriodString();
 	}
 	
-	private void setDoneDate() {
-		doneDate = new Date(System.currentTimeMillis());
-	}
-	
-	@Override
-	public Date getDoneDate() {
-		return doneDate;
-	}
-
 	@Override
     public Task markDone() throws TaskDoneException {
 		if (!this.getIsDone()) {
             Task taskToRepeat = new RepeatedTask(this.description,
                                                  this.deadline,
                                                  this.repeatPeriod);
-		    this.setDoneDate();
 		    super.markDone();
 		    return taskToRepeat;
 		    

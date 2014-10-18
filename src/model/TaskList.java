@@ -307,7 +307,8 @@ public class TaskList {
                     
                     this.taskFinished++;
                     if (newRepeatTask != null) {
-                        this.addToList(newRepeatTask);
+                        
+                        this.addToList((RepeatedTask) newRepeatTask);
                     }
                 }
             }

@@ -22,6 +22,7 @@ public abstract class Task {
 	protected boolean isDone;
 	protected Type taskType;
 	protected Date addedTime;
+	protected Date doneDate;
 	
 	public Task(String description) {
 		this.description = description;
@@ -62,6 +63,7 @@ public abstract class Task {
 	
 	public Task markDone() throws TaskDoneException {
 		isDone = true;
+	    doneDate = new Date(System.currentTimeMillis());
 		return null;
 	}
 	
@@ -102,6 +104,7 @@ public abstract class Task {
 	    
     }
 	
-	public abstract String toString();
+	@Override
+    public abstract String toString();
 
 }
