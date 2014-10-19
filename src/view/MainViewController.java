@@ -6,43 +6,59 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import model.TaskList;
 import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import exception.LabelNotSetProperlyException;
-import exception.LogicNoFeedbackException;
-
-/**
- * Controller for the GUI
- * 
- * @author Wang Zhipeng
- *
- */
-
-public class MainViewController extends VBox {
+public class MainViewController extends GridPane{
 	
-	private static final String MESSAGE_NO_TASK = "Good! All tasks are clear!";
-	private static final String MESSAGE_TASKS_EXIST = "Oops! %s to be completed!";
+	@FXML
+	private Label uClear;
 	
-	final static Logger logForMainViewController = Logger.getLogger(MainViewController.class.getName());
+	@FXML
+	private Label date;
 	
-	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
+	@FXML
+	private Label response;
+	
+	@FXML
+	private TextField input;
+	
+	@FXML
+	private GridPane wholePane;
+	
+	@FXML
+	private GridPane title;
+	
+	@FXML
+	private Pane mainDisplay;
+	
+	@FXML
+	private Pagination listDisplay;
+	
+	// Page information
+	private VBox[] page;
+	private GridPane[] content;
+	
+	String command;
+	String feedback;
+	int pageCount;
+	
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
@@ -50,165 +66,103 @@ public class MainViewController extends VBox {
 			date.setText(dateFormat.format(cal.getTime()));
 		}
 	}));
-	
-	
-    @FXML 
-    private TextField textField;
-    
-    @FXML
-    private Label date;
-    
-    @FXML
-    private VBox toBeCompleted;
-    
-    @FXML
-    private VBox toDo;
-    
-    @FXML
-    private Label popMessage;
-    
-	Label displayTaskList = new Label();
-	TaskList taskList;
-	int countTasks;
-	String tasks;
 
-    public MainViewController() throws LabelNotSetProperlyException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
+	public MainViewController() throws IOException {
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-        	logForMainViewController.log(Level.SEVERE, "Time out! Run time exception!");
-            throw new RuntimeException(exception);
-        }
         
-        logForMainViewController.log(Level.INFO, "Load MainView.fxml successfully!");
+        fxmlLoader.load();
         
-        Logic.initialize();
-        
-        logForMainViewController.log(Level.INFO, "Initialize successfully!");
-        
-        toBeCompleted.getChildren().add(displayTaskList);
-        
-        setTaskListView();
-		determinePopMessage();
-    }
-
-    public String getText() {
-        return textProperty().get();
-    }
-
-    public void setText(String value) {
-        textProperty().set(value);
-    }
-    
-    public String getInput() {
-    	return textField.getText();
-    }
-    
-    public void display() throws LogicNoFeedbackException, LabelNotSetProperlyException {
-    	
-    	String input = getInput();
-    	
-    	if (input.trim().toLowerCase().equals("exit")) {
-    		Stage stage = (Stage) getScene().getWindow();
-    		stage.close();
-    	
-    	} else if (input.trim().toLowerCase().equals("show")) {
-    		
-    		displayTaskList.setText(Logic.getDisplayInfo());
-    		
-    	} else {
-    		
-    		// Feedback from Logic
-    		String feedback = Logic.readAndExecuteCommands(input);
-    		
-    		if (feedback == null) {
-    			throw new LogicNoFeedbackException();
-    		}
-    
-    		logForMainViewController.log(Level.INFO, "Execute command complete!");    		
-    		
-    		fadeFeedback(feedback);
-    		setTaskListView(feedback);
-    		determinePopMessage();
-    		
-    		logForMainViewController.log(Level.INFO, "Set the view successfully!");
-    		
-    		Logic.saveTaskList();
-    	}
-    	
-    }
-
-	private void setTaskListView() {
-    	taskList = Logic.getTaskList();
-		countTasks = taskList.count();
-		tasks = taskList.toString();
+        initialize();
+	}
 	
-		displayTaskList.setText(tasks);
-    }
+	private void initialize() {
+		setPageCount(5);
+		setPages();
+		setFont();
+        setDate();
+        initMainDisplay();
+	}
 	
-	private void setTaskListView(String feedback) {
-    	taskList = Logic.getTaskList();
-		countTasks = taskList.count();
-		tasks = taskList.toString();
+	private void setPageCount(int count) {
+		pageCount = count;
+	}
+
+	private void setPages() {
+		page = new VBox[pageCount];
+		content = new GridPane[pageCount];
+		for (int i=0; i<pageCount; i++) {
+			page[i] = new VBox();
+			page[i].setPrefHeight(listDisplay.getPrefHeight());
+			page[i].setPrefWidth(listDisplay.getPrefWidth());
+			content[i] = new GridPane();
+			page[i].getChildren().add(content[i]);
+		}
+	}
+	
+	private void setFont() {
+	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
+	    uClear.setStyle("-fx-font-size: 35");
+	    date.setStyle("-fx-font-size: 15");
+	    response.setStyle("-fx-font-size: 20");
+	    input.setStyle("-fx-font-size: 20");
+	}
+
+	private void setDate() {
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
+	}
+
+	private void initMainDisplay() {
+		listDisplay.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+		listDisplay.setPageCount(pageCount);
+		listDisplay.setPageFactory(new Callback<Integer, Node>() 
+		{
+			@Override
+			public Node call(Integer pageIndex) {
+				return page[pageIndex];
+			}
+		});
+	}
+
+	private void changePage(int pageNum) {
+		listDisplay.setCurrentPageIndex((pageNum)%pageCount);
+	}
+	
+	private void closePage() {
+		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
-		tasks = tasks + "\n" + feedback;
+		content[currentPageNum] = new GridPane();
+		
+		changePage(currentPageNum+1);
+	}
 	
-		displayTaskList.setText(tasks);
-    }
-    
-    private void determinePopMessage() throws LabelNotSetProperlyException {
-		if (countTasks == 0) {
-			popMessage.setText(MESSAGE_NO_TASK);
-			
-			logForMainViewController.log(Level.INFO, "No existing task!");	
-		} else {
-			popMessage.setText(String.format(MESSAGE_TASKS_EXIST, countTasks));
-			
-			logForMainViewController.log(Level.INFO, "Load existing task!");
+	private void setMainDisplay() {
+		
+	}
+	
+	private String getUserInput() {
+		return input.getText();
+	}
+	
+	private String executeCommand(String command) {
+		return command;
+	}
+	
+	@FXML
+    private void onEnter() {
+		command = getUserInput();
+		
+		if (command.trim().toLowerCase().equals("close")) {
+			closePage();
 		}
 		
-		if (!popMessage.getText().equals(MESSAGE_NO_TASK) 
-				&& !popMessage.getText().equals(String.format(MESSAGE_TASKS_EXIST, countTasks))) {
-			throw new LabelNotSetProperlyException();
-		}
+		feedback = executeCommand(command);
+		setMainDisplay();
+    	input.setText("");
     }
-    
-    
-    @FXML
-    public void onEnter() throws LogicNoFeedbackException, LabelNotSetProperlyException {
-    	display();
-    	textField.setText("");
-    }
-    
-    public String getDateLabel() {
-    	return date.getText();
-    }
-    
-    public void setDateLabel() {
-    	timeline.setCycleCount(Animation.INDEFINITE);
-    	timeline.play();
-    }
-
-    public StringProperty textProperty() {
-        return textField.textProperty();
-    }
-    
-    public void fadeFeedback(String feedback) {
-    	popMessage.setText(feedback);
-    	assert(feedback!=null);
-    	
-    	FadeTransition ft = new FadeTransition(Duration.millis(3000), popMessage);
-    	ft.setFromValue(1.0);
-    	ft.setToValue(0.1);
-    	ft.setCycleCount(2);
-    	ft.setAutoReverse(true);
-    	ft.play();
-    }
-    
+	
 }
 
 

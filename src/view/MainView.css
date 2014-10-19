@@ -1,25 +1,54 @@
-.root {
-	-fx-font-family: "Arial";
+#title {
+	-fx-background-color: #504A4B;
 }
 
-#textfield {
-	-fx-background-color: white;
-	-fx-font-size: 18px;
-}
-
-#uclear {
-	-fx-label-padding: 5.0 0 0 10.0;
-}
-
-#assert {
-	-fx-label-padding: 0 0 0 13.0;
+#uClear {
+	-fx-text-fill: rgb(243,249,53);
+	-fx-label-padding: 0.0 0.0 0.0 15.0;
 }
 
 #date {
-	-fx-label-padding: 0 10.0 0 0;
+	-fx-text-fill: rgb(243,249,53);
+	-fx-alignment: center-right;
+	-fx-label-padding: 0.0 20.0 0.0 0.0;
 }
 
-#toBeCompleted {
-	-fx-padding: 10	10;
-	-fx-font-size: 15px;
+#response {
+	-fx-text-fill: rgb(94,211,215);
+	-fx-label-padding: 0.0 0.0 5.0 15.0;
+}
+
+.titleDivision {
+	-fx-background-color: white;
+}
+
+#mainDisplay {
+	-fx-background-color: rgb(127,127,127);
+}
+
+#listDisplay {
+	-fx-background-color: rgb(127,127,127);
+}
+
+#inputPane {
+	-fx-background-color: #504A4B;
+}
+
+#input {
+	-fx-prompt-text-fill: rgb(179,179,179);
+}
+
+#listDisplay {
+	-fx-max-page-indicator-count: 5;
+	-fx-arrows-visible: false;
+	-fx-tooltip-visible: false;
+	-fx-page-information-visible: false;
+}
+
+.pagination .pagination-control .bullet-button {
+    -fx-background-color: transparent, #DDF1F8, #0E5D79, white, white;
+}
+ 
+.pagination .pagination-control .bullet-button:selected {   
+    -fx-background-color: transparent, #DDF1F8, #0E5D79, white, #0E5D79;
 }
