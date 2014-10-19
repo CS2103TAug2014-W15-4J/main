@@ -6,7 +6,7 @@ CS2103T Project of team W15-4j
 Current Stage
 ====
 
-Milestone V0.1
+Milestone V0.17
 
 User Guide
 ====
