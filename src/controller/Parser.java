@@ -172,7 +172,7 @@ public class Parser {
 	 * @param content
 	 * @return UserInput
 	 *
-	 *         this is for entering add command(temporally floating only)
+	 *         this is for entering add command
 	 */
 
 	private UserInput parseAdd(String content) {
@@ -313,7 +313,7 @@ public class Parser {
 		log.info("fixed task found");
 		String description = null;
 		if(times.getDates().size()==1)
-			return parseDeadline(input, description, times);
+			return parseDeadline(input, content, times);
 		try {
 			description = times.getText();
 		} catch (NullPointerException e) {
