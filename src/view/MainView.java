@@ -16,13 +16,24 @@ public class MainView extends Application {
 		Scene scene = new Scene(mvc, 383, 620);
 		Font.loadFont(MainView.class.getResource("Montserrat-Regular.ttf").toExternalForm(), 10);
 		scene.getStylesheets().add(getClass().getResource("MainView.css").toExternalForm());
-		primaryStage.setTitle("Welcome to uClear!");
-		primaryStage.setMaxHeight(658);
-		primaryStage.setMaxWidth(399);
+		primaryStage.setTitle("uClear");
+		
+		if (getOS().equals("Mac OS X")) {
+			primaryStage.setMaxHeight(642);
+			primaryStage.setMaxWidth(383);
+		} else {
+			primaryStage.setMaxHeight(642);
+			primaryStage.setMaxWidth(399);
+		}
+		
 		primaryStage.setMinHeight(primaryStage.getMaxHeight());
 		primaryStage.setMinWidth(primaryStage.getMaxWidth());
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+	
+	private String getOS() {
+		return System.getProperty("os.name");
 	}
 	
 	public static void main(String[] args) {

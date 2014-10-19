@@ -1,6 +1,8 @@
 package view;
 
 import controller.Logic;
+import model.TaskList;
+import model.Task;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -60,6 +62,7 @@ public class MainViewController extends GridPane{
 	String command;
 	String feedback;
 	int pageCount;
+	TaskList taskList;
 	
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
@@ -86,7 +89,6 @@ public class MainViewController extends GridPane{
 		setFont();
         setDate();
         initMainDisplay();
-        Logic.initialize();
 	}
 	
 	private void setPageCount(int count) {
@@ -100,6 +102,7 @@ public class MainViewController extends GridPane{
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
+			//content.set(i, new ArrayList<GridPane>());
 		}
 	}
 	
@@ -126,6 +129,20 @@ public class MainViewController extends GridPane{
 				return page[pageIndex];
 			}
 		});
+		
+		displayExistingTasks();
+	}
+	
+	private void displayExistingTasks() {
+        Logic.initialize();
+		taskList = Logic.getTaskList();
+		
+		for (int i=0; i<taskList.count(); i++) {
+			GridPane taskLayout = new GridPane();
+			taskLayout.setPrefSize(383, 100);
+			
+			
+		}
 	}
 
 	private void changePage(int pageNum) {
