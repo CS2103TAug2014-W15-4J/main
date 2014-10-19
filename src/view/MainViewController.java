@@ -180,6 +180,49 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void updateDisplay() {
+		int currentPageNum = listDisplay.getCurrentPageIndex();
+		taskList = Logic.getTaskList();
+		
+		for (int i=0; i<taskList.count(); i++) {
+			GridPane taskLayout = new GridPane();
+			taskLayout.setPrefSize(383, 75);
+			Task task = taskList.getTask(i);
+			Label description = new Label((i+1) +". " + task.getDescription());
+			description.setStyle("-fx-text-fill: rgb(175,225,252)");
+			Label date = new Label("Deadline: ");
+			date.setStyle("-fx-text-fill: rgb(249,192,162)");
+			
+			if (task.getTags().size() > 0) {
+				Label[] tags = new Label[task.getTags().size()];
+				
+				for (int j=0; j<task.getTags().size(); j++) {
+					List<String> tagList = task.getTags();
+					tags[j] = new Label(tagList.get(j));
+					Label space = new Label("  ");
+					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					space.setStyle("-fx-background-color: rgb(127,127,127)");
+					taskLayout.setConstraints(tags[j], 2*j, 2);
+					taskLayout.setConstraints(space, 2*j+1, 2);
+					taskLayout.getChildren().addAll(space, tags[j]);
+				}
+				
+			} else {
+				Label[] tags = new Label[1];
+				tags[0] = new Label("None");
+				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
+				taskLayout.setConstraints(tags[0], 0, 2);
+				taskLayout.getChildren().add(tags[0]);
+			}
+			
+			taskLayout.setConstraints(description, 0, 0, 10, 1);
+			taskLayout.setConstraints(date, 0, 1, 10, 1);
+			taskLayout.getChildren().addAll(description, date);
+			
+			page[currentPageNum].getChildren().add(taskLayout);
+		}
+	}
+	
+	private void updateDisplay(int pageIndex) {
 
 		taskList = Logic.getTaskList();
 		
@@ -218,7 +261,7 @@ public class MainViewController extends GridPane{
 			taskLayout.setConstraints(date, 0, 1, 10, 1);
 			taskLayout.getChildren().addAll(description, date);
 			
-			page[0].getChildren().add(taskLayout);
+			page[pageIndex].getChildren().add(taskLayout);
 		}
 	}
 
@@ -229,12 +272,16 @@ public class MainViewController extends GridPane{
 	private void closePage() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
-		page[currentPageNum] = new VBox();
+		page[currentPageNum].getChildren().clear();
+	}
+	
+	private void closePage(int pageIndex) {
+		page[pageIndex].getChildren().clear();
 	}
 	
 	private void setMainDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
-		page[currentPageNum].getChildren().clear();
+		closePage(currentPageNum);
 		updateDisplay();
 	}
 	
