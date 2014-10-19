@@ -93,6 +93,7 @@ public class MainViewController extends GridPane{
 		setFont();
         setDate();
         initMainDisplay();
+        setResponse();
 	}
 	
 	private void setPageCount(int count) {
@@ -121,6 +122,16 @@ public class MainViewController extends GridPane{
 	private void setDate() {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
+	}
+	
+	private void setResponse() {
+		if (taskList.count() > 1) {
+			response.setText("Oops! " + taskList.count() + " tasks should be done!");
+		} else if (taskList.count() == 1) {
+			response.setText("Oops! " + taskList.count() + " task should be done!");
+		} else {
+			response.setText("Good! All tasks are done!");
+		}
 	}
 
 	private void initMainDisplay() throws TaskInvalidDateException {
@@ -297,6 +308,7 @@ public class MainViewController extends GridPane{
 	private void setMainDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		closePage(currentPageNum);
+		setResponse();
 		updateDisplay();
 	}
 	
