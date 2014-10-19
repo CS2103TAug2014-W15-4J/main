@@ -109,7 +109,7 @@ public class Logic {
 		}
 	}
 
-	public static void initialize() {
+	public static void loadTaskList() {
 		listOfTasks = storage.load();
 	}
 
