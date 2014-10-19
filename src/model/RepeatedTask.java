@@ -28,7 +28,7 @@ public class RepeatedTask extends Task {
 	        period = "daily";
 	        
 	    } else if (repeatPeriod == RepeatDate.WEEKLY) {
-	        period = "every" + namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
+	        period = "every " + namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
 	        
 	    } else if (repeatPeriod == RepeatDate.MONTHLY) {
 	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of each month";
@@ -38,6 +38,7 @@ public class RepeatedTask extends Task {
 	    super(description);
 	    deadline = time;
 	    repeatPeriod = repeatDate;
+	    taskType = Task.Type.REPEATED;
 	    
 	    updatePeriodString();
     }
