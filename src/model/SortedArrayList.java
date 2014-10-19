@@ -31,4 +31,16 @@ public class SortedArrayList extends ArrayList<Task> {
         return true;
        
     }
+    
+    /** 
+     * @param index of task that has been edited
+     * 
+     * call this method to re-order the task edited when the deadline has been changed
+     */
+    public void updateListOrder(int index) {
+        assert ((index < this.size()) && (index >= 0));
+        
+        Task task = this.remove(index);
+        this.addOrder(task);
+    }
 }

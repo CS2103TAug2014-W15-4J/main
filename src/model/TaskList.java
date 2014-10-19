@@ -196,6 +196,7 @@ public class TaskList {
             throw new TaskInvalidIdException("Error index for editing!");
         } else {
             this.tasksTimed.get(taskIndex - 1).setDeadline(time);
+            ((SortedArrayList) this.tasksTimed).updateListOrder(taskIndex - 1);
         }   
     }
     
