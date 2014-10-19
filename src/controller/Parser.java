@@ -511,7 +511,7 @@ public class Parser {
 	private UserInput parseShow(String content) {
 		log.info("entering show command");
 		UserInput input = new UserInput();
-		if (content != null && !content.equals("")) {
+		if (content == null || content.equals("")) {
 			input.addShow("all");
 		}
 		input.addCommand(CMD.SHOW);
