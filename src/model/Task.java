@@ -26,6 +26,7 @@ public abstract class Task {
 	protected Type taskType;
 	protected Date addedTime;
 	protected Date doneDate;
+	protected boolean isOverdue;
 	
 	public Task(String description) {
 		this.description = description;
@@ -129,8 +130,18 @@ public abstract class Task {
 	public String displayDone() {
 		if (this.isDone) {
 			return "Status: Done";
+		} else if (this.isOverdue) {
+			return "Status: OVERDUED!!!";
 		} else {
 			return "Status: Ongoing";
+		}
+	}
+	
+	// check if a task is overdued
+	public void checkOverdue() throws TaskInvalidDateException {
+		Date now = new Date();
+		if (now.after(getDeadline())) {
+			this.isOverdue = true;
 		}
 	}
 	

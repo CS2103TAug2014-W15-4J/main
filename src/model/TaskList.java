@@ -370,6 +370,15 @@ public class TaskList {
     
     public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
     	List<Task> output;
+    	// check overdue for each task
+    	for (Task task : tasksTimed) {
+    		try {
+				task.checkOverdue();
+			} catch (TaskInvalidDateException e) {
+				logger.log(Level.WARNING, "Invalid Deadline when checking Overdue!");				
+			}
+    	}
+    	
     	if (isDisplayedByAddTime) {
     		// using comparator AddedDateComparator
     	    output = new SortedArrayList<Task>(this.count(), new AddedDateComparator());
