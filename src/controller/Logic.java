@@ -156,6 +156,7 @@ public class Logic {
     	} else if (userCommand.getCommand() == UserInput.CMD.ADD) {
     		String desc = userCommand.getDescription();
     		List<Date> dateList = userCommand.getDate();
+    		listOfTasks.setShowDisplayListToFalse();
     		
     		assert (desc != null);
     		
@@ -213,6 +214,7 @@ public class Logic {
     		
     		Task taskToEdit = listOfTasks.getTask(editID - 1);
     		Task.Type taskType = taskToEdit.getType();
+    		listOfTasks.setShowDisplayListToFalse();
     		
     		assert (desc != null);
     		
@@ -289,16 +291,15 @@ public class Logic {
     		
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.DELETE) {
+    	    listOfTasks.setShowDisplayListToFalse();
     		return deleteTask(userCommand.getDeleteID());
     		
     	} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
-    		// call the UI to display the corresponding tasks here eventually
-    		return display();
+            String showCommand = userCommand.getShowCommand();
+            return display(showCommand);
     		
-//    	} else if (userCommand.getCommand() == UserInput.CMD.SHOWTAG) {
-//    	    return displayTasksWithTag(userCommand.getDescription());
-    	    
     	} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
+    	    listOfTasks.setShowDisplayListToFalse();
     		return clearTaskList();
 
     	} else if (userCommand.getCommand() == UserInput.CMD.DONE) {
@@ -483,6 +484,29 @@ public class Logic {
     	return MESSAGE_TASK_CLEARED;
     }
     
+    /**
+     * 
+     * @param userCommand
+     * @return user's task information
+     * 
+     * This method displays the user's tasks information, specified by userCommand
+     */
+    private static String display(String userCommand) {
+        
+        assert userCommand != null;
+        
+        if (userCommand.equals("all")) {
+            return displayTasks(listOfTasks.prepareDisplayList(false));
+            
+        } else if (userCommand.equals("added")) {
+            return displayTasks(listOfTasks.prepareDisplayList(true)); 
+            
+        } else {
+            return displayTasksWithTag(userCommand);
+            
+        }
+    }
+    
     /** 
      * This method will display user's tasks information.
      * 
@@ -592,17 +616,18 @@ public class Logic {
     private static String displayTasks(List<Task> taskList) {
         
         int taskListSize = taskList.size();
-        int taskCount = 1;
         
-        assert (taskListSize != 0);
+        if (taskList.size() == 0) {
+            // empty task list
+            return MESSAGE_EMPTY_TASK_LIST;
+        }
         
         StringBuilder taskDisplay = new StringBuilder();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         
-        while (!taskList.isEmpty()) {
-            Task task = taskList.remove(0);
-            taskListSize--;
-            taskDisplay.append(taskCount + ". " + task.getDescription() + "\n");
+        for (int j = 0; j < taskListSize; j++) {
+            Task task = taskList.get(j);
+            taskDisplay.append((j + 1) + ". " + task.getDescription() + "\n");
 
             if (task.getType() == Task.Type.DEADLINE) {
                 DeadlineTask deadlineTask = (DeadlineTask) task;
@@ -634,11 +659,11 @@ public class Logic {
             } else {
                 String tagDisplay = "";
                 List<String> tags = task.getTags();
-                for (int j = 0; j < tags.size(); j++) {
-                    if (j == 0) {
+                for (int k = 0; k < tags.size(); k++) {
+                    if (k == 0) {
                         tagDisplay = tags.get(0);
                     } else {
-                        tagDisplay += ", " + tags.get(j);
+                        tagDisplay += ", " + tags.get(k);
                     }
                 }
  
@@ -652,14 +677,13 @@ public class Logic {
                 taskDisplay.append("Status: Ongoing");
             }
             
-            if (taskListSize != 0) {
+            if (j != taskListSize - 1) {
                 taskDisplay.append("\n\n");
                 
             } else {
                 
             }
-            
-            taskCount++;
+
         }
         
         return taskDisplay.toString();

@@ -46,8 +46,6 @@ public class SortedArrayList<T> extends ArrayList<T> {
             addOrder(i.next());
         }
         return true;
-        
-        
     }
     
     /** 

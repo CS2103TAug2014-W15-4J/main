@@ -60,8 +60,8 @@ public class TaskList {
     @XStreamAlias("TaskListTimed")
     private List<Task> tasksTimed;
     @XStreamAlias("TaskListUntimed")
-    
     private List<Task> tasksUntimed;
+    @XStreamAlias("TaskToDisplay")
     private List<Task> tasksToDisplay;
     @XStreamAlias("showDisplay")
     private boolean showDisplayList;
@@ -79,12 +79,19 @@ public class TaskList {
 		// let the logger only display warning log message.
 		logger.setLevel(Level.WARNING);
 		
-        this.tasksTimed = new SortedArrayList(new DeadlineComparator());
-        this.tasksUntimed = new SortedArrayList(new AddedDateComparator());
+        this.tasksTimed = new SortedArrayList<Task>(new DeadlineComparator());
+        this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
         this.tasksToDisplay = new ArrayList<Task>();
         this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
         this.tags = new HashMap<String, List<Task>>();
         this.taskFinished = 0;
+        this.showDisplayList = false;
+    }
+    
+    /**
+     * Logic calls this method to set showDisplayList to false if the tasks are edited.
+     */
+    public void setShowDisplayListToFalse() {
         this.showDisplayList = false;
     }
 
@@ -134,7 +141,7 @@ public class TaskList {
      */
     public void addToList(String description, Date time) {
     	Task newTask = new DeadlineTask(description, time);
-    	((SortedArrayList) this.tasksTimed).addOrder(newTask);
+    	((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A deadline task added");
     }
@@ -148,7 +155,7 @@ public class TaskList {
     public void addToList(String description, Date time,
                                   RepeatDate repeatDate) {
         Task newTask = new RepeatedTask(description, time, repeatDate);
-        ((SortedArrayList) this.tasksTimed).addOrder(newTask);
+        ((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
         this.totalTasks++;
         logger.log(Level.INFO, "A repeated task added");
     }
@@ -169,7 +176,7 @@ public class TaskList {
             
         } else {
         
-            ((SortedArrayList) this.tasksTimed).addOrder(newTask);
+            ((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
             this.totalTasks++;
             logger.log(Level.INFO, "A fixed task added");
         }
@@ -195,7 +202,7 @@ public class TaskList {
             throw new TaskInvalidIdException("Error index for editing!");
         } else {
             this.tasksTimed.get(taskIndex - 1).setDeadline(time);
-            ((SortedArrayList) this.tasksTimed).updateListOrder(taskIndex - 1);
+            ((SortedArrayList<Task>) this.tasksTimed).updateListOrder(taskIndex - 1);
         }   
     }
     
@@ -365,15 +372,23 @@ public class TaskList {
     	List<Task> output;
     	if (isDisplayedByAddTime) {
     		// using comparator AddedDateComparator
-    	    output = new SortedArrayList(this.count(), new AddedDateComparator());
+    	    output = new SortedArrayList<Task>(this.count(), new AddedDateComparator());
+            output.addAll(tasksTimed);
+            output.addAll(tasksUntimed);   
+            showDisplayList = true;
+            tasksToDisplay = output;
+
     	} else {
     		// using comparator DeadlineComparator
-    		output = new SortedArrayList(this.count(), new DeadlineComparator());
+    		output = new SortedArrayList<Task>(this.count(), new DeadlineComparator());
+            output.addAll(tasksTimed);
+            for (int i = 0; i < tasksUntimed.size(); i++) {
+                output.add(tasksUntimed.get(i));
+            }
+            showDisplayList = false;
     	}
-		// add all tasks from Timed task list and Untimed task list to the output list
     	
-		output.addAll(tasksTimed);
-		output.addAll(tasksUntimed);
+		// add all tasks from Timed task list and Untimed task list to the output list
 		return output;
     }
     
