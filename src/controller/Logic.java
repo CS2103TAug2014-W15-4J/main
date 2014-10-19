@@ -527,7 +527,14 @@ public class Logic {
 			return displayTasks(listOfTasks.prepareDisplayList(true));
 
 		} else {
-			return displayTasksWithTag(userCommand);
+            try {
+                return String.format(MESSAGE_TASKTAG_RETURNED,
+                                     userCommand,
+                                     displayTasks(listOfTasks.prepareDisplayList(userCommand)));
+                
+            } catch (TaskNoSuchTagException e) {
+                return MESSAGE_INVALID_TAG_NONEXISTENT;
+            }
 
 		}
 	}

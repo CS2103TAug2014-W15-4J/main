@@ -394,8 +394,10 @@ public class TaskList {
 		this.tasksUntimed.clear();
 		this.tasksTimed.clear();
 		this.tasksUntimed.clear();
+        this.tags.clear();
 		this.totalTasks = 0;
 		this.taskFinished = 0;
+        
 	}
 
 	public void markTaskDone(List<Integer> taskIndexList)
@@ -560,6 +562,29 @@ public class TaskList {
 		showDisplayList = true;
 		tasksToDisplay = result;
 		return tasksToDisplay;
+	}
+	
+    public List<Task> prepareDisplayList(String tag) throws TaskNoSuchTagException {
+
+        if (tags.containsKey(tag.toLowerCase())) {
+
+            tasksToDisplay = tags.get(tag.toLowerCase());
+            // check overdue for each task
+            for (Task task : tasksToDisplay) {
+                try {
+                    task.checkOverdue();
+                } catch (TaskInvalidDateException e) {
+                    logger.log(Level.WARNING, "Invalid Deadline when checking Overdue!");               
+                }
+            }
+
+            showDisplayList = true;
+
+            return tasksToDisplay;
+        } else {
+            throw new TaskNoSuchTagException();
+        }
+
 	}
 
 	public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
