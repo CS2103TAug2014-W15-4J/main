@@ -1,6 +1,5 @@
 package controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -17,9 +16,6 @@ import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 import model.TaskList;
 import model.Task;
-import model.DeadlineTask;
-import model.RepeatedTask;
-import model.FixedTask;
 
 
 /**
@@ -623,59 +619,11 @@ public class Logic {
         }
         
         StringBuilder taskDisplay = new StringBuilder();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         
         for (int j = 0; j < taskListSize; j++) {
             Task task = taskList.get(j);
-            taskDisplay.append((j + 1) + ". " + task.getDescription() + "\n");
-
-            if (task.getType() == Task.Type.DEADLINE) {
-                DeadlineTask deadlineTask = (DeadlineTask) task;
-                taskDisplay.append("Due: " +
-                                   dateFormat.format(deadlineTask.getDeadline()) +
-                                   "\n");
-            }
             
-            if (task.getType() == Task.Type.FIXED) {
-                FixedTask fixedTask = (FixedTask) task;
-                taskDisplay.append("Start: " +
-                                   dateFormat.format(fixedTask.getStartTime()));
-                taskDisplay.append("\nDue: " +
-                                   dateFormat.format(fixedTask.getDeadline()) +
-                                   "\n");
-            }
-            
-            if (task.getType() == Task.Type.REPEATED) {
-                RepeatedTask repeatedTask = (RepeatedTask) task;
-                taskDisplay.append("Due: " +
-                                   dateFormat.format(repeatedTask.getDeadline()));
-                taskDisplay.append("\nRepeat: " +
-                                   repeatedTask.getRepeatPeriod() + "\n");
-
-            }
-            
-            if (task.getTags().isEmpty()) {
-                taskDisplay.append("Tags: None\n");
-            } else {
-                String tagDisplay = "";
-                List<String> tags = task.getTags();
-                for (int k = 0; k < tags.size(); k++) {
-                    if (k == 0) {
-                        tagDisplay = tags.get(0);
-                    } else {
-                        tagDisplay += ", " + tags.get(k);
-                    }
-                }
- 
-                taskDisplay.append("Tags: " + tagDisplay + "\n");
-            }
-
-            
-            if (task.getIsDone()) {
-                taskDisplay.append("Status: Done");
-            } else {
-                taskDisplay.append("Status: Ongoing");
-            }
+            taskDisplay.append((j + 1) + ". " + task.toString());
             
             if (j != taskListSize - 1) {
                 taskDisplay.append("\n\n");
