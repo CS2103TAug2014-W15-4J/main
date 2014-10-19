@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -362,16 +361,17 @@ public class TaskList {
         }
     }
     
-    public PriorityQueue<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
-    	PriorityQueue<Task> output;
+    public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
+    	List<Task> output;
     	if (isDisplayedByAddTime) {
     		// using comparator AddedDateComparator
-    		output = new PriorityQueue<Task>(this.count(), new AddedDateComparator());
+    	    output = new SortedArrayList(this.count(), new AddedDateComparator());
     	} else {
     		// using comparator DeadlineComparator
-    		output = new PriorityQueue<Task>(this.count(), new DeadlineComparator());
+    		output = new SortedArrayList(this.count(), new DeadlineComparator());
     	}
 		// add all tasks from Timed task list and Untimed task list to the output list
+    	
 		output.addAll(tasksTimed);
 		output.addAll(tasksUntimed);
 		return output;

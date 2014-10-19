@@ -1,22 +1,29 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
-public class SortedArrayList extends ArrayList<Task> {
+public class SortedArrayList<T> extends ArrayList<T> {
 
 
     @XStreamAlias("Comparator")
-    Comparator<Task> comparator;
-    public SortedArrayList(Comparator<Task> c) {
+    Comparator<T> comparator;
+    public SortedArrayList(Comparator<T> c) {
         this.comparator = c;
     }
     
-    public boolean addOrder(Task task) {
+    public SortedArrayList(int initialCount, Comparator<T> c) {
+        super(initialCount);
+        this.comparator = c;
+    }
+    
+    public boolean addOrder(T task) {
         if (this.size() == 0) {
             super.add(0, task);
         } else {
@@ -32,6 +39,17 @@ public class SortedArrayList extends ArrayList<Task> {
        
     }
     
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        Iterator<? extends T> i = c.iterator();
+        while (i.hasNext()) {
+            addOrder(i.next());
+        }
+        return true;
+        
+        
+    }
+    
     /** 
      * @param index of task that has been edited
      * 
@@ -40,7 +58,7 @@ public class SortedArrayList extends ArrayList<Task> {
     public void updateListOrder(int index) {
         assert ((index < this.size()) && (index >= 0));
         
-        Task task = this.remove(index);
+        T task = this.remove(index);
         this.addOrder(task);
     }
 }

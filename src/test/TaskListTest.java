@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Queue;
-
 import model.FixedTask;
 import model.Task;
 import model.TaskList;
@@ -169,16 +167,17 @@ public class TaskListTest {
 		tasks.addToList("Middle", new Date(500));
 		
 		// Test order by addedTime
-		Queue<Task> result = tasks.prepareDisplayList(true);
-		assertEquals("Late", result.poll().getDescription());
-		assertEquals("Early", result.poll().getDescription());
-		assertEquals("Middle", result.poll().getDescription());
+		List<Task> result = tasks.prepareDisplayList(true);
+				
+		assertEquals("Late", result.get(0).getDescription());
+		assertEquals("Early", result.get(1).getDescription());
+		assertEquals("Middle", result.get(2).getDescription());
 		
 		// Test order by addedTime
 		result = tasks.prepareDisplayList(false);
-		assertEquals("Early", result.poll().getDescription());
-		assertEquals("Middle", result.poll().getDescription());
-		assertEquals("Late", result.poll().getDescription());
+		assertEquals("Early", result.get(0).getDescription());
+		assertEquals("Middle", result.get(1).getDescription());
+		assertEquals("Late", result.get(2).getDescription());
 	}
 	
 	void pause(int ms) {
