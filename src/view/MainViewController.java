@@ -149,6 +149,11 @@ public class MainViewController extends GridPane{
 			Label date = new Label("Deadline: ");
 			date.setStyle("-fx-text-fill: rgb(249,192,162)");
 			
+			Label status = new Label(task.displayDone());
+			status.setStyle("-fx-text-fill: yellow");
+			taskLayout.setConstraints(status, 0, 2, 10, 1);
+			taskLayout.getChildren().add(status);
+			
 			if (task.getTags().size() > 0) {
 				Label[] tags = new Label[task.getTags().size()];
 				
@@ -158,8 +163,8 @@ public class MainViewController extends GridPane{
 					Label space = new Label("  ");
 					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 2);
-					taskLayout.setConstraints(space, 2*j+1, 2);
+					taskLayout.setConstraints(tags[j], 2*j, 3);
+					taskLayout.setConstraints(space, 2*j+1, 3);
 					taskLayout.getChildren().addAll(space, tags[j]);
 				}
 				
@@ -167,7 +172,7 @@ public class MainViewController extends GridPane{
 				Label[] tags = new Label[1];
 				tags[0] = new Label("None");
 				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 2);
+				taskLayout.setConstraints(tags[0], 0, 3);
 				taskLayout.getChildren().add(tags[0]);
 			}
 			
@@ -192,6 +197,11 @@ public class MainViewController extends GridPane{
 			Label date = new Label("Deadline: ");
 			date.setStyle("-fx-text-fill: rgb(249,192,162)");
 			
+			Label status = new Label(task.displayDone());
+			status.setStyle("-fx-text-fill: yellow");
+			taskLayout.setConstraints(status, 0, 2, 10, 1);
+			taskLayout.getChildren().add(status);
+			
 			if (task.getTags().size() > 0) {
 				Label[] tags = new Label[task.getTags().size()];
 				
@@ -201,8 +211,8 @@ public class MainViewController extends GridPane{
 					Label space = new Label("  ");
 					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 2);
-					taskLayout.setConstraints(space, 2*j+1, 2);
+					taskLayout.setConstraints(tags[j], 2*j, 3);
+					taskLayout.setConstraints(space, 2*j+1, 3);
 					taskLayout.getChildren().addAll(space, tags[j]);
 				}
 				
@@ -210,7 +220,7 @@ public class MainViewController extends GridPane{
 				Label[] tags = new Label[1];
 				tags[0] = new Label("None");
 				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 2);
+				taskLayout.setConstraints(tags[0], 0, 3);
 				taskLayout.getChildren().add(tags[0]);
 			}
 			
@@ -228,12 +238,17 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setPrefSize(383, 75);
+			taskLayout.setPrefSize(383, 100);
 			Task task = taskList.getTask(i);
 			Label description = new Label((i+1) +". " + task.getDescription());
 			description.setStyle("-fx-text-fill: rgb(175,225,252)");
 			Label date = new Label("Deadline: ");
 			date.setStyle("-fx-text-fill: rgb(249,192,162)");
+			
+			Label status = new Label(task.displayDone());
+			status.setStyle("-fx-text-fill: yellow");
+			taskLayout.setConstraints(status, 0, 2, 10, 1);
+			taskLayout.getChildren().add(status);
 			
 			if (task.getTags().size() > 0) {
 				Label[] tags = new Label[task.getTags().size()];
@@ -244,8 +259,8 @@ public class MainViewController extends GridPane{
 					Label space = new Label("  ");
 					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 2);
-					taskLayout.setConstraints(space, 2*j+1, 2);
+					taskLayout.setConstraints(tags[j], 2*j, 3);
+					taskLayout.setConstraints(space, 2*j+1, 3);
 					taskLayout.getChildren().addAll(space, tags[j]);
 				}
 				
@@ -253,7 +268,7 @@ public class MainViewController extends GridPane{
 				Label[] tags = new Label[1];
 				tags[0] = new Label("None");
 				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 2);
+				taskLayout.setConstraints(tags[0], 0, 3);
 				taskLayout.getChildren().add(tags[0]);
 			}
 			
