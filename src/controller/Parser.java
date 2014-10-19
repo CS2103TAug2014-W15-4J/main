@@ -312,8 +312,9 @@ public class Parser {
 			ParseTime times) {
 		log.info("fixed task found");
 		String description = null;
-		if(times.getDates().size()==1)
-			return parseDeadline(input, description, times);
+		if(times.getDates().size()==1) {
+            return parseDeadline(input, description, times);
+        }
 		try {
 			description = times.getText();
 		} catch (NullPointerException e) {
@@ -325,8 +326,9 @@ public class Parser {
 			}
 		}
 		List<Date> dates = times.getDates();
-		if(dates.size()!=2)
-			return parseFloat(input, content);
+		if(dates.size()!=2) {
+            return parseFloat(input, content);
+        }
 		input.add(description);
 		input.addDate(dates);
 		return input;
@@ -513,7 +515,7 @@ public class Parser {
 		UserInput input = new UserInput();
 		input.addCommand(CMD.SHOW);
 		input.add(null);
-		if (content == null || content.equals("")) {
+		if (content == null || content.trim().equals("")) {
 			input.addShow("all");
 			log.info("exit command");
 			return input;

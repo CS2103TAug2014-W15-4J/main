@@ -1,67 +1,32 @@
 package view;
-
+	
 import java.io.IOException;
 
-
-//import javafx.scene.Parent;
-//import javafx.fxml.FXMLLoader;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.text.*;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import exception.LabelNotSetProperlyException;
-
-/**
- * Main view (GUI) of uClear
- * 
- * @author Wang Zhipeng
- *
- */
 
 public class MainView extends Application {
-	
-	MainViewController mainViewControl;
-	
-	final static Logger logForMainView = Logger.getLogger(MainView.class.getName()); 
-	
 	@Override
-	public void start(Stage primaryStage) throws IOException, LabelNotSetProperlyException {
+	public void start(Stage primaryStage) throws IOException {
+		MainViewController mvc = new MainViewController();
 		
-//		Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
-		
-		mainViewControl = new MainViewController();
-		assert(mainViewControl!=null);
-		
-		mainViewControl.setText("Enter Command here...");
-		mainViewControl.setDateLabel();
-        
-//      Scene scene = new Scene(root, 434, 620);
-		Scene scene = new Scene(mainViewControl);
-		primaryStage.setWidth(383); 
-		primaryStage.setHeight(620); 
-		logForMainView.log(Level.INFO, "Set size of window successfully!");
-        
-        primaryStage.setTitle("uClear: Welcome!");
-        logForMainView.log(Level.INFO, "Set title of window successfully!");
-        
-        primaryStage.setScene(scene);
-        logForMainView.log(Level.INFO, "Set scene of window successfully!");
-        
-        scene.getStylesheets().add(MainView.class.getResource("MainView.css").toExternalForm());
-        primaryStage.show();
-		
+		Scene scene = new Scene(mvc, 383, 620);
+		Font.loadFont(MainView.class.getResource("Montserrat-Regular.ttf").toExternalForm(), 10);
+		scene.getStylesheets().add(getClass().getResource("MainView.css").toExternalForm());
+		primaryStage.setTitle("Welcome to uClear!");
+		primaryStage.setMaxHeight(658);
+		primaryStage.setMaxWidth(399);
+		primaryStage.setMinHeight(primaryStage.getMaxHeight());
+		primaryStage.setMinWidth(primaryStage.getMaxWidth());
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 	
-	public MainViewController getController() {
-		return this.mainViewControl;
-	}
-
 	public static void main(String[] args) {
 		launch(args);
-		logForMainView.log(Level.INFO, "Set window successfully!");
 	}
-
 }
+
