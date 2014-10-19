@@ -4,11 +4,13 @@ import controller.Logic;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +23,7 @@ import javafx.scene.effect.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -52,7 +55,7 @@ public class MainViewController extends GridPane{
 	
 	// Page information
 	private VBox[] page;
-	private GridPane[] content;
+	private ArrayList<ArrayList<GridPane>> content; 
 	
 	String command;
 	String feedback;
@@ -83,6 +86,7 @@ public class MainViewController extends GridPane{
 		setFont();
         setDate();
         initMainDisplay();
+        Logic.initialize();
 	}
 	
 	private void setPageCount(int count) {
@@ -91,13 +95,11 @@ public class MainViewController extends GridPane{
 
 	private void setPages() {
 		page = new VBox[pageCount];
-		content = new GridPane[pageCount];
+		content = new ArrayList<ArrayList<GridPane>>(pageCount);
 		for (int i=0; i<pageCount; i++) {
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			content[i] = new GridPane();
-			page[i].getChildren().add(content[i]);
 		}
 	}
 	
@@ -127,18 +129,20 @@ public class MainViewController extends GridPane{
 	}
 
 	private void changePage(int pageNum) {
-		listDisplay.setCurrentPageIndex((pageNum)%pageCount);
+		listDisplay.setCurrentPageIndex(pageNum % pageCount);
 	}
 	
 	private void closePage() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
-		content[currentPageNum] = new GridPane();
+		page[currentPageNum] = new VBox();
 		
 		changePage(currentPageNum+1);
 	}
 	
 	private void setMainDisplay() {
+//		int currentPageNum = listDisplay.getCurrentPageIndex();
+		
 		
 	}
 	
@@ -147,7 +151,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private String executeCommand(String command) {
-		return command;
+		return Logic.readAndExecuteCommands(command);
 	}
 	
 	@FXML
@@ -156,6 +160,11 @@ public class MainViewController extends GridPane{
 		
 		if (command.trim().toLowerCase().equals("close")) {
 			closePage();
+		}
+		
+		if (command.trim().toLowerCase().equals("exit")) {
+			Logic.saveTaskList();
+			Platform.exit();
 		}
 		
 		feedback = executeCommand(command);
