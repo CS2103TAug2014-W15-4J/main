@@ -1,4 +1,4 @@
-package controller;
+package controller; 
 
 import java.util.Date;
 import java.util.List;
@@ -30,46 +30,54 @@ public class Logic {
     static Stack<UserInput> redoStack = new Stack<UserInput>();
     static TaskList listOfTasks;
     
-    static String MESSAGE_TASK_ADDED = "Task added successfully.";
-    static String MESSAGE_TASK_EDITED = "Task edited successfully.";
-    static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
-    static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
-    static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
-    static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
-    static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
-    static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
+    final static String MESSAGE_TASK_ADDED = "Task added successfully.";
+    final static String MESSAGE_TASK_EDITED = "Task edited successfully.";
+    final static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
+    final static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
+    final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
+    final static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
+    final static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+    final static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
     
-    static String MESSAGE_PROGRAM_REDO = "redo successful.";
-    static String MESSAGE_PROGRAM_UNDO = "undo successful.";
-    static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
+    final static String MESSAGE_PROGRAM_REDO = "redo successful.";
+    final static String MESSAGE_PROGRAM_UNDO = "undo successful.";
+    final static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
     
-    static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
-
-    static String MESSAGE_INVALID_EDIT = "Invalid edit.";
-    static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
-    static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+    final static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
   
-    static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
-    static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
-    static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
-
-    static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
-    static String MESSAGE_INVALID_REDO = "No next operation to redo.";
+    final static String MESSAGE_INVALID_EDIT = "Invalid edit.";
+    final static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
+    final static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+  
+    final static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
+    final static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+    final static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
+  
+    final static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+    final static String MESSAGE_INVALID_REDO = "No next operation to redo.";
+  
+    final static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
+    final static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
+    final static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+    final static String MESSAGE_INVALID_DATE = "Invalid date(s).";
+    final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
     
-
-    static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
-    static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
-    static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
-    static String MESSAGE_INVALID_DATE = "Invalid date(s).";
-    static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
-    
-	static String MESSAGE_HELP = "Current list of available commands: \n" + 
-                                 "- add a task              : add <description>\n" +
+	final static String MESSAGE_HELP = "Current list of available commands: \n" + 
+                                 "- add a floating task     : add <description>\n" +
+                                 "- add a deadline task     : add <description> by <time/date>\n" +
+                                 "- add a fixed time        : add <description> <time/date1> to <time/date2>\n" +
+                                 "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n" +
 			                     "- edit a task description : edit <taskID> <description>\n" +
+                                 "- edit a task time/date   : edit <taskID> <time/date>\n" +
                                  "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n" + 
 			                     "- clear all tasks         : clear\n" + 
                                  "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n" + 
-			                     "- display all tasks       : show\n" + 
+			                     "- tag a task              : tag <taskID> <tag>\n" +
+                                 "- untag a task            : untag <taskID> <tag>\n" +
+			                     "- untag all tags from task: untag <taskID>\n" +
+			                     "- show all tasks          : show / show all\n" +
+                                 "- show tasks (add order)  : show added\n" +
+			                     "- show tasks with tag     : show <tag>\n" +
                                  "- exit the program        : exit";
     
 	static Storage storage = new Storage(); 
