@@ -2,6 +2,7 @@ package view;
 	
 import java.io.IOException;
 
+import exception.TaskInvalidDateException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -10,7 +11,7 @@ import javafx.scene.text.*;
 
 public class MainView extends Application {
 	@Override
-	public void start(Stage primaryStage) throws IOException {
+	public void start(Stage primaryStage) throws IOException, TaskInvalidDateException {
 		MainViewController mvc = new MainViewController();
 		
 		Scene scene = new Scene(mvc, 383, 620);
