@@ -147,7 +147,7 @@ public class MainViewController extends GridPane{
 			Task task = taskList.getTask(i);
 			Label description = new Label((i+1) +". " + task.getDescription());
 			description.setStyle("-fx-text-fill: rgb(175,225,252)");
-			Label date = new Label("Deadline: " + "date");
+			Label date = new Label("Deadline: ");
 			date.setStyle("-fx-text-fill: rgb(249,192,162)");
 			
 			if (task.getTags().size() > 0) {
