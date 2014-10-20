@@ -176,7 +176,7 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setPrefSize(383, 75);
+			taskLayout.setPrefSize(383, 100);
 			Task task = taskList.getTask(i);
 			Label description = new Label((i+1) +". " + task.getDescription());
 			description.setStyle("-fx-text-fill: rgb(175,225,252)");
@@ -231,7 +231,7 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setPrefSize(383, 75);
+			taskLayout.setPrefSize(383, 100);
 			Task task = taskList.getTask(i);
 			Label description = new Label((i+1) +". " + task.getDescription());
 			description.setStyle("-fx-text-fill: rgb(175,225,252)");

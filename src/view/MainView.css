@@ -46,9 +46,15 @@
 }
 
 .pagination .pagination-control .bullet-button {
+	/*
     -fx-background-color: transparent, #DDF1F8, #0E5D79, white, white;
+    */
+    -fx-graphic: url("playstation-cross-icon.png");
 }
  
-.pagination .pagination-control .bullet-button:selected {   
+.pagination .pagination-control .bullet-button:selected { 
+	/*  
     -fx-background-color: transparent, #DDF1F8, #0E5D79, white, #0E5D79;
+    */
+    -fx-graphic: url("playstation-circle-icon.png");
 }

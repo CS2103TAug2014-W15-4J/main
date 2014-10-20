@@ -37,7 +37,7 @@
 			</GridPane>
 			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="1"/>
 			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="451.0" prefWidth="383.0" GridPane.rowIndex="2">
-				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="451.0" prefWidth="383.0" />
+				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="451.0" prefWidth="383.0" />	
 			</Pane>
 			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="3"/>
 			<Pane id="inputPane" prefHeight="70.0" prefWidth="383.0" GridPane.rowIndex="4">
