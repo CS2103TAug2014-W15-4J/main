@@ -6,10 +6,13 @@ import model.Task;
 
 
 
+
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.List;
 
 import exception.TaskInvalidDateException;
@@ -25,15 +28,26 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
 public class MainViewController extends GridPane{
+	
+	final static String[] colors = {
+		"rgb(249, 233, 89)",
+		"rgb(239, 75, 133)",
+		"rgb(162, 100, 223)",
+		"rgb(89, 225, 113)",
+		"rgb(47, 217, 247)",
+		"rgb(234, 106, 74)",
+		"rgb(94, 236, 225)",
+		"rgb(163, 220, 191)",
+		"rgb(187, 239, 78)",
+		"rgb(156, 184, 197)"
+	};
 	
 	@FXML
 	private Label uClear;
@@ -68,6 +82,9 @@ public class MainViewController extends GridPane{
 	int pageCount;
 	TaskList taskList;
 	
+	private Hashtable<String, String> tagColor;
+	private int colorPointer;
+	
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
@@ -91,9 +108,15 @@ public class MainViewController extends GridPane{
 		setPageCount(5);
 		setPages();
 		setFont();
+		setTagColor();
         setDate();
         initMainDisplay();
         setResponse();
+	}
+	
+	private void setTagColor() {
+		tagColor = new Hashtable<String, String>();
+		colorPointer = 0;
 	}
 	
 	private void setPageCount(int count) {
@@ -172,7 +195,14 @@ public class MainViewController extends GridPane{
 					List<String> tagList = task.getTags();
 					tags[j] = new Label(tagList.get(j));
 					Label space = new Label("  ");
-					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+					if (!tagColor.containsKey(tags[j].getText())) {
+						tagColor.put(tags[j].getText(), colors[colorPointer]);
+						colorPointer = (colorPointer + 1) % 10;
+					}
+					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
 					taskLayout.setConstraints(tags[j], 2*j, 3);
 					taskLayout.setConstraints(space, 2*j+1, 3);
@@ -220,7 +250,14 @@ public class MainViewController extends GridPane{
 					List<String> tagList = task.getTags();
 					tags[j] = new Label(tagList.get(j));
 					Label space = new Label("  ");
-					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+					if (!tagColor.containsKey(tags[j].getText())) {
+						tagColor.put(tags[j].getText(), colors[colorPointer]);
+						colorPointer = (colorPointer + 1) % 10;
+					}
+					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
 					taskLayout.setConstraints(tags[j], 2*j, 3);
 					taskLayout.setConstraints(space, 2*j+1, 3);
@@ -268,7 +305,14 @@ public class MainViewController extends GridPane{
 					List<String> tagList = task.getTags();
 					tags[j] = new Label(tagList.get(j));
 					Label space = new Label("  ");
-					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+					if (!tagColor.containsKey(tags[j].getText())) {
+						tagColor.put(tags[j].getText(), colors[colorPointer]);
+						colorPointer = (colorPointer + 1) % 10;
+					}
+					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+					
+//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 					space.setStyle("-fx-background-color: rgb(127,127,127)");
 					taskLayout.setConstraints(tags[j], 2*j, 3);
 					taskLayout.setConstraints(space, 2*j+1, 3);
