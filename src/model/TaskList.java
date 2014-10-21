@@ -98,17 +98,25 @@ public class TaskList {
 
 	public Task getTask(int taskIndex) {
 		if (showDisplayList) {
-			return tasksToDisplay.get(taskIndex);
+		      if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
+		            throw new TaskInvalidIdException("Error index for editing!");
+		      } else {
+		          return tasksToDisplay.get(taskIndex);
+		      }
 		} else {
-			// get edit id from timed/ untimed list
-			if (taskIndex < tasksTimed.size()) {
-				return tasksTimed.get(taskIndex);
-			} else {
-				return tasksUntimed.get(taskIndex - tasksTimed.size());
-			}
+		    if ((taskIndex >= totalTasks) || (taskIndex < 0)) {
+		        throw new TaskInvalidIdException("Error index for editing!");
+		    } else {
+		        // get edit id from timed/ untimed list
+		        if (taskIndex < tasksTimed.size()) {
+		            return tasksTimed.get(taskIndex);
+		        } else {
+		            return tasksUntimed.get(taskIndex - tasksTimed.size());
+		        }
+		    }
 		}
 	}
-
+	
 	private void addToList(Task task) {
 		Comparator<Task> a = new AddedDateComparator();
 		a.compare(new FloatingTask("haha"), new FloatingTask("hehe"));

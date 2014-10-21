@@ -55,6 +55,7 @@ public class RepeatedTask extends Task {
 	@Override
     public void setDeadline(Date dl) {
 		deadline = dl;
+		updatePeriodString();
 	}
 	
 	public void setRepeatPeriod(RepeatDate repeatP) {

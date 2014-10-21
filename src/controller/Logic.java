@@ -730,5 +730,18 @@ public class Logic {
 	public static void setEmptyTaskList() {
 		listOfTasks = new TaskList();
 	}
+	
+	/**
+	 * 
+	 * @param taskId
+	 * @return Task of id taskId
+	 * 
+	 * this method returns the Task of the given taskId.
+	 * 
+	 * this method is for testing purposes only
+	 */
+	public static Task getTask(int taskId) {
+	    return listOfTasks.getTask(taskId);
+	}
 
 }
