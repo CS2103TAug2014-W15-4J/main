@@ -367,7 +367,7 @@ public class MainViewController extends GridPane{
 	private boolean isSpecialCommand() throws TaskInvalidDateException {
 		if (command.trim().toLowerCase().equals("close")) {
 			closePage();
-			input.setText("");
+			setTextFieldEmpty();
 			return true;
 		}
 		
@@ -391,6 +391,10 @@ public class MainViewController extends GridPane{
 		return Logic.getTaskList();
 	}
 	
+	private void setTextFieldEmpty() {
+		input.setText("");
+	}
+	
 	@FXML
     private void onEnter() throws TaskInvalidDateException {
 		command = getUserInput();
@@ -399,7 +403,7 @@ public class MainViewController extends GridPane{
 			feedback = executeCommand(command);
 			saveTaskList();
 			setMainDisplay();
-			input.setText("");
+			setTextFieldEmpty();
 		}
     }
 	
