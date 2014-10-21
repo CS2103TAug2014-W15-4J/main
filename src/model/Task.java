@@ -66,9 +66,13 @@ public abstract class Task {
 	}
 	
 	public Task markDone() throws TaskDoneException {
-		isDone = true;
-	    doneDate = new Date(System.currentTimeMillis());
-		return null;
+	    if (!isDone) {
+    		isDone = true;
+    	    doneDate = new Date(System.currentTimeMillis());
+    		return null;
+	    } else {
+	        throw new TaskDoneException();
+	    }
 	}
 	
 	public boolean getIsDone() {
