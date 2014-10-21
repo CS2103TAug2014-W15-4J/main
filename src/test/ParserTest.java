@@ -27,7 +27,7 @@ public class ParserTest {
 		input = parser.parse(test2);
 		assertTrue(input.getValid());
 		assertEquals(UserInput.CMD.ADD,input.getCommand());
-		assertFalse(input.isDeadline());
+		assertTrue(input.isDeadline());
 		assertFalse(input.isFloat());
 		assertEquals(input.getDate().size(),1);
 		
