@@ -171,8 +171,8 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayExistingTasks() throws TaskInvalidDateException {
-		Logic.loadTaskList();
-		taskList = Logic.getTaskList();
+		loadTaskList();
+		taskList = getTaskList();
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
@@ -227,7 +227,7 @@ public class MainViewController extends GridPane{
 	
 	private void updateDisplay() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
-		taskList = Logic.getTaskList();
+		taskList = getTaskList();
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
@@ -282,7 +282,7 @@ public class MainViewController extends GridPane{
 	
 	private void updateDisplay(int pageIndex) {
 
-		taskList = Logic.getTaskList();
+		taskList = getTaskList();
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
@@ -364,23 +364,43 @@ public class MainViewController extends GridPane{
 		return Logic.readAndExecuteCommands(command);
 	}
 	
+	private boolean isSpecialCommand() throws TaskInvalidDateException {
+		if (command.trim().toLowerCase().equals("close")) {
+			closePage();
+			input.setText("");
+			return true;
+		}
+		
+		if (command.trim().toLowerCase().equals("exit")) {
+			saveTaskList();
+			Platform.exit();
+		}
+		
+		return false;
+	}
+	
+	private void saveTaskList() {
+		Logic.saveTaskList();
+	}
+	
+	private void loadTaskList() {
+		Logic.loadTaskList();
+	}
+	
+	private TaskList getTaskList() {
+		return Logic.getTaskList();
+	}
+	
 	@FXML
     private void onEnter() throws TaskInvalidDateException {
 		command = getUserInput();
 		
-		if (command.trim().toLowerCase().equals("close")) {
-			closePage();
+		if (!isSpecialCommand()) {
+			feedback = executeCommand(command);
+			saveTaskList();
+			setMainDisplay();
+			input.setText("");
 		}
-		
-		if (command.trim().toLowerCase().equals("exit")) {
-			Logic.saveTaskList();
-			Platform.exit();
-		}
-		
-		feedback = executeCommand(command);
-		Logic.saveTaskList();
-		setMainDisplay();
-    	input.setText("");
     }
 	
 }
