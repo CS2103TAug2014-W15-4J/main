@@ -105,7 +105,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void initialize() throws TaskInvalidDateException {
-		setPageCount(5);
+		setPageCount(3);
 		setPages();
 		setFont();
 		setTagColor();
@@ -176,6 +176,7 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
+			taskLayout.setStyle("-fx-padding: 20");
 			taskLayout.setPrefSize(383, 100);
 			Task task = taskList.getTask(i);
 			Label description = new Label((i+1) +". " + task.getDescription());
