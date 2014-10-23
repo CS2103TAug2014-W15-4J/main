@@ -1,4 +1,4 @@
-package controller; 
+package controller;
 
 import java.util.Date;
 import java.util.List;
@@ -22,66 +22,66 @@ import model.Task;
  */
 
 public class Logic {
-	
-    static Scanner scanner = new Scanner(System.in);
-    static Stack<UserInput> undoStack = new Stack<UserInput>();
-    static Stack<UserInput> redoStack = new Stack<UserInput>();
-    static TaskList listOfTasks;
-    
-    final static String MESSAGE_TASK_ADDED = "Task added successfully.";
-    final static String MESSAGE_TASK_EDITED = "Task edited successfully.";
-    final static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
-    final static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
-    final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
-    final static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
-    final static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
-    final static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
-    
-    final static String MESSAGE_PROGRAM_REDO = "redo successful.";
-    final static String MESSAGE_PROGRAM_UNDO = "undo successful.";
-    final static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
-    
-    final static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
-    final static String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
-    
-    final static String MESSAGE_INVALID_EDIT = "Invalid edit.";
-    final static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
-    final static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
-  
-    final static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
-    final static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
-    final static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
-  
-    final static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
-    final static String MESSAGE_INVALID_REDO = "No next operation to redo.";
-  
-    final static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
-    final static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
-    final static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
-    final static String MESSAGE_INVALID_DATE = "Invalid date(s).";
-    final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
-    
-	final static String MESSAGE_HELP = "Current list of available commands: \n" + 
-                                 "- add a floating task     : add <description>\n" +
-                                 "- add a deadline task     : add <description> by <time/date>\n" +
-                                 "- add a fixed time        : add <description> <time/date1> to <time/date2>\n" +
-                                 "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n" +
-			                     "- edit a task description : edit <taskID> <description>\n" +
-                                 "- edit a task time/date   : edit <taskID> <time/date>\n" +
-                                 "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n" + 
-			                     "- clear all tasks         : clear\n" + 
-                                 "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n" + 
-			                     "- tag a task              : tag <taskID> <tag>\n" +
-                                 "- untag a task            : untag <taskID> <tag>\n" +
-			                     "- untag all tags from task: untag <taskID>\n" +
-			                     "- show all tasks          : show / show all\n" +
-                                 "- show tasks (add order)  : show added\n" +
-			                     "- show tasks with tag     : show <tag>\n" +
-			                     "- search tasks            : search <keyword>\n" +
-                                 "- exit the program        : exit";
-    
-	static Storage storage = new Storage(); 
-	
+
+	static Scanner scanner = new Scanner(System.in);
+	static Stack<UserInput> undoStack = new Stack<UserInput>();
+	static Stack<UserInput> redoStack = new Stack<UserInput>();
+	static TaskList listOfTasks;
+
+	final static String MESSAGE_TASK_ADDED = "Task added successfully.";
+	final static String MESSAGE_TASK_EDITED = "Task edited successfully.";
+	final static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
+	final static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
+	final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
+	final static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
+	final static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+	final static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
+
+	final static String MESSAGE_PROGRAM_REDO = "redo successful.";
+	final static String MESSAGE_PROGRAM_UNDO = "undo successful.";
+	final static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
+
+	final static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
+	final static String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
+
+	final static String MESSAGE_INVALID_EDIT = "Invalid edit.";
+	final static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
+	final static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+
+	final static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
+	final static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+	final static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
+
+	final static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+	final static String MESSAGE_INVALID_REDO = "No next operation to redo.";
+
+	final static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
+	final static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
+	final static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+	final static String MESSAGE_INVALID_DATE = "Invalid date(s).";
+	final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
+
+	final static String MESSAGE_HELP = "Current list of available commands: \n"
+			+ "- add a floating task     : add <description>\n"
+			+ "- add a deadline task     : add <description> by <time/date>\n"
+			+ "- add a fixed time        : add <description> <time/date1> to <time/date2>\n"
+			+ "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n"
+			+ "- edit a task description : edit <taskID> <description>\n"
+			+ "- edit a task time/date   : edit <taskID> <time/date>\n"
+			+ "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n"
+			+ "- clear all tasks         : clear\n"
+			+ "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n"
+			+ "- tag a task              : tag <taskID> <tag>\n"
+			+ "- untag a task            : untag <taskID> <tag>\n"
+			+ "- untag all tags from task: untag <taskID>\n"
+			+ "- show all tasks          : show / show all\n"
+			+ "- show tasks (add order)  : show added\n"
+			+ "- show tasks with tag     : show <tag>\n"
+			+ "- search tasks            : search <keyword>\n"
+			+ "- exit the program        : exit";
+
+	static Storage storage = new Storage();
+
 	static Logger log = Logger.getLogger("controller.logic");
 
 	public static void main(String[] args) {
@@ -91,7 +91,7 @@ public class Logic {
 		// get existing tasks from storage
 		listOfTasks = storage.load();
 		listOfTasks.setShowDisplayListToFalse();
-		
+
 		// get and execute new tasks
 		while (true) {
 
@@ -186,18 +186,14 @@ public class Logic {
 						Date date = dateList.get(0);
 						RepeatDate repeatDate = userCommand.repeatDate();
 
-						System.out.println(date);
-						System.out.println(repeatDate);
-						System.out.println(desc);
 						return addTask(desc, date, repeatDate);
 
 					} else {
 						return MESSAGE_INVALID_DATE_NUMBER;
 					}
 
-					// is fixed task
 				} else {
-
+					// is fixed task
 					if (dateList.size() == 2) {
 						Date startDate = dateList.get(0);
 						Date endDate = dateList.get(1);
@@ -218,7 +214,7 @@ public class Logic {
 
 			Task taskToEdit = listOfTasks.getTask(editID - 1);
 			Task.Type taskType = taskToEdit.getType();
-//			listOfTasks.setShowDisplayListToFalse();
+			// listOfTasks.setShowDisplayListToFalse();
 
 			assert (desc != null);
 
@@ -294,7 +290,7 @@ public class Logic {
 			}
 
 		} else if (userCommand.getCommand() == UserInput.CMD.DELETE) {
-//			listOfTasks.setShowDisplayListToFalse();
+			// listOfTasks.setShowDisplayListToFalse();
 			return deleteTask(userCommand.getDeleteID());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
@@ -476,7 +472,7 @@ public class Logic {
 			listOfTasks.setShowDisplayListToFalse();
 			return MESSAGE_EMPTY_SEARCH_RESULT;
 		}
-		
+
 		return displayTasks(result);
 	}
 
@@ -487,7 +483,7 @@ public class Logic {
 	 *         this method will delete the specified task(s) from the file
 	 */
 	private static String deleteTask(List<Integer> taskIndexList) {
-//		listOfTasks.setShowDisplayListToFalse();
+		// listOfTasks.setShowDisplayListToFalse();
 		try {
 			listOfTasks.deleteFromList(taskIndexList);
 			return MESSAGE_TASK_DELETED;
@@ -527,14 +523,14 @@ public class Logic {
 			return displayTasks(listOfTasks.prepareDisplayList(true));
 
 		} else {
-            try {
-                return String.format(MESSAGE_TASKTAG_RETURNED,
-                                     userCommand,
-                                     displayTasks(listOfTasks.prepareDisplayList(userCommand)));
-                
-            } catch (TaskNoSuchTagException e) {
-                return MESSAGE_INVALID_TAG_NONEXISTENT;
-            }
+			try {
+				return String.format(MESSAGE_TASKTAG_RETURNED, userCommand,
+						displayTasks(listOfTasks
+								.prepareDisplayList(userCommand)));
+
+			} catch (TaskNoSuchTagException e) {
+				return MESSAGE_INVALID_TAG_NONEXISTENT;
+			}
 
 		}
 	}
@@ -577,7 +573,7 @@ public class Logic {
 	 * @param taskIndexList
 	 * @return feedback string whether tasks are marked done successfully
 	 * 
-	 * this method marks that specified task(s) has been done
+	 *         this method marks that specified task(s) has been done
 	 */
 	private static String markDone(List<Integer> taskIndexList) {
 		try {
@@ -598,8 +594,8 @@ public class Logic {
 	 * @param tag
 	 * @return feedback string on tagging of tasks.
 	 * 
-	 * this method assigns the tag (non case-sensitive) to a specified
-	 * task
+	 *         this method assigns the tag (non case-sensitive) to a specified
+	 *         task
 	 */
 	private static String tagTask(int taskIndexToTag, String tag) {
 		try {
@@ -730,18 +726,18 @@ public class Logic {
 	public static void setEmptyTaskList() {
 		listOfTasks = new TaskList();
 	}
-	
+
 	/**
 	 * 
 	 * @param taskId
 	 * @return Task of id taskId
 	 * 
-	 * this method returns the Task of the given taskId.
+	 *         this method returns the Task of the given taskId.
 	 * 
-	 * this method is for testing purposes only
+	 *         this method is for testing purposes only
 	 */
 	public static Task getTask(int taskId) {
-	    return listOfTasks.getTask(taskId);
+		return listOfTasks.getTask(taskId);
 	}
 
 }
