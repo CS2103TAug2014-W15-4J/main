@@ -146,6 +146,8 @@ public abstract class Task {
 		Date now = new Date();
 		if (now.after(getDeadline())) {
 			this.isOverdue = true;
+		} else {
+			this.isOverdue = false;
 		}
 	}
 	
