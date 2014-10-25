@@ -19,7 +19,6 @@ public class SystemTest {
     final String MESSAGE_FAIL = "Invalid command. Type 'help' to see the list of available commands.";
     final String MESSAGE_EMPTY = "Your task list is empty.";
     final String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
-    final String MESSAGE_INVALID_DONE = "Error: task(s) already marked done.";
     final String MESSAGE_CLEAR_SUCCESS = "Task list cleared successfully.";
     
     final String COMMAND_CLEAR = "clear";
@@ -31,7 +30,6 @@ public class SystemTest {
     final String COMMAND_DELETE_THREE = "delete 3";
     final String COMMAND_DONE_INVALID_ID = "done 3";
     final String COMMAND_DONE_TWO = "done 2";
-    final String COMMAND_DONE_ALREADY = "done 2";
     final String COMMAND_TAG_ONE = "tag 1 one";
     final String COMMAND_TAG_REPEATED = "tag 1 one";
     final String COMMAND_UNTAG_ONE = "untag 1 one";
@@ -81,10 +79,6 @@ public class SystemTest {
 		// done two
 		feedback = Logic.readAndExecuteCommands(COMMAND_DONE_TWO);
 		assertEquals(feedback, MESSAGE_DONE_SUCCESS);
-		
-		// done a task that has already been done
-		feedback = Logic.readAndExecuteCommands(COMMAND_DONE_ALREADY);
-		assertEquals(feedback, MESSAGE_INVALID_DONE);
 		
 		// tag task one with one
 		feedback = Logic.readAndExecuteCommands(COMMAND_TAG_ONE);

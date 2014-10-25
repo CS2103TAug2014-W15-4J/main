@@ -237,8 +237,8 @@ public class TaskListTest {
 		toDone = new ArrayList<Integer>();
 		toDone.add(1);
 		tasks.markTaskDone(toDone);
-		assertTrue(tasks.getTask(0).getIsDone());
-
+		assertTrue(tasks.getFinishedTasks().get(0).getIsDone());
+		
 		/* Testing done multiple tasks */
 		tasks = new TaskList();
 		toDone = new ArrayList<Integer>();
@@ -247,22 +247,15 @@ public class TaskListTest {
 			pause(10);
 		}
 		for (int i = 2; i < 8; i++) {
-			toDone.add(i);
+			toDone.add(3);
 		}
 		tasks.markTaskDone(toDone);
-
-		for (int i = 2; i < 8; i++) {
-			assertTrue(tasks.getTask(i - 1).getIsDone());
+		List<Task> finished = tasks.getFinishedTasks();
+		for (int i = 0; i < 5; i++) {
+			assertTrue(finished.get(i).getIsDone());
 		}
+		tasks.setNotShowingDone();
 
-		/* Testing done a tasks twice */
-		toDone = new ArrayList<Integer>();
-		toDone.add(1);
-		try {
-			tasks.markTaskDone(toDone);
-		} catch (TaskDoneException e) {
-			assert (e instanceof TaskDoneException);
-		}
 	}
 
 	@Test
