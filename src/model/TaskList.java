@@ -98,25 +98,25 @@ public class TaskList {
 
 	public Task getTask(int taskIndex) {
 		if (showDisplayList) {
-		      if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
-		            throw new TaskInvalidIdException("Error index for editing!");
-		      } else {
-		          return tasksToDisplay.get(taskIndex);
-		      }
+			if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
+				throw new TaskInvalidIdException("Error index for editing!");
+			} else {
+				return tasksToDisplay.get(taskIndex);
+			}
 		} else {
-		    if ((taskIndex >= totalTasks) || (taskIndex < 0)) {
-		        throw new TaskInvalidIdException("Error index for editing!");
-		    } else {
-		        // get edit id from timed/ untimed list
-		        if (taskIndex < tasksTimed.size()) {
-		            return tasksTimed.get(taskIndex);
-		        } else {
-		            return tasksUntimed.get(taskIndex - tasksTimed.size());
-		        }
-		    }
+			if ((taskIndex >= totalTasks) || (taskIndex < 0)) {
+				throw new TaskInvalidIdException("Error index for editing!");
+			} else {
+				// get edit id from timed/ untimed list
+				if (taskIndex < tasksTimed.size()) {
+					return tasksTimed.get(taskIndex);
+				} else {
+					return tasksUntimed.get(taskIndex - tasksTimed.size());
+				}
+			}
 		}
 	}
-	
+
 	private void addToList(Task task) {
 		Comparator<Task> a = new AddedDateComparator();
 		a.compare(new FloatingTask("haha"), new FloatingTask("hehe"));
@@ -203,7 +203,7 @@ public class TaskList {
 
 	public void editTaskDescription(int taskIndex, String description)
 			throws TaskInvalidIdException {
-		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+		if (isInvalidIndex(taskIndex)) {
 			throw new TaskInvalidIdException("Error index for editing!");
 		} else {
 			int indexToEdit = taskIndex - 1;
@@ -247,7 +247,7 @@ public class TaskList {
 
 	public void editTaskDeadline(int taskIndex, Date time)
 			throws TaskInvalidIdException, TaskInvalidDateException {
-		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+		if (isInvalidIndex(taskIndex)) {
 			throw new TaskInvalidIdException("Error index for editing!");
 		} else {
 			int indexToEdit = taskIndex - 1;
@@ -291,7 +291,7 @@ public class TaskList {
 
 	public void editTaskStartDate(int taskIndex, Date startDate)
 			throws TaskInvalidIdException {
-		if ((taskIndex > totalTasks) || (taskIndex <= 0)) {
+		if (isInvalidIndex(taskIndex)) {
 			throw new TaskInvalidIdException("Error index for editing!");
 
 		} else {
@@ -349,14 +349,14 @@ public class TaskList {
 
 			Collections.sort(taskIndexList);
 			for (int i = taskIndexList.size() - 1; i >= 0; i--) {
-				int indexToRemove = taskIndexList.get(i) - 1;
+				int indexToRemove = taskIndexList.get(i);
 
-				if ((indexToRemove >= totalTasks) || (indexToRemove < 0)) {
+				if (isInvalidIndex(indexToRemove)) {
 
 					throw new TaskInvalidIdException("Error index for editing!");
 
 				} else {
-					Task taskToRemove = getTask(indexToRemove);
+					Task taskToRemove = getTask(indexToRemove - 1);
 
 					// if the index comes from a list used for displaying, use
 					// time to find
@@ -402,10 +402,10 @@ public class TaskList {
 		this.tasksUntimed.clear();
 		this.tasksTimed.clear();
 		this.tasksUntimed.clear();
-        this.tags.clear();
+		this.tags.clear();
 		this.totalTasks = 0;
 		this.taskFinished = 0;
-        
+
 	}
 
 	public void markTaskDone(List<Integer> taskIndexList)
@@ -416,18 +416,19 @@ public class TaskList {
 
 		} else {
 			for (int i = 0; i < taskIndexList.size(); i++) {
-				int taskIndexToMarkDone = taskIndexList.get(i) - 1;
-				if ((taskIndexToMarkDone >= totalTasks)
-						|| (taskIndexToMarkDone < 0)) {
+				int taskIndexToMarkDone = taskIndexList.get(i);
+				if (isInvalidIndex(taskIndexToMarkDone)) {
 					throw new TaskInvalidIdException("Error index input.");
 				} else {
-					Task target = getTask(taskIndexToMarkDone);
+					Task target = getTask(taskIndexToMarkDone - 1);
 					Task newRepeatTask = null;
 					boolean isFound = false;
-					
+
 					// trace the task by added time.
 					for (Task task : this.tasksTimed) {
 						if (task.getAddedTime().equals(target.getAddedTime())) {
+							System.out.println("id:"
+									+ (taskIndexToMarkDone - 1));
 							newRepeatTask = task.markDone();
 							isFound = true;
 							break;
@@ -437,6 +438,8 @@ public class TaskList {
 						for (Task task : this.tasksUntimed) {
 							if (task.getAddedTime().equals(
 									target.getAddedTime())) {
+								System.out.println("id:"
+										+ (taskIndexToMarkDone - 1));
 								newRepeatTask = task.markDone();
 								break;
 							}
@@ -454,7 +457,7 @@ public class TaskList {
 
 	public void tagTask(int taskIndexToTag, String tag)
 			throws TaskInvalidIdException, TaskTagDuplicateException {
-		if ((taskIndexToTag > totalTasks) || (taskIndexToTag <= 0)) {
+		if (isInvalidIndex(taskIndexToTag)) {
 			throw new TaskInvalidIdException();
 
 		} else {
@@ -477,7 +480,7 @@ public class TaskList {
 
 	public void untagTask(int taskIndexToUntag, String tag)
 			throws TaskInvalidIdException, TaskTagException {
-		if ((taskIndexToUntag > totalTasks) || (taskIndexToUntag <= 0)) {
+		if (isInvalidIndex(taskIndexToUntag)) {
 			throw new TaskInvalidIdException();
 
 		} else if (tag.isEmpty()) {
@@ -571,27 +574,29 @@ public class TaskList {
 		tasksToDisplay = result;
 		return tasksToDisplay;
 	}
-	
-    public List<Task> prepareDisplayList(String tag) throws TaskNoSuchTagException {
 
-        if (tags.containsKey(tag.toLowerCase())) {
+	public List<Task> prepareDisplayList(String tag)
+			throws TaskNoSuchTagException {
 
-            tasksToDisplay = tags.get(tag.toLowerCase());
-            // check overdue for each task
-            for (Task task : tasksToDisplay) {
-                try {
-                    task.checkOverdue();
-                } catch (TaskInvalidDateException e) {
-                    logger.log(Level.WARNING, "Invalid Deadline when checking Overdue!");               
-                }
-            }
+		if (tags.containsKey(tag.toLowerCase())) {
 
-            showDisplayList = true;
+			tasksToDisplay = tags.get(tag.toLowerCase());
+			// check overdue for each task
+			for (Task task : tasksToDisplay) {
+				try {
+					task.checkOverdue();
+				} catch (TaskInvalidDateException e) {
+					logger.log(Level.WARNING,
+							"Invalid Deadline when checking Overdue!");
+				}
+			}
 
-            return tasksToDisplay;
-        } else {
-            throw new TaskNoSuchTagException();
-        }
+			showDisplayList = true;
+
+			return tasksToDisplay;
+		} else {
+			throw new TaskNoSuchTagException();
+		}
 
 	}
 
@@ -632,6 +637,14 @@ public class TaskList {
 		return output;
 	}
 
+	/**
+	 * @param taskIndex
+	 * @return
+	 */
+	public boolean isInvalidIndex(int taskIndex) {
+		return (taskIndex > this.count()) || (taskIndex <= 0);
+	}
+
 	public int count() {
 		return this.totalTasks;
 	}
@@ -647,27 +660,4 @@ public class TaskList {
 	public int countFinished() {
 		return this.taskFinished;
 	}
-
-	@Override
-	public String toString() {
-		String output = "";
-		int i = 1;
-		for (Task task : this.tasksTimed) {
-			output += i;
-			output += ": ";
-			output += task.getDescription();
-			output += "\n";
-			i++;
-		}
-		return output;
-	}
-
-	// this method is only for testing purpose
-	// generate 50 dummy tasks
-	public void test() {
-		for (int i = 0; i < 50; i++) {
-			this.tasksUntimed.add(new FloatingTask("No." + i));
-		}
-	}
-
 }
