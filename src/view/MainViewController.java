@@ -22,9 +22,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -63,12 +64,10 @@ public class MainViewController extends GridPane{
 	private GridPane title;
 	
 	@FXML
-	private Pane mainDisplay;
-	
-	@FXML
 	private Pagination listDisplay;
 	
 	// Pages
+	private ScrollPane[] scrollPage;
 	private VBox[] page;
 	
 	String command;
@@ -113,12 +112,23 @@ public class MainViewController extends GridPane{
 	}
 
 	private void setPages() {
+		scrollPage = new ScrollPane[pageCount];
 		page = new VBox[pageCount];
 		for (int i=0; i<pageCount; i++) {
+			scrollPage[i] = new ScrollPane();
+			setScrollPage(scrollPage[i]);
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
+			scrollPage[i].setContent(page[i]);
 		}
+	}
+	
+	private void setScrollPage(ScrollPane scroll) {
+		scroll.setStyle("-fx-background-color: rgb(127,127,127)");
+		scroll.setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
+		scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scroll.setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 
 	private void setFont() {
@@ -146,7 +156,7 @@ public class MainViewController extends GridPane{
 		{
 			@Override
 			public Node call(Integer pageIndex) {
-				return page[pageIndex];
+				return scrollPage[pageIndex];
 			}
 		});
 		displayExistingTasks();
@@ -210,7 +220,6 @@ public class MainViewController extends GridPane{
 	
 	private void setDeadline(GridPane taskLayout, Task task) throws TaskInvalidDateException {
 		Label deadline = new Label();
-		System.out.println(task.getType());
 		
 		if (task.getType().equals(Task.Type.FLOAT)) {
 			deadline.setText("Deadline: No deadline");
