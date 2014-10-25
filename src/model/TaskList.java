@@ -153,13 +153,18 @@ public class TaskList {
 	}
 	
 	private void addToList(Task task) {
-		if (task instanceof FloatingTask) {
-			this.tasksUntimed.add(task);
-
-		} else {
-			this.tasksTimed.add(task);
-		}
-		this.totalTasks++;
+	    if (task.getIsDone()) {
+	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
+	        
+	    } else {
+    		if (task instanceof FloatingTask) {
+    			((SortedArrayList<Task>) this.tasksUntimed).addOrder(task);
+    
+    		} else {
+    			((SortedArrayList<Task>) this.tasksTimed).addOrder(task);
+    		}
+    		this.totalTasks++;
+	    }
 	}
 
 	/**
@@ -389,6 +394,8 @@ public class TaskList {
 			throw new TaskInvalidIdException("Nothing to delete");
 		} else {
 
+		    ArrayList<Task> tasksRemoved = new ArrayList<Task>();
+		    
 			Collections.sort(taskIndexList);
 			for (int i = taskIndexList.size() - 1; i >= 0; i--) {
 				int indexToRemove = taskIndexList.get(i);
@@ -397,7 +404,7 @@ public class TaskList {
 					if (indexToRemove>this.tasksFinished.size() || indexToRemove<=0) {
 						throw new TaskInvalidIdException("Error index for deleting!");
 					} else {
-						this.tasksFinished.remove(indexToRemove - 1);
+						tasksRemoved.add(this.tasksFinished.remove(indexToRemove - 1));
 					}
 					this.totalTasks--;
 				} else {
@@ -407,6 +414,7 @@ public class TaskList {
 
 					} else {
 						Task taskToRemove = getTask(indexToRemove - 1);
+						tasksRemoved.add(taskToRemove);
 						// if the index comes from a list used for displaying, use
 						// time to find
 						boolean isFound = false;
@@ -431,13 +439,20 @@ public class TaskList {
 
 						this.totalTasks--;
 					}
-				}
-				
+				}	
 			}
+			
+			addToUndoList(LastCommand.DELETE, tasksRemoved, -1);
 		}
 	}
 
-	public void clearList() {
+    public void clearList() {
+        ArrayList<Task> tasksRemoved = new ArrayList<Task>();
+        tasksRemoved.addAll(tasksUntimed);
+        tasksRemoved.addAll(tasksTimed);
+        tasksRemoved.addAll(tasksFinished);
+        addToUndoList(LastCommand.DELETE, tasksRemoved, -1);
+        
 		this.isDisplay = false;
 		this.tasksUntimed.clear();
 		this.tasksTimed.clear();
@@ -724,10 +739,15 @@ public class TaskList {
 	        
 	        if (lastState.getLastCommand() == LastCommand.ADD) {
 	            int taskIndex = lastState.getTaskIndex();
-	            ArrayList<Integer> arrayList = new ArrayList<Integer>();
+	            List<Integer> arrayList = new ArrayList<Integer>();
 	            arrayList.add(taskIndex + 1);
 	            deleteFromList(arrayList);
 	            
+	        } else if (lastState.getLastCommand() == LastCommand.DELETE) {
+	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
+	            for (Task task : tasksToReadd) {
+	                addToList(task);
+	            }
 	            
 	        } else {
 	            // do other undo operations here
@@ -752,6 +772,12 @@ public class TaskList {
 	    LastState currentTaskState = new LastState(cmd, task, taskIndex);
 	    undoStack.push(currentTaskState);
 	}
+	
+    private void addToUndoList(LastCommand cmd, List<Task> tasks, int taskIndex) {
+        LastState currentTaskState = new LastState(cmd, tasks, taskIndex);
+        undoStack.push(currentTaskState);
+        
+    }
 	
 	private void addToUndoList(LastCommand cmd, List<Task> tasks, List<Integer> taskIndices) {
 	    LastState currentTasksState = new LastState(cmd, tasks, taskIndices);
