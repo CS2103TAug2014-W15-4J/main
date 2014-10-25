@@ -3,19 +3,14 @@ package view;
 import controller.Logic;
 import model.TaskList;
 import model.Task;
-
-
-
-
+import exception.TaskInvalidDateException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 
-import exception.TaskInvalidDateException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -73,9 +68,8 @@ public class MainViewController extends GridPane{
 	@FXML
 	private Pagination listDisplay;
 	
-	// Page information
+	// Pages
 	private VBox[] page;
-	private ArrayList<ArrayList<GridPane>> content; 
 	
 	String command;
 	String feedback;
@@ -101,22 +95,17 @@ public class MainViewController extends GridPane{
         
         fxmlLoader.load();
         
-        initialize();
+        setMainView();
 	}
 	
-	private void initialize() throws TaskInvalidDateException {
+	private void setMainView() throws TaskInvalidDateException {
 		setPageCount(3);
 		setPages();
 		setFont();
-		setTagColor();
+		initTagColor();
         setDate();
         initMainDisplay();
         setResponse();
-	}
-	
-	private void setTagColor() {
-		tagColor = new Hashtable<String, String>();
-		colorPointer = 0;
 	}
 	
 	private void setPageCount(int count) {
@@ -125,15 +114,13 @@ public class MainViewController extends GridPane{
 
 	private void setPages() {
 		page = new VBox[pageCount];
-		content = new ArrayList<ArrayList<GridPane>>(pageCount);
 		for (int i=0; i<pageCount; i++) {
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			//content.set(i, new ArrayList<GridPane>());
 		}
 	}
-	
+
 	private void setFont() {
 	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
 	    uClear.setStyle("-fx-font-size: 35");
@@ -142,21 +129,16 @@ public class MainViewController extends GridPane{
 	    input.setStyle("-fx-font-size: 20");
 	}
 
+	private void initTagColor() {
+		tagColor = new Hashtable<String, String>();
+		colorPointer = 0;
+	}
+	
 	private void setDate() {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
 	
-	private void setResponse() {
-		if (taskList.count() > 1) {
-			response.setText("Oops! " + taskList.count() + " tasks should be done!");
-		} else if (taskList.count() == 1) {
-			response.setText("Oops! " + taskList.count() + " task should be done!");
-		} else {
-			response.setText("Good! All tasks are done!");
-		}
-	}
-
 	private void initMainDisplay() throws TaskInvalidDateException {
 		listDisplay.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
 		listDisplay.setPageCount(pageCount);
@@ -169,175 +151,119 @@ public class MainViewController extends GridPane{
 		});
 		displayExistingTasks();
 	}
-	
+
+	private void setResponse() {
+		if (taskList.count() > 1) {
+			response.setText("Oops! " + taskList.count() + " tasks should be done!");
+		} else if (taskList.count() == 1) {
+			response.setText("Oops! " + taskList.count() + " task should be done!");
+		} else {
+			response.setText("Good! All tasks are done!");
+		}
+	}
+
 	private void displayExistingTasks() throws TaskInvalidDateException {
 		loadTaskList();
 		taskList = getTaskList();
 		
-		for (int i=0; i<taskList.count(); i++) {
-			GridPane taskLayout = new GridPane();
-			taskLayout.setStyle("-fx-padding: 20");
-			taskLayout.setPrefSize(383, 100);
-			Task task = taskList.getTask(i);
-			Label description = new Label((i+1) +". " + task.getDescription());
-			description.setStyle("-fx-text-fill: rgb(175,225,252)");
-			Label date = new Label("Deadline: ");
-			date.setStyle("-fx-text-fill: rgb(249,192,162)");
-			
-			Label status = new Label(task.displayDone());
-			status.setStyle("-fx-text-fill: yellow");
-			taskLayout.setConstraints(status, 0, 2, 10, 1);
-			taskLayout.getChildren().add(status);
-			
-			if (task.getTags().size() > 0) {
-				Label[] tags = new Label[task.getTags().size()];
-				
-				for (int j=0; j<task.getTags().size(); j++) {
-					List<String> tagList = task.getTags();
-					tags[j] = new Label(tagList.get(j));
-					Label space = new Label("  ");
-					
-					if (!tagColor.containsKey(tags[j].getText())) {
-						tagColor.put(tags[j].getText(), colors[colorPointer]);
-						colorPointer = (colorPointer + 1) % 10;
-					}
-					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					
-//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 3);
-					taskLayout.setConstraints(space, 2*j+1, 3);
-					taskLayout.getChildren().addAll(space, tags[j]);
-				}
-				
-			} else {
-				Label[] tags = new Label[1];
-				tags[0] = new Label("None");
-				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 3);
-				taskLayout.getChildren().add(tags[0]);
-			}
-			
-			taskLayout.setConstraints(description, 0, 0, 10, 1);
-			taskLayout.setConstraints(date, 0, 1, 10, 1);
-			taskLayout.getChildren().addAll(description, date);
-			
-			page[0].getChildren().add(taskLayout);
-		}
+		setOnePageView(0);
 	}
 	
-	private void updateDisplay() {
+	private void updateDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		taskList = getTaskList();
 		
-		for (int i=0; i<taskList.count(); i++) {
-			GridPane taskLayout = new GridPane();
-			taskLayout.setPrefSize(383, 100);
-			Task task = taskList.getTask(i);
-			Label description = new Label((i+1) +". " + task.getDescription());
-			description.setStyle("-fx-text-fill: rgb(175,225,252)");
-			Label date = new Label("Deadline: ");
-			date.setStyle("-fx-text-fill: rgb(249,192,162)");
-			
-			Label status = new Label(task.displayDone());
-			status.setStyle("-fx-text-fill: yellow");
-			taskLayout.setConstraints(status, 0, 2, 10, 1);
-			taskLayout.getChildren().add(status);
-			
-			if (task.getTags().size() > 0) {
-				Label[] tags = new Label[task.getTags().size()];
-				
-				for (int j=0; j<task.getTags().size(); j++) {
-					List<String> tagList = task.getTags();
-					tags[j] = new Label(tagList.get(j));
-					Label space = new Label("  ");
-					
-					if (!tagColor.containsKey(tags[j].getText())) {
-						tagColor.put(tags[j].getText(), colors[colorPointer]);
-						colorPointer = (colorPointer + 1) % 10;
-					}
-					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					
-//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 3);
-					taskLayout.setConstraints(space, 2*j+1, 3);
-					taskLayout.getChildren().addAll(space, tags[j]);
-				}
-				
-			} else {
-				Label[] tags = new Label[1];
-				tags[0] = new Label("None");
-				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 3);
-				taskLayout.getChildren().add(tags[0]);
-			}
-			
-			taskLayout.setConstraints(description, 0, 0, 10, 1);
-			taskLayout.setConstraints(date, 0, 1, 10, 1);
-			taskLayout.getChildren().addAll(description, date);
-			
-			page[currentPageNum].getChildren().add(taskLayout);
-		}
+		setOnePageView(currentPageNum);
 	}
 	
-	private void updateDisplay(int pageIndex) {
-
-		taskList = getTaskList();
-		
+	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setPrefSize(383, 100);
-			Task task = taskList.getTask(i);
-			Label description = new Label((i+1) +". " + task.getDescription());
-			description.setStyle("-fx-text-fill: rgb(175,225,252)");
-			Label date = new Label("Deadline: ");
-			date.setStyle("-fx-text-fill: rgb(249,192,162)");
+			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
 			
-			Label status = new Label(task.displayDone());
-			status.setStyle("-fx-text-fill: yellow");
-			taskLayout.setConstraints(status, 0, 2, 10, 1);
-			taskLayout.getChildren().add(status);
+			setGridPaneSize(taskLayout, 383, 100);
 			
-			if (task.getTags().size() > 0) {
-				Label[] tags = new Label[task.getTags().size()];
-				
-				for (int j=0; j<task.getTags().size(); j++) {
-					List<String> tagList = task.getTags();
-					tags[j] = new Label(tagList.get(j));
-					Label space = new Label("  ");
-					
-					if (!tagColor.containsKey(tags[j].getText())) {
-						tagColor.put(tags[j].getText(), colors[colorPointer]);
-						colorPointer = (colorPointer + 1) % 10;
-					}
-					tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					
-//					tags[j].setStyle("-fx-background-color: skyblue; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
-					space.setStyle("-fx-background-color: rgb(127,127,127)");
-					taskLayout.setConstraints(tags[j], 2*j, 3);
-					taskLayout.setConstraints(space, 2*j+1, 3);
-					taskLayout.getChildren().addAll(space, tags[j]);
-				}
-				
-			} else {
-				Label[] tags = new Label[1];
-				tags[0] = new Label("None");
-				tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-				taskLayout.setConstraints(tags[0], 0, 3);
-				taskLayout.getChildren().add(tags[0]);
-			}
-			
-			taskLayout.setConstraints(description, 0, 0, 10, 1);
-			taskLayout.setConstraints(date, 0, 1, 10, 1);
-			taskLayout.getChildren().addAll(description, date);
+			setTaskFormat(taskLayout, i);
 			
 			page[pageIndex].getChildren().add(taskLayout);
 		}
 	}
-
-	private void changePage(int pageNum) {
-		listDisplay.setCurrentPageIndex(pageNum % pageCount);
+	
+	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
+		Task task = taskList.getTask(index);
+		
+		setDescription(taskLayout, task, index);
+		
+		setDeadline(taskLayout, task);
+		
+		setStatus(taskLayout, task);
+		
+		setTags(taskLayout, task);	
+	}
+	
+	private void setDescription(GridPane taskLayout, Task task, int index) {
+		Label description = new Label((index+1) +". " + task.getDescription());
+		description.setStyle("-fx-text-fill: rgb(175,225,252)");
+		GridPane.setConstraints(description, 0, 0, 10, 1);
+		taskLayout.getChildren().add(description);
+	}
+	
+	private void setDeadline(GridPane taskLayout, Task task) throws TaskInvalidDateException {
+		Label deadline = new Label();
+		System.out.println(task.getType());
+		
+		if (task.getType().equals(Task.Type.FLOAT)) {
+			deadline.setText("Deadline: No deadline");
+		} else {
+			deadline.setText("Deadline: " + dateFormat.format(task.getDeadline()));
+		}
+		
+		deadline.setStyle("-fx-text-fill: rgb(249,192,162)");
+		GridPane.setConstraints(deadline, 0, 1, 10, 1);
+		taskLayout.getChildren().add(deadline);
+	}
+	
+	private void setStatus(GridPane taskLayout, Task task) {
+		Label status = new Label(task.displayDone());
+		status.setStyle("-fx-text-fill: yellow");
+		GridPane.setConstraints(status, 0, 2, 10, 1);
+		taskLayout.getChildren().add(status);
+	}
+	
+	private void setTags(GridPane taskLayout, Task task) {
+		if (task.getTags().size() > 0) {
+			Label[] tags = new Label[task.getTags().size()];
+			
+			for (int j=0; j<task.getTags().size(); j++) {
+				List<String> tagList = task.getTags();
+				tags[j] = new Label(tagList.get(j));
+				Label space = new Label("  ");
+				
+				if (!tagColor.containsKey(tags[j].getText())) {
+					tagColor.put(tags[j].getText(), colors[colorPointer]);
+					colorPointer = (colorPointer + 1) % 10;
+				}
+				tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+				
+				space.setStyle("-fx-background-color: rgb(127,127,127)");
+				GridPane.setConstraints(tags[j], 2*j, 3);
+				GridPane.setConstraints(space, 2*j+1, 3);
+				taskLayout.getChildren().addAll(space, tags[j]);
+			}
+			
+		} else {
+			Label[] tags = new Label[1];
+			tags[0] = new Label("None");
+			tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
+			GridPane.setConstraints(tags[0], 0, 3);
+			taskLayout.getChildren().add(tags[0]);
+		}
+	}
+	
+	private void setGridPaneSize(GridPane gridPane, double width, double height) {
+		gridPane.setPrefSize(width, height);
+		gridPane.setMaxSize(width, height);
+		gridPane.setMinSize(width, height);
 	}
 	
 	private void closePage() {
