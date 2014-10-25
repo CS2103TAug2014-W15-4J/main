@@ -6,18 +6,23 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import controller.LastState;
+import controller.LastState.LastCommand;
 import controller.UserInput.RepeatDate;
+import exception.RedoException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
 import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
+import exception.UndoException;
 
 public class TaskList {
 	/**
@@ -57,6 +62,10 @@ public class TaskList {
 
 	private static Logger logger = Logger.getLogger("TaskList");
 
+	
+	static Stack<LastState> undoStack = new Stack<LastState>();
+	static Stack<LastState> redoStack = new Stack<LastState>();
+	
 	@XStreamAlias("TaskListTimed")
 	private List<Task> tasksTimed;
 	@XStreamAlias("TaskListUntimed")
@@ -124,6 +133,25 @@ public class TaskList {
 		}
 	}
 
+	/**
+	 * 
+	 * @param task
+	 * @return taskid of given task 
+	 */
+	public int getTaskIndex(Task task) {
+	    if (tasksTimed.contains(task)) {
+	        return tasksTimed.indexOf(task);
+	        
+	    } else if (tasksUntimed.contains(task)) {
+	        return tasksUntimed.indexOf(task) + tasksTimed.size();
+	        
+	    } else {
+	        return -1;
+	    }
+	    
+	    
+	}
+	
 	private void addToList(Task task) {
 		if (task instanceof FloatingTask) {
 			this.tasksUntimed.add(task);
@@ -145,6 +173,8 @@ public class TaskList {
 		this.tasksUntimed.add(newTask);
 		this.totalTasks++;
 		logger.log(Level.INFO, "A floating task added");
+		
+		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
 	}
 
 	/**
@@ -160,6 +190,8 @@ public class TaskList {
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 		this.totalTasks++;
 		logger.log(Level.INFO, "A deadline task added");
+		
+		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
 	}
 
 	/**
@@ -177,6 +209,8 @@ public class TaskList {
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 		this.totalTasks++;
 		logger.log(Level.INFO, "A repeated task added");
+		
+		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
 	}
 
 	/**
@@ -203,6 +237,8 @@ public class TaskList {
 			((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 			this.totalTasks++;
 			logger.log(Level.INFO, "A fixed task added");
+			
+			addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
 		}
 	}
 
@@ -676,6 +712,50 @@ public class TaskList {
 	 */
 	public boolean isInvalidIndex(int taskIndex) {
 		return (taskIndex > this.countUndone()) || (taskIndex <= 0);
+	}
+
+	public void undo() throws UndoException {
+	    if (undoStack.isEmpty()) {
+	        throw new UndoException();
+	    } else {
+	        
+	        setShowDisplayListToFalse();
+	        LastState lastState = undoStack.pop();
+	        
+	        if (lastState.getLastCommand() == LastCommand.ADD) {
+	            int taskIndex = lastState.getTaskIndex();
+	            ArrayList<Integer> arrayList = new ArrayList<Integer>();
+	            arrayList.add(taskIndex + 1);
+	            deleteFromList(arrayList);
+	            
+	            
+	        } else {
+	            // do other undo operations here
+	        }
+	        
+	        
+	    }
+	}
+	
+	public void redo() throws RedoException{
+	    if (redoStack.isEmpty()) {
+	        throw new RedoException();
+	    } else {
+	        
+	        //redo here based on cmd type
+	        
+	    }
+	    
+	}
+	
+	private void addToUndoList(LastCommand cmd, Task task, int taskIndex) {
+	    LastState currentTaskState = new LastState(cmd, task, taskIndex);
+	    undoStack.push(currentTaskState);
+	}
+	
+	private void addToUndoList(LastCommand cmd, List<Task> tasks, List<Integer> taskIndices) {
+	    LastState currentTasksState = new LastState(cmd, tasks, taskIndices);
+	    undoStack.push(currentTasksState);
 	}
 
 	public int count() {

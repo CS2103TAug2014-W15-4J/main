@@ -3,19 +3,21 @@ package controller;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.Task;
-import model.TaskList;
 import controller.UserInput.RepeatDate;
+import exception.RedoException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
 import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
+import exception.UndoException;
+import model.TaskList;
+import model.Task;
+
 
 /**
  * main class that manages the TaskList
@@ -24,8 +26,6 @@ import exception.TaskTagException;
 public class Logic {
 
 	static Scanner scanner = new Scanner(System.in);
-	static Stack<UserInput> undoStack = new Stack<UserInput>();
-	static Stack<UserInput> redoStack = new Stack<UserInput>();
 	static TaskList listOfTasks;
 
 	final static String MESSAGE_TASK_ADDED = "Task added successfully.";
@@ -327,6 +327,9 @@ public class Logic {
 
 		} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
 			return SearchTask(userCommand.getDescription());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.UNDO) {
+		    return undo();
 
 		} else if (userCommand.getCommand() == UserInput.CMD.EXIT) {
 			listOfTasks.setShowDisplayListToFalse();
@@ -695,17 +698,12 @@ public class Logic {
 	 *         this change can be re-obtained by using the redo method.
 	 */
 	private static String undo() {
-		if (undoStack.isEmpty()) {
-			System.out.println("nothing to undo");
-			return MESSAGE_INVALID_UNDO;
-
-		} else {
-			UserInput lastInput = undoStack.pop();
-			redoStack.push(lastInput);
-
-			// undo the step here
-
+	    try {
+	        listOfTasks.undo();
 			return MESSAGE_PROGRAM_UNDO;
+	        
+	    } catch (UndoException e) {
+	        return MESSAGE_INVALID_UNDO;
 		}
 	}
 
@@ -715,15 +713,12 @@ public class Logic {
 	 *         this method re-does the last operation undo-ed.
 	 */
 	private static String redo() {
-		if (redoStack.isEmpty()) {
-			return MESSAGE_INVALID_REDO;
-
-		} else {
-			UserInput lastInput = redoStack.pop();
-			undoStack.push(lastInput);
-			// redo the step here
-
+	    try {
+	        listOfTasks.redo();
 			return MESSAGE_PROGRAM_REDO;
+	        
+	    } catch (RedoException e) {
+	        return MESSAGE_INVALID_REDO;
 		}
 	}
 	
