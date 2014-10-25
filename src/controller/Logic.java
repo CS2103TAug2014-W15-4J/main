@@ -7,15 +7,15 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import model.Task;
+import model.TaskList;
 import controller.UserInput.RepeatDate;
-import exception.TaskInvalidIdException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
+import exception.TaskInvalidIdException;
 import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
-import model.TaskList;
-import model.Task;
 
 /**
  * main class that manages the TaskList
@@ -61,6 +61,7 @@ public class Logic {
 	final static String MESSAGE_INVALID_DATE = "Invalid date(s).";
 	final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
 
+	final static String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
 	final static String MESSAGE_HELP = "Current list of available commands: \n"
 			+ "- add a floating task     : add <description>\n"
 			+ "- add a deadline task     : add <description> by <time/date>\n"
@@ -77,6 +78,8 @@ public class Logic {
 			+ "- show all tasks          : show / show all\n"
 			+ "- show tasks (add order)  : show added\n"
 			+ "- show tasks with tag     : show <tag>\n"
+			+ "- show tasks that are done: show done\n"
+			+ "(You can only delete or search tasks when displying tasks that are done)\n"
 			+ "- search tasks            : search <keyword>\n"
 			+ "- exit the program        : exit";
 
@@ -206,7 +209,9 @@ public class Logic {
 			}
 
 		} else if (userCommand.getCommand() == UserInput.CMD.EDIT) {
-
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
 			int editID = userCommand.getEditID();
 			String desc = userCommand.getDescription();
 			String editCommand = userCommand.getEditCommand();
@@ -302,17 +307,25 @@ public class Logic {
 			return clearTaskList();
 
 		} else if (userCommand.getCommand() == UserInput.CMD.DONE) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
 			return markDone(userCommand.getDoneID());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.TAG) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
 			return tagTask(userCommand.getTagID(), userCommand.getDescription());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.UNTAG) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
 			return untagTask(userCommand.getTagID(),
 					userCommand.getDescription());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
-			// search function here.
 			return SearchTask(userCommand.getDescription());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.EXIT) {
@@ -517,12 +530,18 @@ public class Logic {
 		assert userCommand != null;
 
 		if (userCommand.equals("all")) {
+			listOfTasks.setNotShowingDone();
 			return displayTasks(listOfTasks.prepareDisplayList(false));
 
 		} else if (userCommand.equals("added")) {
+			listOfTasks.setNotShowingDone();
 			return displayTasks(listOfTasks.prepareDisplayList(true));
 
+		} else if (userCommand.equals("done")) {
+			return displayTasks(listOfTasks.getFinishedTasks());
+
 		} else {
+			listOfTasks.setNotShowingDone();
 			try {
 				return String.format(MESSAGE_TASKTAG_RETURNED, userCommand,
 						displayTasks(listOfTasks
@@ -707,6 +726,7 @@ public class Logic {
 			return MESSAGE_PROGRAM_REDO;
 		}
 	}
+	
 
 	/**
 	 * this method reads the user input from the command line and returns it as

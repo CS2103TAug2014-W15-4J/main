@@ -61,10 +61,16 @@ public class TaskList {
 	private List<Task> tasksTimed;
 	@XStreamAlias("TaskListUntimed")
 	private List<Task> tasksUntimed;
+	@XStreamAlias("TaskFinished")
+	private List<Task> tasksFinished;
 	@XStreamAlias("TaskToDisplay")
 	private List<Task> tasksToDisplay;
+
+	
 	@XStreamAlias("showDisplay")
-	private boolean showDisplayList;
+	private boolean isDisplay;
+	@XStreamAlias("showDone")
+	private boolean isShowingDone;
 
 	@XStreamAlias("TasksCount")
 	private int totalTasks;
@@ -73,7 +79,7 @@ public class TaskList {
 
 	// count the total number of tasks finished.
 	@XStreamAlias("TotalTaskFinished")
-	private int taskFinished;
+	private int totalFinished;
 
 	public TaskList() {
 		// let the logger only display warning log message.
@@ -81,23 +87,24 @@ public class TaskList {
 
 		this.tasksTimed = new SortedArrayList<Task>(new DeadlineComparator());
 		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
+		this.tasksFinished = new ArrayList<Task>();
 		this.tasksToDisplay = new ArrayList<Task>();
 		this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
 		this.tags = new HashMap<String, List<Task>>();
-		this.taskFinished = 0;
-		this.showDisplayList = false;
+		this.totalFinished = 0;
+		this.isDisplay = false;
 	}
 
 	/**
 	 * If setShowDisplayListToFalse is called, display the whole list.
 	 */
 	public void setShowDisplayListToFalse() {
-		this.showDisplayList = false;
+		this.isDisplay = false;
 		this.tasksToDisplay.clear();
 	}
 
 	public Task getTask(int taskIndex) {
-		if (showDisplayList) {
+		if (isDisplay) {
 			if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
 				throw new TaskInvalidIdException("Error index for editing!");
 			} else {
@@ -209,7 +216,7 @@ public class TaskList {
 
 			// if the index comes from a list used for displaying, use time to
 			// find
-			if (showDisplayList) {
+			if (isDisplay) {
 				boolean isFound = false;
 				// trace the task by added time.
 				for (Task task : this.tasksTimed) {
@@ -228,6 +235,7 @@ public class TaskList {
 						}
 					}
 				}
+
 			} else {
 				if (indexToEdit < tasksTimed.size()) {
 					this.tasksTimed.get(indexToEdit)
@@ -253,7 +261,7 @@ public class TaskList {
 
 			// if the index comes from a list used for displaying, use time to
 			// find
-			if (showDisplayList) {
+			if (isDisplay) {
 				boolean isFound = false;
 				// trace the task by added time.
 				for (Task task : this.tasksTimed) {
@@ -298,7 +306,7 @@ public class TaskList {
 
 			// if the index comes from a list used for displaying, use time to
 			// find
-			if (showDisplayList) {
+			if (isDisplay) {
 				boolean isFound = false;
 				// trace the task by added time.
 				for (Task task : this.tasksTimed) {
@@ -348,50 +356,60 @@ public class TaskList {
 			Collections.sort(taskIndexList);
 			for (int i = taskIndexList.size() - 1; i >= 0; i--) {
 				int indexToRemove = taskIndexList.get(i);
-
-				if (isInvalidIndex(indexToRemove)) {
-
-					throw new TaskInvalidIdException("Error index for editing!");
-
-				} else {
-					Task taskToRemove = getTask(indexToRemove - 1);
-					System.out.println(taskToRemove);
-					// if the index comes from a list used for displaying, use
-					// time to find
-					boolean isFound = false;
-					// trace the task by added time.
-					for (Task task : this.tasksTimed) {
-						if (task.getAddedTime().equals(
-								taskToRemove.getAddedTime())) {
-							this.tasksTimed.remove(task);
-							isFound = true;
-							break;
-						}
+				if (isShowingDone) {
+					// displaying done tasks
+					if (indexToRemove>this.tasksFinished.size() || indexToRemove<=0) {
+						throw new TaskInvalidIdException("Error index for deleting!");
+					} else {
+						this.tasksFinished.remove(indexToRemove - 1);
 					}
-					if (!isFound) {
-						for (Task task : this.tasksUntimed) {
+					this.totalTasks--;
+				} else {
+					if (isInvalidIndex(indexToRemove)) {
+
+						throw new TaskInvalidIdException("Error index for deleting!");
+
+					} else {
+						Task taskToRemove = getTask(indexToRemove - 1);
+						// if the index comes from a list used for displaying, use
+						// time to find
+						boolean isFound = false;
+						// trace the task by added time.
+						for (Task task : this.tasksTimed) {
 							if (task.getAddedTime().equals(
 									taskToRemove.getAddedTime())) {
-								this.tasksUntimed.remove(task);
+								this.tasksTimed.remove(task);
+								isFound = true;
 								break;
 							}
 						}
-					}
+						if (!isFound) {
+							for (Task task : this.tasksUntimed) {
+								if (task.getAddedTime().equals(
+										taskToRemove.getAddedTime())) {
+									this.tasksUntimed.remove(task);
+									break;
+								}
+							}
+						}
 
-					this.totalTasks--;
+						this.totalTasks--;
+					}
 				}
+				
 			}
 		}
 	}
 
 	public void clearList() {
-		this.showDisplayList = false;
+		this.isDisplay = false;
 		this.tasksUntimed.clear();
 		this.tasksTimed.clear();
 		this.tasksUntimed.clear();
+		this.tasksFinished.clear();
 		this.tags.clear();
 		this.totalTasks = 0;
-		this.taskFinished = 0;
+		this.totalFinished = 0;
 
 	}
 
@@ -404,8 +422,9 @@ public class TaskList {
 		} else {
 			for (int i = 0; i < taskIndexList.size(); i++) {
 				int taskIndexToMarkDone = taskIndexList.get(i);
+				System.out.println(this.countUndone());
 				if (isInvalidIndex(taskIndexToMarkDone)) {
-					System.out.println("invalid index " + taskIndexToMarkDone);
+					System.out.println("error taskIndexToMarkDone+" + taskIndexToMarkDone);
 					throw new TaskInvalidIdException("Error index input.");
 				} else {
 					Task target = getTask(taskIndexToMarkDone - 1);
@@ -416,6 +435,8 @@ public class TaskList {
 					for (Task task : this.tasksTimed) {
 						if (task.getAddedTime().equals(target.getAddedTime())) {
 							newRepeatTask = task.markDone();
+							this.tasksTimed.remove(task);
+							this.tasksFinished.add(task);
 							isFound = true;
 							break;
 						}
@@ -425,12 +446,14 @@ public class TaskList {
 							if (task.getAddedTime().equals(
 									target.getAddedTime())) {
 								newRepeatTask = task.markDone();
+								this.tasksUntimed.remove(task);
+								this.tasksFinished.add(task);
 								break;
 							}
 						}
 					}
 
-					this.taskFinished++;
+					this.totalFinished++;
 					if (newRepeatTask != null) {
 						this.addToList((RepeatedTask) newRepeatTask);
 					}
@@ -502,7 +525,12 @@ public class TaskList {
 			taskToUntag.deleteTag(tag);
 		}
 	}
-
+	
+	public List<Task> getFinishedTasks() {
+		isShowingDone = true;
+		return this.tasksFinished;
+	}
+	
 	public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
 		if (tags.containsKey(tag.toLowerCase())) {
 			List<Task> taskListOfTag = tags.get(tag.toLowerCase());
@@ -525,36 +553,54 @@ public class TaskList {
 	public List<Task> searchTaskByKeyword(String keyword) {
 		keyword = keyword.toLowerCase();
 		List<Task> result = new ArrayList<Task>();
-		// search task in timed list, search description and tags
-		for (Task task : tasksTimed) {
-			if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
-				result.add(task);
-				continue; // find one
-			} else {
-				for (String tag : task.getTags()) {
-					if (tag.toLowerCase().indexOf(keyword) != -1) {
-						result.add(task);
-						break; // find one
+		if (isShowingDone) {
+			for (Task task : tasksFinished) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					System.out.println("find one");
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
 					}
 				}
 			}
+		} else {
+			// search task in timed list, search description and tags
+			for (Task task : tasksTimed) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
+					}
+				}
+			}
+
+			// search task in untimed list, search description and tags
+			for (Task task : tasksUntimed) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
+					}
+				}
+			}
+			isDisplay = true;
 		}
 
-		// search task in untimed list, search description and tags
-		for (Task task : tasksUntimed) {
-			if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
-				result.add(task);
-				continue; // find one
-			} else {
-				for (String tag : task.getTags()) {
-					if (tag.toLowerCase().indexOf(keyword) != -1) {
-						result.add(task);
-						break; // find one
-					}
-				}
-			}
-		}
-		showDisplayList = true;
 		tasksToDisplay = result;
 		return tasksToDisplay;
 	}
@@ -575,7 +621,7 @@ public class TaskList {
 				}
 			}
 
-			showDisplayList = true;
+			isDisplay = true;
 
 			return tasksToDisplay;
 		} else {
@@ -602,7 +648,7 @@ public class TaskList {
 					new AddedDateComparator());
 			output.addAll(tasksTimed);
 			output.addAll(tasksUntimed);
-			showDisplayList = true;
+			isDisplay = true;
 			tasksToDisplay = output;
 
 		} else {
@@ -610,24 +656,34 @@ public class TaskList {
 			for (int i = 0; i < tasksUntimed.size(); i++) {
 				output.add(tasksUntimed.get(i));
 			}
-			showDisplayList = false;
+			isDisplay = false;
 		}
 
 		// add all tasks from Timed task list and Untimed task list to the
 		// output list
 		return output;
 	}
-
+	
+	public boolean isShowingDone() {
+		return this.isShowingDone;
+	}
+	public void setNotShowingDone() {
+		this.isShowingDone = false;
+	}
 	/**
 	 * @param taskIndex
 	 * @return
 	 */
 	public boolean isInvalidIndex(int taskIndex) {
-		return (taskIndex > this.count()) || (taskIndex <= 0);
+		return (taskIndex > this.countUndone()) || (taskIndex <= 0);
 	}
 
 	public int count() {
 		return this.totalTasks;
+	}
+	
+	public int countUndone() {
+		return this.countTimedTask()+this.countUntimedTask();
 	}
 
 	public int countTimedTask() {
@@ -639,6 +695,6 @@ public class TaskList {
 	}
 
 	public int countFinished() {
-		return this.taskFinished;
+		return this.totalFinished;
 	}
 }
