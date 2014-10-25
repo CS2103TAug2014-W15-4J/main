@@ -12,8 +12,11 @@ import exception.TaskDoneException;
 public class RepeatedTask extends Task {
 	@XStreamAlias("Deadline")
 	private Date deadline;
-	@XStreamAlias("Period")
+	@XStreamAlias("Next")
+	private Date next;
+	@XStreamAlias("RepeatDate")
 	private RepeatDate repeatPeriod;
+	@XStreamAlias("Period")
 	private String period;
 
 	public static String[] namesOfDays =  {"DUMMY", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
@@ -25,15 +28,20 @@ public class RepeatedTask extends Task {
 	    cal.setTime(time);
 	    
 	    if (repeatPeriod == RepeatDate.DAILY) {
+	    	cal.add(Calendar.DATE, 1);
+	    	next = cal.getTime();
 	        period = "daily";
-	        
 	    } else if (repeatPeriod == RepeatDate.WEEKLY) {
 	        period = "every " + namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
-	        
+	        cal.add(Calendar.DATE, 7);
+	    	next = cal.getTime();
 	    } else if (repeatPeriod == RepeatDate.MONTHLY) {
 	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of each month";
+	        cal.add(Calendar.MONTH, 1);
+	    	next = cal.getTime();
 	    }
 	}
+	
 	public RepeatedTask(String description, Date time, RepeatDate repeatDate) {
 	    super(description);
 	    deadline = time;
@@ -67,7 +75,7 @@ public class RepeatedTask extends Task {
     public Task markDone() throws TaskDoneException {
 		if (!this.getIsDone()) {
             Task taskToRepeat = new RepeatedTask(this.description,
-                                                 this.deadline,
+                                                 this.next,
                                                  this.repeatPeriod);
 		    super.markDone();
 		    return taskToRepeat;
@@ -80,7 +88,7 @@ public class RepeatedTask extends Task {
 	public String toString() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 		return this.description +"\nDeadline: " + dateFormatter.format(this.deadline) + 
-				"\nRepeat: " + this.repeatPeriod + "\n" +this.displayTags() + "\n" + this.displayDone();
+				"\nRepeat: " + this.period + "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 
 }
