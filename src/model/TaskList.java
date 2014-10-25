@@ -89,11 +89,11 @@ public class TaskList {
 	}
 
 	/**
-	 * Logic calls this method to set showDisplayList to false if the tasks are
-	 * edited.
+	 * If setShowDisplayListToFalse is called, display the whole list.
 	 */
 	public void setShowDisplayListToFalse() {
 		this.showDisplayList = false;
+		this.tasksToDisplay.clear();
 	}
 
 	public Task getTask(int taskIndex) {
@@ -118,8 +118,6 @@ public class TaskList {
 	}
 
 	private void addToList(Task task) {
-		Comparator<Task> a = new AddedDateComparator();
-		a.compare(new FloatingTask("haha"), new FloatingTask("hehe"));
 		if (task instanceof FloatingTask) {
 			this.tasksUntimed.add(task);
 
@@ -357,42 +355,31 @@ public class TaskList {
 
 				} else {
 					Task taskToRemove = getTask(indexToRemove - 1);
-
+					System.out.println(taskToRemove);
 					// if the index comes from a list used for displaying, use
 					// time to find
-					if (showDisplayList) {
-						boolean isFound = false;
-						// trace the task by added time.
-						for (Task task : this.tasksTimed) {
+					boolean isFound = false;
+					// trace the task by added time.
+					for (Task task : this.tasksTimed) {
+						if (task.getAddedTime().equals(
+								taskToRemove.getAddedTime())) {
+							this.tasksTimed.remove(task);
+							isFound = true;
+							break;
+						}
+					}
+					if (!isFound) {
+						for (Task task : this.tasksUntimed) {
 							if (task.getAddedTime().equals(
 									taskToRemove.getAddedTime())) {
-								this.tasksTimed.remove(task);
-								isFound = true;
+								this.tasksUntimed.remove(task);
 								break;
 							}
 						}
-						if (!isFound) {
-							for (Task task : this.tasksUntimed) {
-								if (task.getAddedTime().equals(
-										taskToRemove.getAddedTime())) {
-									this.tasksUntimed.remove(task);
-									break;
-								}
-							}
-						}
-					} else {
-						if (indexToRemove < tasksTimed.size()) {
-							this.tasksTimed.remove(taskToRemove);
-
-						} else {
-							// update the index to the proper value in
-							// tasksUntimed.
-							indexToRemove -= tasksTimed.size();
-							this.tasksUntimed.remove(taskToRemove);
-						}
 					}
+
+					this.totalTasks--;
 				}
-				this.totalTasks--;
 			}
 		}
 	}
@@ -418,6 +405,7 @@ public class TaskList {
 			for (int i = 0; i < taskIndexList.size(); i++) {
 				int taskIndexToMarkDone = taskIndexList.get(i);
 				if (isInvalidIndex(taskIndexToMarkDone)) {
+					System.out.println("invalid index " + taskIndexToMarkDone);
 					throw new TaskInvalidIdException("Error index input.");
 				} else {
 					Task target = getTask(taskIndexToMarkDone - 1);
@@ -427,8 +415,6 @@ public class TaskList {
 					// trace the task by added time.
 					for (Task task : this.tasksTimed) {
 						if (task.getAddedTime().equals(target.getAddedTime())) {
-							System.out.println("id:"
-									+ (taskIndexToMarkDone - 1));
 							newRepeatTask = task.markDone();
 							isFound = true;
 							break;
@@ -438,8 +424,6 @@ public class TaskList {
 						for (Task task : this.tasksUntimed) {
 							if (task.getAddedTime().equals(
 									target.getAddedTime())) {
-								System.out.println("id:"
-										+ (taskIndexToMarkDone - 1));
 								newRepeatTask = task.markDone();
 								break;
 							}
@@ -622,10 +606,7 @@ public class TaskList {
 			tasksToDisplay = output;
 
 		} else {
-			// using comparator DeadlineComparator
-			output = new SortedArrayList<Task>(this.count(),
-					new DeadlineComparator());
-			output.addAll(tasksTimed);
+			output = new ArrayList<Task>(this.tasksTimed);
 			for (int i = 0; i < tasksUntimed.size(); i++) {
 				output.add(tasksUntimed.get(i));
 			}
