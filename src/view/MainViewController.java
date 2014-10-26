@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -45,6 +46,13 @@ public class MainViewController extends GridPane{
 		"rgb(156, 184, 197)"
 	};
 	
+	final static String CSS_BACKGROUND_COLOR = "-fx-background-color: ";
+	final static String FX_COLOR_RGB = "rgb(%s, %s, %s)";
+	final static String FXML_FILE_NAME = "MainView.fxml";
+	final static String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
+	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
+	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
+	
 	@FXML
 	private Label uClear;
 	
@@ -65,6 +73,8 @@ public class MainViewController extends GridPane{
 	
 	@FXML
 	private Pagination listDisplay;
+	
+	private FadeTransition fadeOut = new FadeTransition(Duration.millis(200));
 	
 	// Pages
 	private ScrollPane[] scrollPage;
@@ -88,7 +98,7 @@ public class MainViewController extends GridPane{
 	}));
 
 	public MainViewController() throws IOException, TaskInvalidDateException {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         
@@ -98,15 +108,24 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setMainView() throws TaskInvalidDateException {
+		initFadeEffect();
 		setPageCount(3);
 		setPages();
 		setFont();
 		initTagColor();
         setDate();
         initMainDisplay();
-        setResponse();
+        setRestTaskResponse();
 	}
 	
+	private void initFadeEffect() {
+		fadeOut.setNode(response);
+		fadeOut.setFromValue(1.0);
+		fadeOut.setToValue(0.65);
+		fadeOut.setCycleCount(10);
+		fadeOut.setAutoReverse(true);
+	}
+
 	private void setPageCount(int count) {
 		pageCount = count;
 	}
@@ -125,7 +144,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setScrollPage(ScrollPane scroll) {
-		scroll.setStyle("-fx-background-color: rgb(127,127,127)");
+		scroll.setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
 		scroll.setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
 		scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scroll.setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -160,16 +179,6 @@ public class MainViewController extends GridPane{
 			}
 		});
 		displayExistingTasks();
-	}
-
-	private void setResponse() {
-		if (taskList.count() > 1) {
-			response.setText("Oops! " + taskList.count() + " tasks should be done!");
-		} else if (taskList.count() == 1) {
-			response.setText("Oops! " + taskList.count() + " task should be done!");
-		} else {
-			response.setText("Good! All tasks are done!");
-		}
 	}
 
 	private void displayExistingTasks() throws TaskInvalidDateException {
@@ -252,9 +261,9 @@ public class MainViewController extends GridPane{
 					tagColor.put(tags[j].getText(), colors[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
 				}
-				tags[j].setStyle("-fx-background-color: " + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 				
-				space.setStyle("-fx-background-color: rgb(127,127,127)");
+				space.setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
 				GridPane.setConstraints(tags[j], 2*j, 3);
 				GridPane.setConstraints(space, 2*j+1, 3);
 				taskLayout.getChildren().addAll(space, tags[j]);
@@ -288,10 +297,19 @@ public class MainViewController extends GridPane{
 	private void setMainDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		closePage(currentPageNum);
-		setResponse();
 		updateDisplay();
 	}
 	
+	private void setRestTaskResponse() {
+		if (taskList.count() > 1) {
+			response.setText(String.format(MANY_TASKS_NOT_DONE, taskList.count()));
+		} else if (taskList.count() == 1) {
+			response.setText(ONE_TASK_NOT_DONE);
+		} else {
+			response.setText(ALL_TASKS_DONE);
+		}
+	}
+
 	private String getUserInput() {
 		return input.getText();
 	}
@@ -335,11 +353,33 @@ public class MainViewController extends GridPane{
     private void onEnter() throws TaskInvalidDateException {
 		command = getUserInput();
 		
-		if (!isSpecialCommand()) {
-			feedback = executeCommand(command);
-			saveTaskList();
-			setMainDisplay();
-			setTextFieldEmpty();
+		if (!command.equals("")) {			
+			
+			if (!isSpecialCommand()) {
+				feedback = executeCommand(command);
+				setTextFieldEmpty();
+				saveTaskList();
+				
+				if (command.length() > 3 && command.trim().toLowerCase().substring(0, 3).equals("show")) {
+					System.out.println("haha");
+					feedback = response.getText();
+				}
+				
+				setMainDisplay();
+				response.setText(feedback);
+				response.setStyle("-fx-text-fill: rgb(68,217,117)");
+				fadeOut.playFromStart();
+				
+				fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
+
+					@Override
+					public void handle(ActionEvent event) {
+						setRestTaskResponse();
+						response.setStyle("-fx-text-fill: rgb(241,109,82)");
+					}
+					
+				});
+			}
 		}
     }
 	
