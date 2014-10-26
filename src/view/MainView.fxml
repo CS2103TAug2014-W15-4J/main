@@ -14,7 +14,9 @@
 		<rowConstraints>
 			<RowConstraints maxHeight="100" minHeight="10.0" prefHeight="95.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="2.0" minHeight="0.0" prefHeight="2.0" vgrow="SOMETIMES" />
-			<RowConstraints maxHeight="451.0" minHeight="10.0" prefHeight="451.0" vgrow="SOMETIMES" />
+			<RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES" />
+			<RowConstraints maxHeight="2.0" minHeight="0.0" prefHeight="2.0" vgrow="SOMETIMES" />
+			<RowConstraints maxHeight="404.0" minHeight="10.0" prefHeight="451.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="2.0" minHeight="0.0" prefHeight="2.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="151.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
 		</rowConstraints>
@@ -27,7 +29,6 @@
 				<rowConstraints>
 					<RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="65.0" vgrow="SOMETIMES" />
 					<RowConstraints maxHeight="34.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
-					<RowConstraints maxHeight="2.0" minHeight="0.0" prefHeight="2.0" vgrow="SOMETIMES" />
 				</rowConstraints>
 				<children>
 					<Label fx:id="date" id="date" styleClass="titleText" prefHeight="15.0" prefWidth="230.0" text="Date" GridPane.columnIndex="1" />
@@ -36,11 +37,15 @@
 				</children>
 			</GridPane>
 			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="1"/>
-			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="451.0" prefWidth="383.0" GridPane.rowIndex="2">
-				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="451.0" prefWidth="383.0" />	
+			<Pane fx:id="displayTitle" id="displayTitle" prefHeight="45.0" prefWidth="383.0" GridPane.rowIndex="2">
+				<Label fx:id="displayTitleText" id="displayTitleText" prefHeight="45.0" prefWidth="383.0" text="All Tasks" />
 			</Pane>
-			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="3"/>
-			<Pane id="inputPane" prefHeight="70.0" prefWidth="383.0" GridPane.rowIndex="4">
+			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="3" style="-fx-background-color: rgb(127,127,127)" />
+			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="404.0" prefWidth="383.0" GridPane.rowIndex="4">
+				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="404.0" prefWidth="383.0" />	
+			</Pane>
+			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="5"/>
+			<Pane id="inputPane" prefHeight="70.0" prefWidth="383.0" GridPane.rowIndex="6">
 				<children>
 					<TextField fx:id="input" id="input" promptText="Enter command here." layoutX="17.0" layoutY="11.0" prefHeight="47.0" prefWidth="350.0" onAction="#onEnter" />
 				</children>

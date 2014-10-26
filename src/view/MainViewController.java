@@ -33,7 +33,7 @@ import javafx.util.Duration;
 
 public class MainViewController extends GridPane{
 	
-	final static String[] colors = {
+	final static String[] DEFAULT_COLORS = {
 		"rgb(249, 233, 89)",
 		"rgb(239, 75, 133)",
 		"rgb(162, 100, 223)",
@@ -61,6 +61,9 @@ public class MainViewController extends GridPane{
 	
 	@FXML
 	private Label response;
+	
+	@FXML
+	private Label displayTitleText;
 	
 	@FXML
 	private TextField input;
@@ -109,7 +112,7 @@ public class MainViewController extends GridPane{
 	
 	private void setMainView() throws TaskInvalidDateException {
 		initFadeEffect();
-		setPageCount(3);
+		setPageCount(4);
 		setPages();
 		setFont();
 		initTagColor();
@@ -156,6 +159,7 @@ public class MainViewController extends GridPane{
 	    date.setStyle("-fx-font-size: 15");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
+	    displayTitleText.setStyle("-fx-font-size: 25");
 	}
 
 	private void initTagColor() {
@@ -258,7 +262,7 @@ public class MainViewController extends GridPane{
 				Label space = new Label("  ");
 				
 				if (!tagColor.containsKey(tags[j].getText())) {
-					tagColor.put(tags[j].getText(), colors[colorPointer]);
+					tagColor.put(tags[j].getText(), DEFAULT_COLORS[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
 				}
 				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");

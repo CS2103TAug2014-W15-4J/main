@@ -22,6 +22,15 @@
 	-fx-background-color: white;
 }
 
+#displayTitle {
+	-fx-background-color: rgb(127,127,127);
+}
+
+#displayTitleText {
+	-fx-text-fill: rgb(56,245,217);
+	-fx-padding: 0 0 0 15;
+}
+
 #mainDisplay {
 	-fx-background-color: rgb(127,127,127);
 }
