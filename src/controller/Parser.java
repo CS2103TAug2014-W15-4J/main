@@ -53,7 +53,7 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		log.info("parse main function");
-		switch (command.toLowerCase()) {
+		switch (parseCommand(command.toLowerCase())) {
 		case CMD_EXIT:
 			return parseExit(content);
 		case CMD_HELP:
@@ -87,6 +87,36 @@ public class Parser {
 		default:
 			return errorCommand();
 		}
+	}
+	
+	private String parseCommand(String command){
+		if(command.equals(CMD_EXIT)||command.equals("e"))
+			return CMD_EXIT;
+		if(command.equals(CMD_HELP)||command.equals("h"))
+			return CMD_HELP;
+		if(command.equals(CMD_ADD)||command.equals("+"))
+			return CMD_ADD;
+		if(command.equals(CMD_DELETE)||command.equals("-"))
+			return CMD_DELETE;
+		if(command.equals(CMD_CLEAR)||command.equals("--")||command.equals("cl"))
+			return CMD_CLEAR;
+		if(command.equals(CMD_SEARCH)||command.equals("?")||command.equals("s"))
+			return CMD_SEARCH;
+		if(command.equals(CMD_EDIT)||command.equals("<")||command.equals("ed"))
+			return CMD_EDIT;
+		if(command.equals(CMD_DONE)||command.equals("d"))
+			return CMD_DONE;
+		if(command.equals(CMD_SHOW)||command.equals("sh"))
+			return CMD_SHOW;
+		if(command.equals(CMD_TAG)||command.equals("t"))
+			return CMD_TAG;
+		if(command.equals(CMD_UNTAG)||command.equals("ut"))
+			return CMD_UNTAG;
+		if(command.equals(CMD_UNDO)||command.equals("b"))
+			return CMD_UNDO;
+		if(command.equals(CMD_REDO)||command.equals("r"))
+			return CMD_REDO;
+		return command;
 	}
 
 	/**
