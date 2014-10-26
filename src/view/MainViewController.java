@@ -6,29 +6,42 @@ import model.Task;
 import exception.TaskInvalidDateException;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
+
+import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPaneBuilder;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBuilder;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -128,6 +141,10 @@ public class MainViewController extends GridPane{
         setDisplayTitleText();
 	}
 	
+	public ScrollPane[] getScrollPages() {
+		return scrollPage;
+	}
+	
 	private void setDisplayTitleText() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
@@ -159,7 +176,7 @@ public class MainViewController extends GridPane{
 		page = new VBox[pageCount];
 		for (int i=0; i<pageCount; i++) {
 			scrollPage[i] = new ScrollPane();
-			setScrollPage(scrollPage[i]);
+			setScrollPage(i);
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
@@ -167,11 +184,11 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
-	private void setScrollPage(ScrollPane scroll) {
-		scroll.setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
-		scroll.setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
-		scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		scroll.setHbarPolicy(ScrollBarPolicy.NEVER);
+	private void setScrollPage(int index) {
+		scrollPage[index].setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
+		scrollPage[index].setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
+		scrollPage[index].setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPage[index].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 
 	private void setFont() {
@@ -221,6 +238,8 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
+		page[pageIndex].getChildren().clear();
+		
 		for (int i=0; i<taskList.count(); i++) {
 			GridPane taskLayout = new GridPane();
 			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
@@ -388,16 +407,24 @@ public class MainViewController extends GridPane{
 				feedback = executeCommand(command);
 				setTextFieldEmpty();
 				saveTaskList();
-				
-				if (command.length() > 3 && command.trim().toLowerCase().substring(0, 3).equals("show")) {
-					System.out.println("haha");
-					feedback = response.getText();
+				if (command.length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
+					listDisplay.setCurrentPageIndex(3);
+					setDisplayTitleText();
+				} else if (command.length() == 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
+					listDisplay.setCurrentPageIndex(2);
+					setDisplayTitleText();
+				} else if (command.length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) {
+					listDisplay.setCurrentPageIndex(0);
+					setDisplayTitleText();
+				} else if (command.length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
+					listDisplay.setCurrentPageIndex(1);
+					setDisplayTitleText();
+				} else {
+					setMainDisplay();
+					response.setText(feedback);
+					response.setStyle("-fx-text-fill: rgb(68,217,117)");
+					fadeOut.playFromStart();
 				}
-				
-				setMainDisplay();
-				response.setText(feedback);
-				response.setStyle("-fx-text-fill: rgb(68,217,117)");
-				fadeOut.playFromStart();
 				
 				fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
 
