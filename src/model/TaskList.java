@@ -59,6 +59,14 @@ public class TaskList {
 		}
 
 	}
+	
+	static class DoneDateComparator implements Comparator<Task> {
+	    
+	    @Override
+	    public int compare(Task o1, Task o2) {
+	        return o1.getDoneDate().compareTo(o2.getDoneDate());
+	    }
+	}
 
 	private static Logger logger = Logger.getLogger("TaskList");
 
@@ -96,7 +104,7 @@ public class TaskList {
 
 		this.tasksTimed = new SortedArrayList<Task>(new DeadlineComparator());
 		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
-		this.tasksFinished = new ArrayList<Task>();
+		this.tasksFinished = new SortedArrayList<Task>(new DoneDateComparator());
 		this.tasksToDisplay = new ArrayList<Task>();
 		this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
 		this.tags = new HashMap<String, List<Task>>();
@@ -152,11 +160,20 @@ public class TaskList {
 	    
 	}
 	
+	   /**
+     * @param task
+     * 
+     * this method is called by markTaskDone, if task is a repeat task
+     * this method is called by undo, to undo the deleting of tasks.
+     * this method will not call the addToUndoList function
+     */
 	private void addToList(Task task) {
 	    if (task.getIsDone()) {
+	        System.out.println(this.tasksFinished.getClass());
 	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
 	        
 	    } else {
+	        System.out.println(this.tasksUntimed.getClass());
     		if (task instanceof FloatingTask) {
     			((SortedArrayList<Task>) this.tasksUntimed).addOrder(task);
     
@@ -387,6 +404,21 @@ public class TaskList {
 	 * 
 	 * }
 	 */
+	
+	/**
+	 * @param task
+	 * 
+	 * this method is called by undo, to undo the adding of tasks.
+	 * this method will not call the addToUndoList function
+	 */
+	private void deleteFromList(Task task) {
+	    if (tasksTimed.contains(task)) {
+	        tasksTimed.remove(task);
+	    } else {
+	        tasksUntimed.remove(task);
+	    }
+	    
+	}
 
 	public void deleteFromList(List<Integer> taskIndexList)
 			throws TaskInvalidIdException {
@@ -738,10 +770,8 @@ public class TaskList {
 	        LastState lastState = undoStack.pop();
 	        
 	        if (lastState.getLastCommand() == LastCommand.ADD) {
-	            int taskIndex = lastState.getTaskIndex();
-	            List<Integer> arrayList = new ArrayList<Integer>();
-	            arrayList.add(taskIndex + 1);
-	            deleteFromList(arrayList);
+	            Task task = lastState.getPreviousTaskState();
+	            deleteFromList(task);
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.DELETE) {
 	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
