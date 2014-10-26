@@ -26,6 +26,7 @@ import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -52,6 +53,11 @@ public class MainViewController extends GridPane{
 	final static String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
 	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
+	
+	final static String TITLE_ALL_TASKS = "All Tasks";
+	final static String TITLE_DONE_TASKS = "Done Tasks";
+	final static String TITLE_SEARCH_RESULT = "Search Result";
+	final static String TITLE_HELP_PAGE = "Help Document";
 	
 	@FXML
 	private Label uClear;
@@ -119,6 +125,21 @@ public class MainViewController extends GridPane{
         setDate();
         initMainDisplay();
         setRestTaskResponse();
+        setDisplayTitleText();
+	}
+	
+	private void setDisplayTitleText() {
+		int currentPageNum = listDisplay.getCurrentPageIndex();
+		
+		if (currentPageNum == 0) {
+			displayTitleText.setText(TITLE_ALL_TASKS);
+		} else if (currentPageNum == 1) {
+			displayTitleText.setText(TITLE_DONE_TASKS);
+		} else if (currentPageNum == 2) {
+			displayTitleText.setText(TITLE_SEARCH_RESULT);
+		} else {
+			displayTitleText.setText(TITLE_HELP_PAGE);
+		}
 	}
 	
 	private void initFadeEffect() {
@@ -294,13 +315,13 @@ public class MainViewController extends GridPane{
 		page[currentPageNum].getChildren().clear();
 	}
 	
-	private void closePage(int pageIndex) {
+	private void clearPage(int pageIndex) {
 		page[pageIndex].getChildren().clear();
 	}
 	
 	private void setMainDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
-		closePage(currentPageNum);
+		clearPage(currentPageNum);
 		updateDisplay();
 	}
 	
@@ -349,8 +370,12 @@ public class MainViewController extends GridPane{
 		return Logic.getTaskList();
 	}
 	
+	private void setTextField(String content) {
+		input.setText(content);
+	}
+	
 	private void setTextFieldEmpty() {
-		input.setText("");
+		setTextField("");
 	}
 	
 	@FXML
@@ -386,6 +411,46 @@ public class MainViewController extends GridPane{
 			}
 		}
     }
+	
+	@FXML
+	private void onKeyTyped(KeyEvent keyEvent) {
+		if (keyEvent.getCharacter().equals("1")) {
+			listDisplay.setCurrentPageIndex(0);
+			setDisplayTitleText();
+		}
+		if (keyEvent.getCharacter().equals("2")) {
+			listDisplay.setCurrentPageIndex(1);
+			setDisplayTitleText();
+		}
+		if (keyEvent.getCharacter().equals("3")) {
+			listDisplay.setCurrentPageIndex(2);
+			setDisplayTitleText();
+		}
+		if (keyEvent.getCharacter().equals("4")) {
+			listDisplay.setCurrentPageIndex(3);
+			setDisplayTitleText();
+		}
+		if (keyEvent.getCharacter().equals("a")) {
+			setTextField("add ");
+			input.requestFocus();
+			input.selectEnd();
+		}
+		if (keyEvent.getCharacter().equals("d")) {
+			setTextField("done ");
+			input.requestFocus();
+			input.selectEnd();
+		}
+		if (keyEvent.getCharacter().equals("e")) {
+			setTextField("edit ");
+			input.requestFocus();
+			input.selectEnd();
+		}
+		if (keyEvent.getCharacter().equals("t")) {
+			setTextField("tag ");
+			input.requestFocus();
+			input.selectEnd();
+		}
+	}
 	
 }
 
