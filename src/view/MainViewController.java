@@ -37,6 +37,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPaneBuilder;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -185,6 +186,8 @@ public class MainViewController extends GridPane{
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
 			scrollPage[i].setContent(page[i]);
 		}
+		
+		setLeftAndRightKey();
 	}
 	
 	private void setScrollPage(int index) {
@@ -192,6 +195,73 @@ public class MainViewController extends GridPane{
 		scrollPage[index].setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
 		scrollPage[index].setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPage[index].setHbarPolicy(ScrollBarPolicy.NEVER);
+	}
+	
+	private void setLeftAndRightKey() {
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+		     @Override 
+		     public void handle(KeyEvent event ) {
+		        if (event.getCode() == KeyCode.LEFT) {
+//		        	event.consume();
+		        	boolean flag = true;
+		        	if (flag) {
+		        		flag = false;
+		        		if (listDisplay.getCurrentPageIndex() == 0) {
+		    				try {
+								displayShowAllCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+		    				try {
+								displayShowDoneCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+		    				try {
+								displaySearchCommand(searchKey);
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			}
+		        	}
+		        }
+		     }
+		});
+		
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+		     @Override 
+		     public void handle(KeyEvent event ) {
+		        if (event.getCode() == KeyCode.RIGHT) {
+//		        	event.consume();
+		        	boolean flag = true;
+		        	if (flag) {
+		        		flag = false;
+		        		if (listDisplay.getCurrentPageIndex() == 3) {
+		    				displayHelpCommand();
+		    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+		    				try {
+								displayShowDoneCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+		    				try {
+								displaySearchCommand(searchKey);
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			}
+		        	}
+		        }
+		     }
+		});
 	}
 
 	private void setFont() {
@@ -421,6 +491,127 @@ public class MainViewController extends GridPane{
 		setTextField("");
 	}
 	
+	private void displayHelpCommand() {
+		listDisplay.setCurrentPageIndex(3);
+		
+		page[3].getChildren().clear();
+		
+		Text helpDoc = new Text(feedback);
+		helpDoc.setStyle("-fx-text-fill: yellow");
+		page[3].getChildren().add(helpDoc);
+		
+		setDisplayTitleText();
+	}
+	
+	private void displaySearchCommand(String searchKey) throws TaskInvalidDateException {
+		listDisplay.setCurrentPageIndex(2);
+		
+		page[2].getChildren().clear();
+		
+		if (searchKey != null) {
+			ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
+			for (int i=0; i<searchTaskList.size(); i++) {
+				
+				Task task = searchTaskList.get(i);
+				GridPane taskLayout = new GridPane();
+				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+				
+				setGridPaneSize(taskLayout, 383, 100);
+				
+				setTaskFormat(taskLayout, task, i);
+				
+				page[2].getChildren().add(taskLayout);
+			}
+		}
+		
+		setDisplayTitleText();
+		setRestTaskResponse();
+	}
+	
+	private void displayShowAllCommand() throws TaskInvalidDateException {
+		listDisplay.setCurrentPageIndex(0);
+		setDisplayTitleText();
+		setRestTaskResponse();
+		setMainDisplay();
+	}
+	
+	private void displayShowDoneCommand() throws TaskInvalidDateException {
+		listDisplay.setCurrentPageIndex(1);
+		page[1].getChildren().clear();
+		
+		ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
+		for (int i=0; i<doneTaskList.size(); i++) {
+			
+			Task task = doneTaskList.get(i);
+			GridPane taskLayout = new GridPane();
+			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+			
+			setGridPaneSize(taskLayout, 383, 100);
+			
+			setTaskFormat(taskLayout, task, i);
+			
+			page[1].getChildren().add(taskLayout);
+		}
+		
+		setDisplayTitleText();
+		setRestTaskResponse();
+	}
+	
+	private void analyseCommand(String command) throws TaskInvalidDateException {
+		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
+			displayHelpCommand();
+		} else if (command.trim().length() >= 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
+			searchKey = command.trim().substring(7);
+			displaySearchCommand(searchKey);
+		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
+				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
+			displayShowAllCommand();
+		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
+			displayShowDoneCommand();
+		// except show, search and help
+		} else {
+			if (listDisplay.getCurrentPageIndex() == 0) {
+				setMainDisplay();
+			} else if (listDisplay.getCurrentPageIndex() == 1) {
+				page[1].getChildren().clear();
+				
+				ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
+				for (int i=0; i<doneTaskList.size(); i++) {
+					
+					Task task = doneTaskList.get(i);
+					GridPane taskLayout = new GridPane();
+					taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+					
+					setGridPaneSize(taskLayout, 383, 100);
+					
+					setTaskFormat(taskLayout, task, i);
+					
+					page[1].getChildren().add(taskLayout);
+				}
+			} else if (listDisplay.getCurrentPageIndex() == 2) {
+				page[2].getChildren().clear();
+				
+				ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
+				for (int i=0; i<searchTaskList.size(); i++) {
+					
+					Task task = searchTaskList.get(i);
+					GridPane taskLayout = new GridPane();
+					taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+					
+					setGridPaneSize(taskLayout, 383, 100);
+					
+					setTaskFormat(taskLayout, task, i);
+					
+					page[2].getChildren().add(taskLayout);
+				}
+			}
+			response.setText(feedback);
+			response.setStyle("-fx-text-fill: rgb(68,217,117)");
+			fadeOut.playFromStart();
+			setDisplayTitleText();
+		}
+	}
+	
 	@FXML
     private void onEnter() throws TaskInvalidDateException {
 		command = getUserInput();
@@ -433,106 +624,8 @@ public class MainViewController extends GridPane{
 				taskList.setNotShowingDone();
 				setTextFieldEmpty();
 				saveTaskList();
-				if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
-					listDisplay.setCurrentPageIndex(3);
-					
-					page[3].getChildren().clear();
-					
-					Text helpDoc = new Text(feedback);
-					helpDoc.setStyle("-fx-text-fill: yellow");
-					page[3].getChildren().add(helpDoc);
-					
-					setDisplayTitleText();
-				} else if (command.trim().length() >= 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
-					listDisplay.setCurrentPageIndex(2);
-					
-					page[2].getChildren().clear();
-					searchKey = command.trim().substring(7);
-					ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
-					for (int i=0; i<searchTaskList.size(); i++) {
-						
-						Task task = searchTaskList.get(i);
-						GridPane taskLayout = new GridPane();
-						taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-						
-						setGridPaneSize(taskLayout, 383, 100);
-						
-						setTaskFormat(taskLayout, task, i);
-						
-						page[2].getChildren().add(taskLayout);
-					}
-					
-					setDisplayTitleText();
-					setRestTaskResponse();
-				} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
-						|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
-					listDisplay.setCurrentPageIndex(0);
-					setDisplayTitleText();
-					setRestTaskResponse();
-					setMainDisplay();
-				} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
-					listDisplay.setCurrentPageIndex(1);
-					page[1].getChildren().clear();
-					
-					ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
-					for (int i=0; i<doneTaskList.size(); i++) {
-						
-						Task task = doneTaskList.get(i);
-						GridPane taskLayout = new GridPane();
-						taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-						
-						setGridPaneSize(taskLayout, 383, 100);
-						
-						setTaskFormat(taskLayout, task, i);
-						
-						page[1].getChildren().add(taskLayout);
-					}
-					
-					setDisplayTitleText();
-					setRestTaskResponse();
 				
-				// except show, search and help
-				} else {
-					if (listDisplay.getCurrentPageIndex() == 0) {
-						setMainDisplay();
-					} else if (listDisplay.getCurrentPageIndex() == 1) {
-						page[1].getChildren().clear();
-						
-						ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
-						for (int i=0; i<doneTaskList.size(); i++) {
-							
-							Task task = doneTaskList.get(i);
-							GridPane taskLayout = new GridPane();
-							taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-							
-							setGridPaneSize(taskLayout, 383, 100);
-							
-							setTaskFormat(taskLayout, task, i);
-							
-							page[1].getChildren().add(taskLayout);
-						}
-					} else if (listDisplay.getCurrentPageIndex() == 2) {
-						page[2].getChildren().clear();
-						
-						ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
-						for (int i=0; i<searchTaskList.size(); i++) {
-							
-							Task task = searchTaskList.get(i);
-							GridPane taskLayout = new GridPane();
-							taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-							
-							setGridPaneSize(taskLayout, 383, 100);
-							
-							setTaskFormat(taskLayout, task, i);
-							
-							page[2].getChildren().add(taskLayout);
-						}
-					}
-					response.setText(feedback);
-					response.setStyle("-fx-text-fill: rgb(68,217,117)");
-					fadeOut.playFromStart();
-					setDisplayTitleText();
-				}
+				analyseCommand(command);
 				
 				fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
 
@@ -548,22 +641,18 @@ public class MainViewController extends GridPane{
     }
 	
 	@FXML
-	private void onKeyTyped(KeyEvent keyEvent) {
+	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException {
 		if (keyEvent.getCharacter().equals("1")) {
-			listDisplay.setCurrentPageIndex(0);
-			setDisplayTitleText();
+			displayShowAllCommand();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
-			listDisplay.setCurrentPageIndex(1);
-			setDisplayTitleText();
+			displayShowDoneCommand();
 		}
 		if (keyEvent.getCharacter().equals("3")) {
-			listDisplay.setCurrentPageIndex(2);
-			setDisplayTitleText();
+			displaySearchCommand(searchKey);
 		}
 		if (keyEvent.getCharacter().equals("4")) {
-			listDisplay.setCurrentPageIndex(3);
-			setDisplayTitleText();
+			displayHelpCommand();
 		}
 		if (keyEvent.getCharacter().equals("a")) {
 			setTextField("add ");
