@@ -61,6 +61,10 @@ public class RepeatedTask extends Task {
 		return period;
 	}
 	
+	public Date getNext() {
+	    return next;
+	}
+	
 	@Override
     public void setDeadline(Date dl) {
 		deadline = dl;
@@ -102,6 +106,18 @@ public class RepeatedTask extends Task {
         
         return newTask;
     }   
+    
+    public boolean isConsecutiveTasks(RepeatedTask rt2) {
+        
+        boolean isConsecutive = (this.getRepeatPeriod().equals(rt2.getRepeatPeriod())) &&
+                                ((this.getDeadline() == rt2.getNext()) || (this.getNext() == rt2.getDeadline())) &&
+                                (this.getDescription().equals(rt2.getDescription())) &&
+                                (this.getTags().equals(rt2.getTags())) &&
+                                (this.getAddedTime() != rt2.getAddedTime());
+        return isConsecutive;
+
+        
+    }
 
 
 }

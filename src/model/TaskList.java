@@ -780,6 +780,27 @@ public class TaskList {
 	                addToList(task);
 	            }
 	            
+	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
+	            List<Task> tasksNotDone = lastState.getPreviousTaskStateList();
+	            for (Task undoneTask : tasksNotDone) {
+	                for (int i = this.tasksFinished.size() - 1; i >= 0; i--) {
+	                    Task task = this.tasksFinished.get(i);
+	                    if (task.getAddedTime().equals(undoneTask.getAddedTime())) {
+	                        
+	                        if (task instanceof RepeatedTask) {
+	                            // find the task added in timedTasks to delete
+	                            RepeatedTask newRepeatedTask = getLatestConsecutiveRepeatedTask((RepeatedTask) task);
+	                            this.tasksTimed.remove(newRepeatedTask);
+	                            this.totalTasks--;
+	                        }                        
+	                        
+	                        this.tasksFinished.remove(task);
+	                        addToList(undoneTask);
+	                        this.totalFinished--;
+	                        break;
+	                    }
+	                }
+	            }
 	        } else {
 	            // do other undo operations here
 	        }
@@ -788,17 +809,36 @@ public class TaskList {
 	    }
 	}
 	
-	public void redo() throws RedoException{
-	    if (redoStack.isEmpty()) {
-	        throw new RedoException();
-	    } else {
-	        
-	        //redo here based on cmd type
-	        
-	    }
-	    
-	}
+    public void redo() throws RedoException{
+        if (redoStack.isEmpty()) {
+            throw new RedoException();
+        } else {
+            
+            //redo here based on cmd type
+            
+        }
+        
+    }
+
 	
+	public RepeatedTask getLatestConsecutiveRepeatedTask(RepeatedTask repeatedTask) {
+	    RepeatedTask consecutiveTask = null;
+	    for (int j = this.tasksTimed.size() - 1; j >= 0; j--) {
+	        Task timedTask = this.tasksTimed.get(j);
+	        if (timedTask instanceof RepeatedTask) {
+	            if (((RepeatedTask) timedTask).isConsecutiveTasks(repeatedTask)) {
+	                consecutiveTask = (RepeatedTask) timedTask;
+	                break;
+	            }
+	        }
+	    }
+	    if (consecutiveTask == null) {
+	        assert false;
+	    } 
+
+	    return consecutiveTask;
+	}
+		
 	private void addToUndoList(LastCommand cmd, Task task, int taskIndex) {
 	    LastState currentTaskState = new LastState(cmd, task, taskIndex);
 	    undoStack.push(currentTaskState);
