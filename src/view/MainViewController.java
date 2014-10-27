@@ -445,6 +445,21 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
 			}
+		} else if (listDisplay.getCurrentPageIndex() == 2) {
+			if (searchKey == null) {
+				response.setText("No Result.");
+			} else {
+				int count = taskList.searchTaskByKeyword(searchKey).size();
+				if (count == 0) {
+					response.setText("No Result.");
+				} else if (count == 1) {
+					response.setText("1 result shown.");
+				} else {
+					response.setText(count + "results shown.");
+				}
+			}
+		} else {
+			response.setText("Valid commands shown.");
 		}
 	}
 
@@ -501,6 +516,7 @@ public class MainViewController extends GridPane{
 		page[3].getChildren().add(helpDoc);
 		
 		setDisplayTitleText();
+		setRestTaskResponse();
 	}
 	
 	private void displaySearchCommand(String searchKey) throws TaskInvalidDateException {
