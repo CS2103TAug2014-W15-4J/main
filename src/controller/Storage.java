@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ import model.FixedTask;
 import model.FloatingTask;
 import model.RepeatedTask;
 import model.SortedArrayList;
+import model.Task;
 import model.TaskList;
 
 
@@ -66,7 +68,7 @@ public class Storage {
 	}
 	
 	/**
-	 * Save an TaskList object into the data file.
+	 * Save a TaskList object into the data file.
 	 * @param tasks the TaskList object which contains the list of tasks
 	 * @return a feedback message
 	 */
@@ -104,6 +106,44 @@ public class Storage {
 		return MESSAGE_SUCCESS;
 	}
 	
+	/**
+	 * Export user's list of task into txt file.
+	 * @param tasks the TaskList object which contains the list of tasks
+	 * @return a feedback message
+	 */
+	public static void export(List<Task> taskTImed, List<Task> taskTodo, List<Task> taskFinished) {
+		logger.log(Level.INFO, "Going to export task list to tasklist.txt file");
+		// preparation work
+		StringBuilder output = new StringBuilder();
+		output.append("Thank you for using uClear\n");
+		output.append("Here are your current tasks.\n\n");
+		output.append("Tasks that due soon:\n");
+		for (Task task : taskTImed) {
+			output.append(task.toString());
+			output.append("\n\n");
+		}
+		output.append("Tasks to do:\n");
+		for (Task task : taskTodo) {
+			output.append(task.toString());
+			output.append("\n\n");
+		}
+		output.append("Tasks finished:\n");
+		for (Task task : taskFinished) {
+			output.append(task.toString());
+			output.append("\n\n");
+		}
+		
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("tasklist.txt", false));
+			writer.write(output.toString());
+			writer.close();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "I/O error when exporting tasks.");
+			throw new Error(ERROR_IO);
+		}
+		logger.log(Level.INFO, "Exporting complete.");
+	}
+
 	/**
 	 * Load and build a TaskList object from the data file.
 	 * @return a TaskList object

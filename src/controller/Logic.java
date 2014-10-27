@@ -35,6 +35,7 @@ public class Logic {
 	final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
 	final static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
 	final static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+	final static String MESSAGE_TASK_EXPORT = "Export successfully.";
 	final static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
 
 	final static String MESSAGE_PROGRAM_REDO = "redo successful.";
@@ -330,6 +331,9 @@ public class Logic {
 
 		} else if (userCommand.getCommand() == UserInput.CMD.UNDO) {
 		    return undo();
+
+		} else if (userCommand.getCommand() == UserInput.CMD.EXPORT) {
+			return exportTasks();
 
 		} else if (userCommand.getCommand() == UserInput.CMD.EXIT) {
 			listOfTasks.setShowDisplayListToFalse();
@@ -643,6 +647,11 @@ public class Logic {
 		} catch (TaskTagException e) {
 			return MESSAGE_INVALID_TAG_DELETE;
 		}
+	}
+
+	private static String exportTasks() {
+		listOfTasks.export();
+	    return MESSAGE_TASK_EXPORT;
 	}
 
 	private static String displayTasksWithTag(String tag) {

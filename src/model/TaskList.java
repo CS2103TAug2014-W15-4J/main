@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import controller.LastState;
+import controller.Storage;
 import controller.LastState.LastCommand;
 import controller.UserInput.RepeatDate;
 import exception.RedoException;
@@ -781,6 +782,12 @@ public class TaskList {
 	public void setNotShowingDone() {
 		this.isShowingDone = false;
 	}
+	
+	public void export() {
+		Storage.export(tasksTimed, tasksUntimed, tasksFinished);
+	}
+	
+	
 	/**
 	 * @param taskIndex
 	 * @return

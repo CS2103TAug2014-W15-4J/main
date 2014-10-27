@@ -31,6 +31,7 @@ public class Parser {
 	private static final String CMD_UNTAG = "untag";
 	private static final String CMD_UNDO = "undo";
 	private static final String CMD_REDO = "redo";
+	private static final String CMD_EXPORT = "export";
 
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
@@ -84,6 +85,8 @@ public class Parser {
 			return parseRedo(content);
 		case CMD_UNTAG:
 			return parseUntag(content);
+		case CMD_EXPORT:
+			return parseExport(content);
 		default:
 			return errorCommand();
 		}
@@ -116,6 +119,8 @@ public class Parser {
 			return CMD_UNDO;
 		if(command.equals(CMD_REDO)||command.equals("r"))
 			return CMD_REDO;
+		if(command.equals(CMD_EXPORT)||command.equals("ex"))
+			return CMD_EXPORT;
 		return command;
 	}
 
@@ -653,6 +658,13 @@ public class Parser {
 			input.add(contentString);
 		}
 		log.info("exit command");
+		return input;
+	}
+
+	private UserInput parseExport(String content) {
+		log.info("entering export command");
+		UserInput input = new UserInput();
+		input.addCommand(CMD.EXPORT);
 		return input;
 	}
 

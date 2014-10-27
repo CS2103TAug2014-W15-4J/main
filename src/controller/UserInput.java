@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class UserInput {
 	public enum CMD {
-		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG,UNDO,REDO, UNTAG
+		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG,UNDO,REDO, UNTAG, EXPORT
 	};
 	public enum RepeatDate {
 		DAILY,WEEKLY,MONTHLY
