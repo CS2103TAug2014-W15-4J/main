@@ -5,7 +5,6 @@ import java.util.Set;
 
 import exception.TaskInvalidDateException;
 import javafx.application.Application;
-import javafx.geometry.Orientation;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -37,7 +36,7 @@ public class MainView extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
-		//setScrollBar(mvc);
+//		setScrollBar(mvc);
 	}
 	
 	private String getOS() {
