@@ -12,6 +12,7 @@ public class LastState {
     LastCommand lastCommand; 
     List<Task> previousTaskStateList;
     Task previousTaskState;
+    Task currentTaskState;
     List<Integer> taskIndices;
     int taskIndex;
     UserInput lastUserInput;
@@ -63,12 +64,24 @@ public class LastState {
     }    
 
 
+    public LastState(LastCommand cmd, Task taskPrev, Task taskNext) {
+        lastCommand = cmd;
+        previousTaskState = taskPrev;
+        currentTaskState = taskNext;
+        previousTaskStateList = null;
+        
+    }
+
     public LastCommand getLastCommand() {
         return lastCommand;
     }
     
     public Task getPreviousTaskState() {
         return previousTaskState;
+    }
+    
+    public Task getCurrentTaskState() {
+        return currentTaskState;
     }
     
     public int getTaskIndex() {

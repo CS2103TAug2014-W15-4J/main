@@ -399,7 +399,7 @@ public class Logic {
 	 */
 	private static String editTask(int taskIndex, String description) {
 		try {
-			listOfTasks.editTaskDescription(taskIndex, description);
+			listOfTasks.editTaskDescriptionOnly(taskIndex, description);
 			return MESSAGE_TASK_EDITED;
 
 		} catch (TaskInvalidIdException e) {
@@ -409,7 +409,7 @@ public class Logic {
 
 	private static String editTask(int taskIndex, Date time) {
 		try {
-			listOfTasks.editTaskDeadline(taskIndex, time);
+			listOfTasks.editTaskDeadlineOnly(taskIndex, time);
 			return MESSAGE_TASK_EDITED;
 
 		} catch (TaskInvalidIdException e) {
@@ -423,8 +423,7 @@ public class Logic {
 
 	private static String editTask(int taskIndex, String desc, Date time) {
 		try {
-			listOfTasks.editTaskDescription(taskIndex, desc);
-			listOfTasks.editTaskDeadline(taskIndex, time);
+		    listOfTasks.editTaskDescriptionDeadline(taskIndex, desc, time);
 			return MESSAGE_TASK_EDITED;
 
 		} catch (TaskInvalidIdException e) {
@@ -439,8 +438,7 @@ public class Logic {
 	private static String editTask(int taskIndex, Date startDate, Date endDate) {
 
 		try {
-			listOfTasks.editTaskStartDate(taskIndex, startDate);
-			listOfTasks.editTaskDeadline(taskIndex, endDate);
+		    listOfTasks.editTaskTimes(taskIndex, startDate, endDate);
 			return MESSAGE_TASK_EDITED;
 
 		} catch (TaskInvalidIdException e) {
@@ -454,9 +452,7 @@ public class Logic {
 	private static String editTask(int taskIndex, String desc, Date startDate,
 			Date endDate) {
 		try {
-			listOfTasks.editTaskDescription(taskIndex, desc);
-			listOfTasks.editTaskStartDate(taskIndex, startDate);
-			listOfTasks.editTaskDeadline(taskIndex, endDate);
+		    listOfTasks.editTaskDescriptionTimes(taskIndex, desc, startDate, endDate);
 			return MESSAGE_TASK_EDITED;
 
 		} catch (TaskInvalidIdException e) {
