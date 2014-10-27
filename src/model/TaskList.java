@@ -557,7 +557,8 @@ public class TaskList {
 		} else {
 		    
 		    List<Task> tasksToMarkDone = new ArrayList<Task>();
-		    List<Task> tasksMarkedDone = new ArrayList<Task>();
+		    List<Task> tasksBeforeMarkingDone = new ArrayList<Task>();
+		    List<Task> newRepeatTaskList = new ArrayList<Task>();
 		    
 		    // putting the tasks to be marked done into a list,
 		    // since marking a task done would move it into a new list, 
@@ -573,7 +574,7 @@ public class TaskList {
 		    }
 		    
 		    for (Task target : tasksToMarkDone) {
-		        tasksMarkedDone.add(target.clone());
+		        tasksBeforeMarkingDone.add(target.clone());
 		        Task newRepeatTask = null;
 		        
 		        if (this.tasksUntimed.contains(target)) {
@@ -585,17 +586,25 @@ public class TaskList {
 		            newRepeatTask = target.markDone();
 		            this.tasksTimed.remove(target);
 		            this.tasksFinished.add(target);
-		            
 		        }
 		        
 		        this.totalFinished++;
 		        if (newRepeatTask != null) {
 		            this.addToList((RepeatedTask) newRepeatTask);
+		            newRepeatTaskList.add(newRepeatTask);
 		        }
 		    }
 		    
-		    addToUndoList(LastCommand.DONE, tasksMarkedDone, -1);
+		    addToUndoList(LastCommand.DONE, tasksBeforeMarkingDone, tasksToMarkDone, newRepeatTaskList);
 		}
+	}
+	
+	private void markTaskRedone(Task task) {
+	    task.markRedone();
+	}
+	
+	private void markTaskUndone(Task task) {
+	    task.markUndone();
 	}
 
 	public void tagTask(int taskIndexToTag, String tag)
@@ -608,11 +617,12 @@ public class TaskList {
 	        Task givenTaskToTag = getTask(taskIndexToTag - 1);
 	        Task clonedTask = givenTaskToTag.clone();
 	        tagGivenTask(givenTaskToTag, tag);
-	        addToUndoList(LastCommand.TAG, clonedTask, givenTaskToTag);
+	        
+	        addToUndoList(LastCommand.TAG, clonedTask, givenTaskToTag, tag);
 	    }
 	}
 	
-	private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
+    private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
 
 	    taskToTag.addTag(tag);
 	    
@@ -637,7 +647,7 @@ public class TaskList {
 	        Task givenTaskToUntag = getTask(taskIndexToUntag - 1);
 	        Task clonedTask = givenTaskToUntag.clone();
 	        untagGivenTask(givenTaskToUntag, tag);
-            addToUndoList(LastCommand.TAG, clonedTask, givenTaskToUntag);
+            addToUndoList(LastCommand.UNTAG, clonedTask, givenTaskToUntag, tag);
 	    }
 	}
 	
@@ -842,52 +852,67 @@ public class TaskList {
 	        
 	        setShowDisplayListToFalse();
 	        LastState lastState = undoStack.pop();
+	        redoStack.push(lastState);
 	        
 	        if (lastState.getLastCommand() == LastCommand.ADD) {
 	            Task task = lastState.getPreviousTaskState();
-	            deleteFromList(task);
+	            this.deleteFromList(task);
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.DELETE) {
 	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
 	            for (Task task : tasksToReadd) {
-	                addToList(task);
+	                this.addToList(task);
 	            }
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
-	            List<Task> tasksNotDone = lastState.getPreviousTaskStateList();
-	            for (Task undoneTask : tasksNotDone) {
-	                for (int i = this.tasksFinished.size() - 1; i >= 0; i--) {
-	                    Task task = this.tasksFinished.get(i);
-	                    if (task.getAddedTime().equals(undoneTask.getAddedTime())) {
-	                        
-	                        if (task instanceof RepeatedTask) {
-	                            // find the task added in timedTasks to delete
-	                            RepeatedTask newRepeatedTask = getLatestConsecutiveRepeatedTask((RepeatedTask) task);
-	                            this.tasksTimed.remove(newRepeatedTask);
-	                            this.totalTasks--;
-	                        }                        
-	                        
-	                        this.tasksFinished.remove(task);
-	                        addToList(undoneTask);
-	                        this.totalFinished--;
-	                        break;
-	                    }
-	                }
+	            List<Task> tasksAfterDone = lastState.getCurrentTaskStateList();
+	            List<Task> repeatTaskList = lastState.getRepeatTaskList();
+	            
+	            for (Task doneTask : tasksAfterDone) {
+	                this.markTaskUndone(doneTask);
+	                this.tasksFinished.remove(doneTask);
+	                this.totalFinished--;
+	                this.addToList(doneTask);
+	            }
+	            
+	            for (Task newRepeatTask : repeatTaskList) {
+	                this.tasksTimed.remove(newRepeatTask);
+	                this.totalTasks--;
 	            }
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.TAG) {
 	            Task currentTaskState = lastState.getCurrentTaskState();
-	            Task prevTaskState = lastState.getPreviousTaskState();
+	            String tag = lastState.getTag();
 	            
-                for (int i = 0; i < this.totalTasks; i++) {
-                    Task task = this.getTask(i);
-                    if (task.equals(currentTaskState)) {
-                        deleteFromList(task);
-                        addToList(prevTaskState);
-                        break;
+	            if (tag.isEmpty()) {
+	                assert false;
+	                
+	            } else {
+	                try {
+                        untagGivenTask(currentTaskState, tag);
+                    } catch (TaskTagException e) {
+                        assert false;
                     }
                 }
 	            
+	        } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
+	            Task currentTaskState = lastState.getCurrentTaskState();
+	            Task previousTaskState = lastState.getPreviousTaskState();
+	            String tag = lastState.getTag();
+	            
+	            try {
+	                if (tag.isEmpty()) {
+	                    List<String> tagsToReadd = previousTaskState.getTags();
+	                    for (String tagToReadd : tagsToReadd) {
+	                        tagGivenTask(currentTaskState, tagToReadd);
+	                    }
+	                } else {
+	                    tagGivenTask(currentTaskState, tag);
+	                }
+	            } catch (TaskTagDuplicateException e) {
+	                assert false;
+	            }
+
 	        } else if (lastState.getLastCommand() == LastCommand.EDIT) {
 	            Task currentTaskState = lastState.getCurrentTaskState();
 	            Task prevTaskState = lastState.getPreviousTaskState();
@@ -902,7 +927,9 @@ public class TaskList {
 	            }
 	            
 	        } else {
-	            // do other undo operations here
+	            // add on other undo operations with a new else if statement,
+	            // should not actually reach here
+	            assert false;
 	        }
 	        
 	        
@@ -914,7 +941,86 @@ public class TaskList {
             throw new RedoException();
         } else {
             
-            //redo here based on cmd type
+            setShowDisplayListToFalse();
+            LastState lastState = redoStack.pop();
+            undoStack.push(lastState);
+            
+            if (lastState.getLastCommand() == LastCommand.ADD) {
+                Task task = lastState.getPreviousTaskState();
+                this.addToList(task);
+                
+            } else if (lastState.getLastCommand() == LastCommand.DELETE) {
+                List<Task> tasksToDelete = lastState.getPreviousTaskStateList();
+                for (Task task : tasksToDelete) {
+                    this.deleteFromList(task);
+                }
+                
+            } else if (lastState.getLastCommand() == LastCommand.DONE) {
+                List<Task> tasksAfterUndone = lastState.getCurrentTaskStateList();
+                List<Task> repeatTaskList = lastState.getRepeatTaskList();
+
+                for (Task doneTask : tasksAfterUndone) {
+                    this.markTaskRedone(doneTask);
+                    this.deleteFromList(doneTask);
+                    ((SortedArrayList<Task>) this.tasksFinished).addOrder(doneTask);
+                    this.totalFinished++;
+                }
+                
+                for (Task newRepeatTask : repeatTaskList) {
+                    this.addToList(newRepeatTask);
+                }
+                
+            } else if (lastState.getLastCommand() == LastCommand.TAG) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                String tag = lastState.getTag();
+                
+                if (tag.isEmpty()) {
+                    assert false;
+                    
+                } else {
+                    try {
+                        tagGivenTask(currentTaskState, tag);
+                        
+                    } catch (TaskTagDuplicateException e) {
+                        assert false;
+                    }
+                }
+                
+            } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                String tag = lastState.getTag();
+                
+                try {
+                    if (tag.isEmpty()) {
+                        List<String> tagsToUntag = currentTaskState.getTags();
+                        for (String tagToUntag : tagsToUntag) {
+                            untagGivenTask(currentTaskState, tagToUntag);
+                        }
+                    } else {
+                        untagGivenTask(currentTaskState, tag);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                }
+                
+            } else if (lastState.getLastCommand() == LastCommand.EDIT) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                Task prevTaskState = lastState.getPreviousTaskState();
+                
+                for (int i = 0; i < this.totalTasks; i++) {
+                    Task task = this.getTask(i);
+                    if (task.equals(prevTaskState)) {
+                        deleteFromList(task);
+                        addToList(currentTaskState);
+                        break;
+                    }
+                }
+                
+            } else {
+                // add on other redo operations with a new else if statement,
+                // should not actually reach here
+                assert false;
+            }
             
         }
         
@@ -954,17 +1060,24 @@ public class TaskList {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext);
         undoStack.push(currentTaskState);        
     }
-
+    
+    private void addToUndoList(LastCommand cmd, List<Task> taskListPrev, 
+                               List<Task> taskListNext, List<Task> repeatTaskList) {
+        LastState currentTaskState = new LastState(cmd, taskListPrev, taskListNext, repeatTaskList);
+        undoStack.push(currentTaskState);
+    }
+    
+    private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext, String tag) {
+        LastState currentTaskState = new LastState(cmd, taskPrev, taskNext, tag);
+        undoStack.push(currentTaskState);        
+    }
 
 	
-	private void addToUndoList(LastCommand cmd, List<Task> tasks, List<Integer> taskIndices) {
-	    LastState currentTasksState = new LastState(cmd, tasks, taskIndices);
-	    undoStack.push(currentTasksState);
-	}
-	
-    private void addToUndoList(LastCommand cmd, Task task) {
-        LastState currentTasksState = new LastState(cmd, task);
-        undoStack.push(currentTasksState);        
+    
+    private void addToRedoList(LastCommand cmd, List<Task> taskListPrev, List<Task> taskListNext) {
+        LastState currentTaskState = new LastState(cmd, taskListPrev, taskListNext);
+        redoStack.push(currentTaskState);
+        
     }
 
 

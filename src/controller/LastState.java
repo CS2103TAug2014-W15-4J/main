@@ -1,6 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Task;
@@ -11,8 +10,11 @@ public class LastState {
     }
     LastCommand lastCommand; 
     List<Task> previousTaskStateList;
+    List<Task> currentTaskStateList;
+    List<Task> newRepeatTaskList;
     Task previousTaskState;
     Task currentTaskState;
+    String tag;
     List<Integer> taskIndices;
     int taskIndex;
     UserInput lastUserInput;
@@ -43,13 +45,6 @@ public class LastState {
         taskIndex = taskIndexEdited;
         
     }
-
-    public LastState(LastCommand cmd, List<Task> tasksEdited, List<Integer> taskIndicesEdited) {
-        lastCommand = cmd;
-        previousTaskState = null;
-        previousTaskStateList = new ArrayList<Task>(tasksEdited);
-        taskIndices = taskIndicesEdited;
-    }
     
     /**
      * to undo for commands: tag, untag
@@ -72,6 +67,29 @@ public class LastState {
         
     }
 
+    public LastState(LastCommand cmd, List<Task> taskListPrevState,
+                     List<Task> taskListCurrentState) {
+        lastCommand = cmd;
+        previousTaskStateList = taskListPrevState;
+        currentTaskStateList = taskListCurrentState;
+    }
+    
+    public LastState(LastCommand cmd, Task taskPrevState,
+                     Task taskCurrentState, String givenTag) {
+        lastCommand = cmd;
+        previousTaskState = taskPrevState;
+        currentTaskState = taskCurrentState;
+        tag = givenTag;
+    }
+    
+    public LastState(LastCommand cmd, List<Task> taskListPrevState,
+                     List<Task> taskListCurrentState, List<Task> repeatTaskList) {
+        lastCommand = cmd;
+        previousTaskStateList = taskListPrevState;
+        currentTaskStateList = taskListCurrentState;
+        newRepeatTaskList = repeatTaskList;
+    }
+
     public LastCommand getLastCommand() {
         return lastCommand;
     }
@@ -90,6 +108,18 @@ public class LastState {
     
     public List<Task> getPreviousTaskStateList() {
         return previousTaskStateList;
+    }
+    
+    public List<Task> getCurrentTaskStateList() {
+        return currentTaskStateList;
+    }
+    
+    public List<Task> getRepeatTaskList() {
+        return newRepeatTaskList;
+    }
+    
+    public String getTag() {
+        return tag;
     }
     
     public List<Integer> getTaskIndices() {

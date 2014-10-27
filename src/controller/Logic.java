@@ -331,6 +331,9 @@ public class Logic {
 
 		} else if (userCommand.getCommand() == UserInput.CMD.UNDO) {
 		    return undo();
+		    
+		} else if (userCommand.getCommand() == UserInput.CMD.REDO) {
+		    return redo();
 
 		} else if (userCommand.getCommand() == UserInput.CMD.EXPORT) {
 			return exportTasks();

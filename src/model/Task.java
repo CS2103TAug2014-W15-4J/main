@@ -75,6 +75,22 @@ public abstract class Task {
 	    }
 	}
 	
+	public void markRedone() {
+	    if (isDone) {
+	        assert false;
+	    } else {
+	        isDone = true;
+	    }
+	}
+	
+	public void markUndone() {
+	    if (!isDone) {
+	        assert false;
+	    } else {
+	        isDone = false;
+	    }
+	}
+	
 	public boolean getIsDone() {
 		return this.isDone;
 	}
@@ -84,7 +100,6 @@ public abstract class Task {
 	    // else trying to add date to otherwise non date task, error
 	    
 	    throw new TaskInvalidDateException();
-	    
     }
 
 	public Date getDeadline() throws TaskInvalidDateException {
@@ -99,8 +114,7 @@ public abstract class Task {
     }
 
 	public Date getDoneDate() {
-	    // TODO Auto-generated method stub
-	    return null;
+	    return this.doneDate;
     }
 	
 	public Type getType() {
