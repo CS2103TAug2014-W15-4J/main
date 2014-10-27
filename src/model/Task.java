@@ -156,5 +156,9 @@ public abstract class Task {
 	
 	@Override
     public abstract Task clone();
+	
+	public boolean equals(Task task) {
+	    return this.getAddedTime() == task.getAddedTime();
+	}
 
 }

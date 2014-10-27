@@ -548,52 +548,79 @@ public class TaskList {
 
 	public void tagTask(int taskIndexToTag, String tag)
 			throws TaskInvalidIdException, TaskTagDuplicateException {
-		if (isInvalidIndex(taskIndexToTag)) {
-			throw new TaskInvalidIdException();
+	    
+	    if (isInvalidIndex(taskIndexToTag)) {
+	        throw new TaskInvalidIdException();
+	        
+	    } else {
+	        Task givenTaskToTag = getTask(taskIndexToTag - 1);
+	        Task clonedTask = givenTaskToTag.clone();
+	        tagGivenTask(givenTaskToTag, tag);
+	        List<String> tagToTag = new ArrayList<String>();
+	        tagToTag.add(tag);
+	        addToUndoList(LastCommand.TAG, clonedTask, taskIndexToTag - 1);
+	    }
+	}
+	
+	private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
 
-		} else {
-
-			Task taskToTag = getTask(taskIndexToTag - 1);
-			taskToTag.addTag(tag);
-
-			if (!tags.containsKey(tag.toLowerCase())) {
-				List<Task> tagTaskList = new ArrayList<Task>();
-				tagTaskList.add(taskToTag);
-				tags.put(tag.toLowerCase(), tagTaskList);
-
-			} else {
-				List<Task> tagTaskList = tags.remove(tag.toLowerCase());
-				tagTaskList.add(taskToTag);
-				tags.put(tag.toLowerCase(), tagTaskList);
-			}
-		}
+	    taskToTag.addTag(tag);
+	    
+	    if (!tags.containsKey(tag.toLowerCase())) {
+	        List<Task> tagTaskList = new ArrayList<Task>();
+	        tagTaskList.add(taskToTag);
+	        tags.put(tag.toLowerCase(), tagTaskList);
+	        
+	    } else {
+	        List<Task> tagTaskList = tags.remove(tag.toLowerCase());
+	        tagTaskList.add(taskToTag);
+	        tags.put(tag.toLowerCase(), tagTaskList);
+	    }
+	    
+	    
 	}
 
 	public void untagTask(int taskIndexToUntag, String tag)
 			throws TaskInvalidIdException, TaskTagException {
-		if (isInvalidIndex(taskIndexToUntag)) {
-			throw new TaskInvalidIdException();
-
-		} else if (tag.isEmpty()) {
-			untagTaskAll(taskIndexToUntag - 1);
-
-		} else {
-			Task taskToTag = getTask(taskIndexToUntag - 1);
-			taskToTag.deleteTag(tag);
-
-			if (tags.get(tag.toLowerCase()).size() == 1) {
-				tags.remove(tag.toLowerCase());
-
-			} else {
-				List<Task> tagTaskList = tags.remove(tag.toLowerCase());
-				tagTaskList.remove(taskToTag);
-				tags.put(tag.toLowerCase(), tagTaskList);
-			}
-		}
+	    if (isInvalidIndex(taskIndexToUntag)) {
+	        throw new TaskInvalidIdException();
+	        
+	    } else {
+	        Task givenTaskToUntag = getTask(taskIndexToUntag - 1);
+	        Task clonedTask = givenTaskToUntag.clone();
+	        untagGivenTask(givenTaskToUntag, tag);
+	        List<String> tagsToUntag;
+	        if (tag.isEmpty()) {
+	            tagsToUntag = new ArrayList<String>(givenTaskToUntag.getTags());
+	            
+	        } else {
+	            tagsToUntag = new ArrayList<String>();
+	            tagsToUntag.add(tag);
+	        }
+            addToUndoList(LastCommand.TAG, clonedTask, taskIndexToUntag - 1);
+	    }
+	}
+	
+    private void untagGivenTask(Task taskToUntag, String tag) throws TaskTagException {
+	    if (tag.isEmpty()) {
+	        untagTaskAll(taskToUntag);
+	        
+	    } else {
+	        taskToUntag.deleteTag(tag);
+	        
+	        if (tags.get(tag.toLowerCase()).size() == 1) {
+	            tags.remove(tag.toLowerCase());
+	            
+	        } else {
+	            List<Task> tagTaskList = tags.remove(tag.toLowerCase());
+	            tagTaskList.remove(taskToUntag);
+	            tags.put(tag.toLowerCase(), tagTaskList);
+	        }
+	    }
 	}
 
-	private void untagTaskAll(int taskIndexToUntag) throws TaskTagException {
-		Task taskToUntag = getTask(taskIndexToUntag);
+
+	private void untagTaskAll(Task taskToUntag) throws TaskTagException {
 		List<String> taskTags = taskToUntag.getTags();
 
 		if (taskTags.isEmpty()) {
@@ -801,6 +828,15 @@ public class TaskList {
 	                    }
 	                }
 	            }
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.TAG) {
+	            int taskIndexToUndo = lastState.getTaskIndex();
+	            Task currentTaskState = getTask(taskIndexToUndo);
+	            Task prevTaskState = lastState.getPreviousTaskState();
+	            
+	            deleteFromList(currentTaskState);
+	            addToList(prevTaskState);
+	            
 	        } else {
 	            // do other undo operations here
 	        }
@@ -854,6 +890,12 @@ public class TaskList {
 	    LastState currentTasksState = new LastState(cmd, tasks, taskIndices);
 	    undoStack.push(currentTasksState);
 	}
+	
+    private void addToUndoList(LastCommand cmd, Task task) {
+        LastState currentTasksState = new LastState(cmd, task);
+        undoStack.push(currentTasksState);        
+    }
+
 
 	public int count() {
 		return this.totalTasks;

@@ -30,7 +30,7 @@ public class LastState {
     }
     
     /**
-     * to undo for commands: delete,
+     * to undo for commands: delete, mark done
      * @param cmd
      * @param tasksEdited
      * @param taskIndexEdited
@@ -48,7 +48,20 @@ public class LastState {
         previousTaskState = null;
         previousTaskStateList = new ArrayList<Task>(tasksEdited);
         taskIndices = taskIndicesEdited;
+    }
+    
+    /**
+     * to undo for commands: tag, untag
+     * @param cmd
+     * @param tasksEdited
+     * @param tag
+     */
+    public LastState(LastCommand cmd, Task taskEdited) {
+        lastCommand = cmd;
+        previousTaskState = taskEdited;
+        previousTaskStateList = null;
     }    
+
 
     public LastCommand getLastCommand() {
         return lastCommand;
@@ -69,7 +82,6 @@ public class LastState {
     public List<Integer> getTaskIndices() {
         return taskIndices;
     }
-    
     
     
     
