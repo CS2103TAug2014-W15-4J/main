@@ -1,49 +1,38 @@
 package view;
 
 import controller.Logic;
+import controller.UserInput.CMD;
 import model.TaskList;
 import model.Task;
 import exception.TaskInvalidDateException;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
-
-import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPaneBuilder;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBuilder;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -62,6 +51,27 @@ public class MainViewController extends GridPane{
 		"rgb(156, 184, 197)"
 	};
 	
+	final static KeyCode[] F_KEYS = {
+		KeyCode.F1,
+		KeyCode.F2,
+		KeyCode.F3,
+		KeyCode.F4,
+		KeyCode.F5,
+		KeyCode.F6,
+		KeyCode.F7,
+		KeyCode.F8,
+	};
+	
+	final static CMD[] F_KEY_COMMAND = {
+		CMD.ADD,
+		CMD.DELETE,
+		CMD.DONE,
+		CMD.EDIT,
+		CMD.SEARCH,
+		CMD.SHOW,
+		CMD.TAG,
+	};
+	
 	final static String CSS_BACKGROUND_COLOR = "-fx-background-color: ";
 	final static String FX_COLOR_RGB = "rgb(%s, %s, %s)";
 	final static String FXML_FILE_NAME = "MainView.fxml";
@@ -73,6 +83,27 @@ public class MainViewController extends GridPane{
 	final static String TITLE_DONE_TASKS = "Done Tasks";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
+	
+	final static String MESSAGE_HELP = "Current list of available commands: \n"
+			+ "- add a floating task     : add <description>\n"
+			+ "- add a deadline task     : add <description> by <time/date>\n"
+			+ "- add a fixed time        : add <description> <time/date1> to <time/date2>\n"
+			+ "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n"
+			+ "- edit a task description : edit <taskID> <description>\n"
+			+ "- edit a task time/date   : edit <taskID> <time/date>\n"
+			+ "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n"
+			+ "- clear all tasks         : clear\n"
+			+ "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n"
+			+ "- tag a task              : tag <taskID> <tag>\n"
+			+ "- untag a task            : untag <taskID> <tag>\n"
+			+ "- untag all tags from task: untag <taskID>\n"
+			+ "- show all tasks          : show / show all\n"
+			+ "- show tasks (add order)  : show added\n"
+			+ "- show tasks with tag     : show <tag>\n"
+			+ "- show tasks that are done: show done\n"
+			+ "(You can only delete or search tasks when displying tasks that are done)\n"
+			+ "- search tasks            : search <keyword>\n"
+			+ "- exit the program        : exit";
 	
 	@FXML
 	private Label uClear;
@@ -187,7 +218,12 @@ public class MainViewController extends GridPane{
 			scrollPage[i].setContent(page[i]);
 		}
 		
-		setLeftAndRightKey();
+		setLeftKey();
+		setRightKey();
+		for (int i=0; i<8; i++) {
+			setFKey(i);
+		}
+		
 	}
 	
 	private void setScrollPage(int index) {
@@ -197,7 +233,7 @@ public class MainViewController extends GridPane{
 		scrollPage[index].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 	
-	private void setLeftAndRightKey() {
+	private void setLeftKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 		     @Override 
 		     public void handle(KeyEvent event ) {
@@ -232,7 +268,9 @@ public class MainViewController extends GridPane{
 		        }
 		     }
 		});
-		
+	}
+	
+	private void setRightKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 		     @Override 
 		     public void handle(KeyEvent event ) {
@@ -263,6 +301,30 @@ public class MainViewController extends GridPane{
 		     }
 		});
 	}
+	
+	private void setFKey(final int index) {
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+		     @Override 
+		     public void handle(KeyEvent event ) {
+		        if (event.getCode() == F_KEYS[index]) {
+//		        	event.consume();
+		        	boolean flag = true;
+		        	if (flag) {
+		        		flag = false;
+		        		if (listDisplay.getCurrentPageIndex() == 3) {
+		    				if (index != 7) {
+		    					setHelpPage(F_KEY_COMMAND[index]);
+		    				} else {
+		    					setHelpPage();
+		    				}
+		    			}
+		        	}
+		        }
+		     }
+		});
+	}
+	
+	
 
 	private void setFont() {
 	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
@@ -295,7 +357,15 @@ public class MainViewController extends GridPane{
 		});
 		displayExistingTasks();
 	}
+	
+	private void setHelpPage() {
+		
+	}
 
+	private void setHelpPage(CMD commandType) {
+		
+	}
+	
 	private void displayExistingTasks() throws TaskInvalidDateException {
 		loadTaskList();
 		taskList = getTaskList();
@@ -498,6 +568,10 @@ public class MainViewController extends GridPane{
 		return Logic.getTaskList();
 	}
 	
+	private String getHelpInfo() {
+		return MESSAGE_HELP;
+	}
+	
 	private void setTextField(String content) {
 		input.setText(content);
 	}
@@ -511,7 +585,7 @@ public class MainViewController extends GridPane{
 		
 		page[3].getChildren().clear();
 		
-		Text helpDoc = new Text(feedback);
+		Text helpDoc = new Text(getHelpInfo());
 		helpDoc.setStyle("-fx-text-fill: yellow");
 		page[3].getChildren().add(helpDoc);
 		
@@ -545,6 +619,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayShowAllCommand() throws TaskInvalidDateException {
+		taskList.setNotShowingDone();
 		listDisplay.setCurrentPageIndex(0);
 		setDisplayTitleText();
 		setRestTaskResponse();
@@ -573,10 +648,58 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	private void displayOtherCommand() throws TaskInvalidDateException {
+		if (listDisplay.getCurrentPageIndex() == 0) {
+			setMainDisplay();
+		} else if (listDisplay.getCurrentPageIndex() == 1) {
+			page[1].getChildren().clear();
+			
+			ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
+			for (int i=0; i<doneTaskList.size(); i++) {
+				
+				Task task = doneTaskList.get(i);
+				GridPane taskLayout = new GridPane();
+				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+				
+				setGridPaneSize(taskLayout, 383, 100);
+				
+				setTaskFormat(taskLayout, task, i);
+				
+				page[1].getChildren().add(taskLayout);
+			}
+		} else if (listDisplay.getCurrentPageIndex() == 2) {
+			page[2].getChildren().clear();
+			
+			ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
+			for (int i=0; i<searchTaskList.size(); i++) {
+				
+				Task task = searchTaskList.get(i);
+				GridPane taskLayout = new GridPane();
+				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
+				
+				setGridPaneSize(taskLayout, 383, 100);
+				
+				setTaskFormat(taskLayout, task, i);
+				
+				page[2].getChildren().add(taskLayout);
+			}
+		}
+		response.setText(feedback);
+		
+		if (feedback.length() > 10) {
+			response.setStyle("-fx-font-size: 15;-fx-text-fill: rgb(68,217,117)");
+		} else {
+			response.setStyle("-fx-text-fill: rgb(68,217,117)");
+		}
+		
+		fadeOut.playFromStart();
+		setDisplayTitleText();
+	}
+	
 	private void analyseCommand(String command) throws TaskInvalidDateException {
 		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
 			displayHelpCommand();
-		} else if (command.trim().length() >= 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
+		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
 			searchKey = command.trim().substring(7);
 			displaySearchCommand(searchKey);
 		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
@@ -586,45 +709,7 @@ public class MainViewController extends GridPane{
 			displayShowDoneCommand();
 		// except show, search and help
 		} else {
-			if (listDisplay.getCurrentPageIndex() == 0) {
-				setMainDisplay();
-			} else if (listDisplay.getCurrentPageIndex() == 1) {
-				page[1].getChildren().clear();
-				
-				ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
-				for (int i=0; i<doneTaskList.size(); i++) {
-					
-					Task task = doneTaskList.get(i);
-					GridPane taskLayout = new GridPane();
-					taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-					
-					setGridPaneSize(taskLayout, 383, 100);
-					
-					setTaskFormat(taskLayout, task, i);
-					
-					page[1].getChildren().add(taskLayout);
-				}
-			} else if (listDisplay.getCurrentPageIndex() == 2) {
-				page[2].getChildren().clear();
-				
-				ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
-				for (int i=0; i<searchTaskList.size(); i++) {
-					
-					Task task = searchTaskList.get(i);
-					GridPane taskLayout = new GridPane();
-					taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-					
-					setGridPaneSize(taskLayout, 383, 100);
-					
-					setTaskFormat(taskLayout, task, i);
-					
-					page[2].getChildren().add(taskLayout);
-				}
-			}
-			response.setText(feedback);
-			response.setStyle("-fx-text-fill: rgb(68,217,117)");
-			fadeOut.playFromStart();
-			setDisplayTitleText();
+			displayOtherCommand();
 		}
 	}
 	
@@ -637,7 +722,9 @@ public class MainViewController extends GridPane{
 			if (!isSpecialCommand()) {
 				feedback = executeCommand(command);
 				taskList = getTaskList();
-				taskList.setNotShowingDone();
+				if (listDisplay.getCurrentPageIndex() != 1) {
+					taskList.setNotShowingDone();
+				}
 				setTextFieldEmpty();
 				saveTaskList();
 				
@@ -648,7 +735,7 @@ public class MainViewController extends GridPane{
 					@Override
 					public void handle(ActionEvent event) {
 						setRestTaskResponse();
-						response.setStyle("-fx-text-fill: rgb(241,109,82)");
+						response.setStyle("-fx-font-size: 20;-fx-text-fill: rgb(241,109,82)");
 					}
 					
 				});

@@ -36,7 +36,7 @@ public class MainView extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
-//		setScrollBar(mvc);
+		setScrollBar(mvc);
 	}
 	
 	private String getOS() {
@@ -53,12 +53,9 @@ public class MainView extends Application {
 		
 		for (int i=0; i<scrollPage.length; i++) {
 			Set<Node> scrollBars = scrollPage[i].lookupAll(".scroll-bar");
-			System.out.println(scrollBars.isEmpty());
 	        for (final Node sBar : scrollBars) {
 	            if (sBar instanceof ScrollBar) {
 	                scrollBar[i] = (ScrollBar) sBar;
-	                
-	                scrollBar[i].setVisible(false);
 	            }
 	        }
 		}
