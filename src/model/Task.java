@@ -153,5 +153,8 @@ public abstract class Task {
 	
 	@Override
     public abstract String toString();
+	
+	@Override
+    public abstract Task clone();
 
 }

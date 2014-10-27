@@ -1,6 +1,7 @@
 package model;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -24,15 +25,18 @@ public class FixedTask extends Task {
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime) {
+	@Override
+    public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 
-	public Date getDeadline() {
+	@Override
+    public Date getDeadline() {
 		return endTime;
 	}
 	
-	public void setDeadline(Date endtime) {
+	@Override
+    public void setDeadline(Date endtime) {
 		this.endTime = endtime;
 	}
 	
@@ -43,5 +47,16 @@ public class FixedTask extends Task {
 				dateFormatter.format(this.endTime) + "\n" + this.displayTags() 
 					+ "\n" + this.displayDone();
 	}
+	
+    @Override
+    public Task clone() {
+        
+        FixedTask newTask = new FixedTask(this.description, startTime, endTime);
+        newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+        newTask.isDone = this.isDone;
+        
+        return newTask;
+    }   
 
 }

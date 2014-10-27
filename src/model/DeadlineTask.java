@@ -1,6 +1,7 @@
 package model;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -20,7 +21,8 @@ public class DeadlineTask extends Task {
 		return deadline;
 	}
 	
-	public void setDeadline(Date dl) {
+	@Override
+    public void setDeadline(Date dl) {
 		deadline = dl;
 	}
 
@@ -31,4 +33,14 @@ public class DeadlineTask extends Task {
 				+ "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
 	
+
+	@Override
+    public Task clone() {
+	    DeadlineTask newTask = new DeadlineTask(this.description, this.deadline);
+	    newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+	    newTask.isDone = this.isDone;
+	    
+	    return newTask;
+	}	
 }

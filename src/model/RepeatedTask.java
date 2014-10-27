@@ -1,6 +1,7 @@
 package model;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 
@@ -19,7 +20,7 @@ public class RepeatedTask extends Task {
 	@XStreamAlias("Period")
 	private String period;
 
-	public static String[] namesOfDays =  {"DUMMY", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+	public static String[] namesOfDays =  {"DUMMY", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
 
 	private void updatePeriodString() {
 	    
@@ -90,5 +91,17 @@ public class RepeatedTask extends Task {
 		return this.description +"\nDeadline: " + dateFormatter.format(this.deadline) + 
 				"\nRepeat: " + this.period + "\n" +this.displayTags() + "\n" + this.displayDone();
 	}
+	
+    @Override
+    public Task clone() {
+        RepeatedTask newTask = new RepeatedTask(this.description, this.deadline, this.repeatPeriod);
+        newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+        newTask.isDone = this.isDone;
+        newTask.next = this.next;
+        
+        return newTask;
+    }   
+
 
 }
