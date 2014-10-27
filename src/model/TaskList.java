@@ -503,45 +503,46 @@ public class TaskList {
 			throw new TaskInvalidIdException("Error index input.");
 
 		} else {
-			for (int i = 0; i < taskIndexList.size(); i++) {
-				int taskIndexToMarkDone = taskIndexList.get(i);
-				System.out.println(this.countUndone());
-				if (isInvalidIndex(taskIndexToMarkDone)) {
-					System.out.println("error taskIndexToMarkDone+" + taskIndexToMarkDone);
-					throw new TaskInvalidIdException("Error index input.");
-				} else {
-					Task target = getTask(taskIndexToMarkDone - 1);
-					Task newRepeatTask = null;
-					boolean isFound = false;
-
-					// trace the task by added time.
-					for (Task task : this.tasksTimed) {
-						if (task.getAddedTime().equals(target.getAddedTime())) {
-							newRepeatTask = task.markDone();
-							this.tasksTimed.remove(task);
-							this.tasksFinished.add(task);
-							isFound = true;
-							break;
-						}
-					}
-					if (!isFound) {
-						for (Task task : this.tasksUntimed) {
-							if (task.getAddedTime().equals(
-									target.getAddedTime())) {
-								newRepeatTask = task.markDone();
-								this.tasksUntimed.remove(task);
-								this.tasksFinished.add(task);
-								break;
-							}
-						}
-					}
-
-					this.totalFinished++;
-					if (newRepeatTask != null) {
-						this.addToList((RepeatedTask) newRepeatTask);
-					}
-				}
-			}
+		    
+		    List<Task> tasksToMarkDone = new ArrayList<Task>();
+		    List<Task> tasksMarkedDone = new ArrayList<Task>();
+		    
+		    // putting the tasks to be marked done into a list,
+		    // since marking a task done would move it into a new list, 
+		    // changing the order (using index might not work)
+		    for (int i = 0; i < taskIndexList.size(); i++) {
+		        int taskIdToMarkDone = taskIndexList.get(i);
+		        if (isInvalidIndex(taskIdToMarkDone)) {
+		            throw new TaskInvalidIdException("Error index input.");
+		        } else {
+		            Task taskToMarkDone = getTask(taskIdToMarkDone - 1);
+		            tasksToMarkDone.add(taskToMarkDone);
+		        }
+		    }
+		    
+		    for (Task target : tasksToMarkDone) {
+		        tasksMarkedDone.add(target.clone());
+		        Task newRepeatTask = null;
+		        
+		        if (this.tasksUntimed.contains(target)) {
+		            newRepeatTask = target.markDone();
+		            this.tasksUntimed.remove(target);
+		            this.tasksFinished.add(target);
+		            
+		        } else if (this.tasksTimed.contains(target)) {
+		            newRepeatTask = target.markDone();
+		            this.tasksTimed.remove(target);
+		            this.tasksFinished.add(target);
+		            
+		        }
+		        
+		        this.totalFinished++;
+		        if (newRepeatTask != null) {
+		            this.addToList((RepeatedTask) newRepeatTask);
+		        }
+		    }
+		    
+		    addToUndoList(LastCommand.DONE, tasksMarkedDone, -1);
 		}
 	}
 
