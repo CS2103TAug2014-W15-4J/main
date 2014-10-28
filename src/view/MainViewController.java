@@ -32,7 +32,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -315,7 +314,7 @@ public class MainViewController extends GridPane{
 		    				if (index != 7) {
 		    					setHelpPage(F_KEY_COMMAND[index]);
 		    				} else {
-		    					setHelpPage();
+		    					setHelpPageOtherCommand();
 		    				}
 		    			}
 		        	}
@@ -358,7 +357,11 @@ public class MainViewController extends GridPane{
 		displayExistingTasks();
 	}
 	
-	private void setHelpPage() {
+	private void setHelpHompPage() {
+		
+	}
+	
+	private void setHelpPageOtherCommand() {
 		
 	}
 
@@ -568,10 +571,6 @@ public class MainViewController extends GridPane{
 		return Logic.getTaskList();
 	}
 	
-	private String getHelpInfo() {
-		return MESSAGE_HELP;
-	}
-	
 	private void setTextField(String content) {
 		input.setText(content);
 	}
@@ -585,9 +584,11 @@ public class MainViewController extends GridPane{
 		
 		page[3].getChildren().clear();
 		
-		Text helpDoc = new Text(getHelpInfo());
-		helpDoc.setStyle("-fx-text-fill: yellow");
-		page[3].getChildren().add(helpDoc);
+		setHelpHompPage();
+		
+//		Text helpDoc = new Text(getHelpInfo());
+//		helpDoc.setStyle("-fx-text-fill: yellow");
+//		page[3].getChildren().add(helpDoc);
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
