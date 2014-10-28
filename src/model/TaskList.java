@@ -160,13 +160,12 @@ public class TaskList {
 	    
 	    
 	}
-	
-	   /**
-     * @param task
-     * 
-     * this method is called by markTaskDone, if task is a repeat task
-     * this method is called by undo, to undo the deleting of tasks.
-     * this method will not call the addToUndoList function
+	/**
+	 * This method adds a task to the corresponding lists in its position
+	 * This method is called by markTaskDone, if task is a repeat task;
+	 * This method is called by undo, to revert the deleting of tasks.
+	 * 
+     * @param task      The task to be added
      */
 	private void addToList(Task task) {
 	    if (task.getIsDone()) {
@@ -197,7 +196,7 @@ public class TaskList {
 		this.totalTasks++;
 		logger.log(Level.INFO, "A floating task added");
 		
-		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
+		addToUndoList(LastCommand.ADD, newTask);
 	}
 
 	/**
@@ -214,7 +213,7 @@ public class TaskList {
 		this.totalTasks++;
 		logger.log(Level.INFO, "A deadline task added");
 		
-		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
+		addToUndoList(LastCommand.ADD, newTask);
 	}
 
 	/**
@@ -233,7 +232,7 @@ public class TaskList {
 		this.totalTasks++;
 		logger.log(Level.INFO, "A repeated task added");
 		
-		addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
+		addToUndoList(LastCommand.ADD, newTask);
 	}
 
 	/**
@@ -261,7 +260,7 @@ public class TaskList {
 			this.totalTasks++;
 			logger.log(Level.INFO, "A fixed task added");
 			
-			addToUndoList(LastCommand.ADD, newTask, this.getTaskIndex(newTask));
+			addToUndoList(LastCommand.ADD, newTask);
 		}
 	}
 	
@@ -456,10 +455,9 @@ public class TaskList {
 	 */
 	
 	/**
-	 * @param task
+	 * This method is called by undo, to revert the adding of tasks
 	 * 
-	 * this method is called by undo, to undo the adding of tasks.
-	 * this method will not call the addToUndoList function
+	 * @param task     The task that was added and is to be deleted 
 	 */
 	private void deleteFromList(Task task) {
 	    if (tasksTimed.contains(task)) {
@@ -525,8 +523,7 @@ public class TaskList {
 					}
 				}	
 			}
-			
-			addToUndoList(LastCommand.DELETE, tasksRemoved, -1);
+			addToUndoList(LastCommand.DELETE, tasksRemoved);
 		}
 	}
 
@@ -535,7 +532,7 @@ public class TaskList {
         tasksRemoved.addAll(tasksUntimed);
         tasksRemoved.addAll(tasksTimed);
         tasksRemoved.addAll(tasksFinished);
-        addToUndoList(LastCommand.DELETE, tasksRemoved, -1);
+        addToUndoList(LastCommand.DELETE, tasksRemoved);
         
 		this.isDisplay = false;
 		this.tasksUntimed.clear();
@@ -599,10 +596,20 @@ public class TaskList {
 		}
 	}
 	
+	/**
+	 * This method is called by redo, to revert the undo on marking tasks done
+	 * 
+	 * @param task     The task that is to be re-marked done 
+	 */
 	private void markTaskRedone(Task task) {
 	    task.markRedone();
 	}
 	
+	/**
+	 * This method is called by undo, to revert the marking done of tasks
+	 * 
+	 * @param task     The task that is to be marked un-done
+	 */
 	private void markTaskUndone(Task task) {
 	    task.markUndone();
 	}
@@ -622,6 +629,16 @@ public class TaskList {
 	    }
 	}
 	
+	/**
+	 * This method attaches a tag to the task.
+	 * This method is called by tagTask, when tagging a task;
+	 * This method is called by undo, when reverting the untag operation;
+	 * and is called by redo, when reverting the undo of the tag operation
+	 * 
+	 * @param taskToTag    The task that is to be tagged
+	 * @param tag          The tag to be attached to the task
+	 * @throws TaskTagDuplicateException   if the task already has the tag
+	 */
     private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
 
 	    taskToTag.addTag(tag);
@@ -651,6 +668,14 @@ public class TaskList {
 	    }
 	}
 	
+	/**
+	 * This method removes a tag to the task. 
+	 * If no tag is given, all tags from the given task are removed.
+	 *  
+	 * @param taskToUntag  The task that is to be untagged
+	 * @param tag          The tag to be removed from the task
+	 * @throws TaskTagException    if the task does not have the tag to remove
+	 */
     private void untagGivenTask(Task taskToUntag, String tag) throws TaskTagException {
 	    if (tag.isEmpty()) {
 	        untagTaskAll(taskToUntag);
@@ -669,7 +694,13 @@ public class TaskList {
 	    }
 	}
 
-
+    /**
+     * This method removes all tags from the task.
+     * This method is called by untagGivenTask.
+     * 
+     * @param taskToUntag   The task that is to be untagged
+     * @throws TaskTagException     if the task does not have any tags to remove
+     */
 	private void untagTaskAll(Task taskToUntag) throws TaskTagException {
 		List<String> taskTags = taskToUntag.getTags();
 
@@ -845,6 +876,11 @@ public class TaskList {
 		return (taskIndex > this.countUndone()) || (taskIndex <= 0);
 	}
 
+	/**
+	 * This method reverts the last operation that changed the TaskList.
+	 * 
+	 * @throws UndoException   if there is no operation to undo 
+	 */
 	public void undo() throws UndoException {
 	    if (undoStack.isEmpty()) {
 	        throw new UndoException();
@@ -931,11 +967,14 @@ public class TaskList {
 	            // should not actually reach here
 	            assert false;
 	        }
-	        
-	        
 	    }
 	}
 	
+	/**
+	 * This method reverts the undo operation done.
+	 * 
+	 * @throws RedoException   if there is no operation undid
+	 */
     public void redo() throws RedoException{
         if (redoStack.isEmpty()) {
             throw new RedoException();
@@ -1025,7 +1064,6 @@ public class TaskList {
         }
         
     }
-
 	
 	public RepeatedTask getLatestConsecutiveRepeatedTask(RepeatedTask repeatedTask) {
 	    RepeatedTask consecutiveTask = null;
@@ -1044,42 +1082,67 @@ public class TaskList {
 
 	    return consecutiveTask;
 	}
-		
-	private void addToUndoList(LastCommand cmd, Task task, int taskIndex) {
-	    LastState currentTaskState = new LastState(cmd, task, taskIndex);
+
+	/**
+	 * This method creates a LastState object to undo for add command
+	 * 
+	 * @param cmd
+	 * @param task
+	 */
+	private void addToUndoList(LastCommand cmd, Task task) {
+	    LastState currentTaskState = new LastState(cmd, task);
 	    undoStack.push(currentTaskState);
 	}
-	
-    private void addToUndoList(LastCommand cmd, List<Task> tasks, int taskIndex) {
-        LastState currentTaskState = new LastState(cmd, tasks, taskIndex);
-        undoStack.push(currentTaskState);
-        
-    }
-    
+
+	/**
+	 * This method creates a LastState object to undo for edit command
+	 * 
+	 * @param cmd
+	 * @param taskPrev
+	 * @param taskNext
+	 */
     private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext) {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext);
         undoStack.push(currentTaskState);        
     }
-    
+
+    /**
+     * This method creates a LastState object to undo for delete command
+     * 
+     * @param cmd
+     * @param taskListPrev
+     */
+    private void addToUndoList(LastCommand cmd, List<Task> taskListPrev) {
+        LastState currentTaskState = new LastState(cmd, taskListPrev);
+        undoStack.push(currentTaskState);
+    }
+
+    /**
+     * This method creates a LastState object to undo for mark done command
+     * 
+     * @param cmd
+     * @param taskListPrev
+     * @param taskListNext
+     * @param repeatTaskList
+     */
     private void addToUndoList(LastCommand cmd, List<Task> taskListPrev, 
                                List<Task> taskListNext, List<Task> repeatTaskList) {
         LastState currentTaskState = new LastState(cmd, taskListPrev, taskListNext, repeatTaskList);
         undoStack.push(currentTaskState);
     }
-    
+
+    /**
+     * This method creates a LastState object to undo for tagging commands
+     * 
+     * @param cmd
+     * @param taskPrev
+     * @param taskNext
+     * @param tag
+     */
     private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext, String tag) {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext, tag);
         undoStack.push(currentTaskState);        
     }
-
-	
-    
-    private void addToRedoList(LastCommand cmd, List<Task> taskListPrev, List<Task> taskListNext) {
-        LastState currentTaskState = new LastState(cmd, taskListPrev, taskListNext);
-        redoStack.push(currentTaskState);
-        
-    }
-
 
 	public int count() {
 		return this.totalTasks;
