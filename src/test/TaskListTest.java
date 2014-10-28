@@ -204,14 +204,13 @@ public class TaskListTest {
 		assertEquals(tasks.getTask(1).getDeadline(), daysAfter3);
 		assertEquals(tasks.getTask(2).getDeadline(), daysAfter4);
 
-		System.out.println(tasks.getTask(0).getDescription());
-		System.out.println(tasks.getTask(1).getDescription());
-		System.out.println(tasks.getTask(2).getDescription());
-
-		// edit fixed task start date
+		// edit fixed task dates: after edit, repeated, fixed, deadline
 		assertEquals(((FixedTask) tasks.getTask(2)).getStartTime(), today);
-		tasks.editTaskDeadlineOnly(3, daysAfter2);
-		assertEquals(((FixedTask) tasks.getTask(2)).getStartTime(), daysAfter2);
+		tasks.editTaskTimes(3, daysAfter2, daysAfter3);
+
+		assertEquals(((FixedTask) tasks.getTask(1)).getStartTime(), daysAfter2);
+		assertEquals(((FixedTask) tasks.getTask(1)).getDeadline(), daysAfter3);
+
 	}
 
 	@Test
@@ -247,7 +246,7 @@ public class TaskListTest {
 			pause(10);
 		}
 		for (int i = 2; i < 8; i++) {
-			toDone.add(3);
+			toDone.add(i);
 		}
 		tasks.markTaskDone(toDone);
 		List<Task> finished = tasks.getFinishedTasks();
