@@ -42,7 +42,7 @@
 			</Pane>
 			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="3" style="-fx-background-color: rgb(127,127,127)" />
 			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="404.0" prefWidth="383.0" GridPane.rowIndex="4">
-				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="404.0" prefWidth="383.0" onKeyTyped="#onKeyTyped"/>	
+				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="404.0" prefWidth="383.0" onKeyTyped="#onKeyTyped" style="-fx-background-color: rgb(127,127,127)" />	
 			</Pane>
 			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="383" GridPane.rowIndex="5"/>
 			<Pane id="inputPane" prefHeight="70.0" prefWidth="383.0" GridPane.rowIndex="6">

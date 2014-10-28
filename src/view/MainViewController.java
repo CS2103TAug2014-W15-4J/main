@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
@@ -133,6 +134,9 @@ public class MainViewController extends GridPane{
 	// Pages
 	private ScrollPane[] scrollPage;
 	private VBox[] page;
+	private GridPane[] commandInfo;
+	private Label[] fKeys;
+	private Label[] fKeysInfo;
 	
 	String command;
 	String feedback;
@@ -214,6 +218,7 @@ public class MainViewController extends GridPane{
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight());
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
+			page[i].setStyle("-fx-background-color: rgb(127,127,127)");
 			scrollPage[i].setContent(page[i]);
 		}
 		
@@ -311,11 +316,7 @@ public class MainViewController extends GridPane{
 		        	if (flag) {
 		        		flag = false;
 		        		if (listDisplay.getCurrentPageIndex() == 3) {
-		    				if (index != 7) {
-		    					setHelpPage(F_KEY_COMMAND[index]);
-		    				} else {
-		    					setHelpPageOtherCommand();
-		    				}
+		    				setHelpPage(index);
 		    			}
 		        	}
 		        }
@@ -357,16 +358,78 @@ public class MainViewController extends GridPane{
 		displayExistingTasks();
 	}
 	
-	private void setHelpHompPage() {
+	private void setHelpHomePage() {
+		commandInfo = new GridPane[8];
+		fKeys = new Label[8];
+		fKeysInfo = new Label[8];
 		
+		for (int i=0; i<7; i++) {
+			
+			commandInfo[i] = new GridPane();
+			setHelpHBoxSize(i, 383, 40);
+			
+			fKeys[i] = new Label(F_KEYS[i].toString());
+			fKeys[i].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
+			
+			fKeysInfo[i] = new Label(F_KEY_COMMAND[i].toString());
+			fKeysInfo[i].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: lightgreen");
+			
+			GridPane.setConstraints(fKeys[i], 0, 0);
+			commandInfo[i].getChildren().add(0, fKeys[i]);
+			GridPane.setConstraints(fKeysInfo[i], 1, 0);
+			commandInfo[i].getChildren().add(1, fKeysInfo[i]);
+			
+			page[3].getChildren().add(commandInfo[i]);
+			
+			GridPane.setMargin(fKeys[i], new Insets(5, 50, 5, 15));
+			GridPane.setMargin(fKeysInfo[i], new Insets(5, 15, 5, 15));
+			
+		}
+		
+		commandInfo[7] = new GridPane();
+		setHelpHBoxSize(7, 383, 40);
+		
+		fKeys[7] = new Label(F_KEYS[7].toString());
+		fKeys[7].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
+		
+		fKeysInfo[7] = new Label("OTHER COMMANDS");
+		fKeysInfo[7].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: lightgreen");
+		
+		GridPane.setConstraints(fKeys[7], 0, 0);
+		commandInfo[7].getChildren().add(fKeys[7]);
+		GridPane.setConstraints(fKeysInfo[7], 1, 0);
+		commandInfo[7].getChildren().add(fKeysInfo[7]);
+		
+		page[3].getChildren().add(commandInfo[7]);
+		
+		GridPane.setMargin(fKeys[7], new Insets(5, 50, 5, 15));
+		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 15));
 	}
 	
-	private void setHelpPageOtherCommand() {
-		
+	private void setHelpHBoxSize(int index, double width, double height) {
+		commandInfo[index].setPrefSize(width, height);
+		commandInfo[index].setMaxSize(width, height);
+		commandInfo[index].setMinSize(width, height);
 	}
 
-	private void setHelpPage(CMD commandType) {
-		
+	private void setHelpPage(int index) {
+		if (index == 0) {
+			
+		} else if (index == 1) {
+			
+		} else if (index == 2) {
+			
+		} else if (index == 3) {
+			
+		} else if (index == 4) {
+			
+		} else if (index == 5) {
+			
+		} else if (index == 6) {
+			
+		} else {
+			
+		}
 	}
 	
 	private void displayExistingTasks() throws TaskInvalidDateException {
@@ -532,7 +595,7 @@ public class MainViewController extends GridPane{
 				}
 			}
 		} else {
-			response.setText("Valid commands shown.");
+			response.setText("Press F1 - F8 for more details.");
 		}
 	}
 
@@ -584,7 +647,7 @@ public class MainViewController extends GridPane{
 		
 		page[3].getChildren().clear();
 		
-		setHelpHompPage();
+		setHelpHomePage();
 		
 //		Text helpDoc = new Text(getHelpInfo());
 //		helpDoc.setStyle("-fx-text-fill: yellow");
@@ -784,7 +847,5 @@ public class MainViewController extends GridPane{
 			input.selectEnd();
 		}
 	}
-	
+
 }
-
-
