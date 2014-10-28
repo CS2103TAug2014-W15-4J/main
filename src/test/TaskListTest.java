@@ -145,14 +145,14 @@ public class TaskListTest {
 		TaskList tasks = new TaskList();
 		/* This is a boundary case for the ‘invalid editing’ partition */
 		try {
-			tasks.editTaskDescription(0, "UPPERCASE");
+			tasks.editTaskDescriptionOnly(0, "UPPERCASE");
 		} catch (TaskInvalidIdException e) {
 			assertTrue(e instanceof TaskInvalidIdException);
 		}
 
 		// editing floating task
 		tasks.addToList("lowercase");
-		tasks.editTaskDescription(1, "UPPERCASE");
+		tasks.editTaskDescriptionOnly(1, "UPPERCASE");
 		assertEquals("UPPERCASE", tasks.getTask(0).getDescription());
 
 		tasks.clearList();
@@ -161,7 +161,7 @@ public class TaskListTest {
 		Date dateB = new Date(200);
 		Date dateC = new Date(300);
 		tasks.addToList("lowercase", dateA, dateB);
-		tasks.editTaskDeadline(1, dateC);
+		tasks.editTaskDeadlineOnly(1, dateC);
 		assertEquals(dateC, tasks.getTask(0).getDeadline());
 
 		// add tasks to edit
@@ -174,10 +174,10 @@ public class TaskListTest {
 		assertEquals(tasks.getTask(2).getDescription(), "fixed task one");
 		assertEquals(tasks.getTask(3).getDescription(), "floating task one");
 
-		tasks.editTaskDescription(1, "repeated task");
-		tasks.editTaskDescription(2, "deadline task");
-		tasks.editTaskDescription(3, "fixed task");
-		tasks.editTaskDescription(4, "floating task");
+		tasks.editTaskDescriptionOnly(1, "repeated task");
+		tasks.editTaskDescriptionOnly(2, "deadline task");
+		tasks.editTaskDescriptionOnly(3, "fixed task");
+		tasks.editTaskDescriptionOnly(4, "floating task");
 
 		assertEquals(tasks.getTask(0).getDescription(), "repeated task");
 		assertEquals(tasks.getTask(1).getDescription(), "deadline task");
@@ -196,9 +196,9 @@ public class TaskListTest {
 		cal.add(Calendar.DAY_OF_MONTH, 1);
 		Date daysAfter4 = cal.getTime();
 
-		tasks.editTaskDeadline(3, daysAfter4);
-		tasks.editTaskDeadline(2, daysAfter3);
-		tasks.editTaskDeadline(1, daysAfter2);
+		tasks.editTaskDeadlineOnly(3, daysAfter4);
+		tasks.editTaskDeadlineOnly(2, daysAfter3);
+		tasks.editTaskDeadlineOnly(1, daysAfter2);
 
 		assertEquals(tasks.getTask(0).getDeadline(), daysAfter2);
 		assertEquals(tasks.getTask(1).getDeadline(), daysAfter3);
@@ -210,7 +210,7 @@ public class TaskListTest {
 
 		// edit fixed task start date
 		assertEquals(((FixedTask) tasks.getTask(2)).getStartTime(), today);
-		tasks.editTaskStartDate(3, daysAfter2);
+		tasks.editTaskDeadlineOnly(3, daysAfter2);
 		assertEquals(((FixedTask) tasks.getTask(2)).getStartTime(), daysAfter2);
 	}
 
