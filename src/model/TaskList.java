@@ -1236,12 +1236,77 @@ public class TaskList {
 	 * @return
 	 */
 	public int indexOfFirstFloatingTask(List<Task> taskList) {
-		for (int i = 0;i< taskList.size();i++) {
+		for (int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if (task instanceof FloatingTask) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * This method compares two TaskLists, 
+	 * and returns true if all tasks in both task lists are equal
+	 * This method is used for testing purposes
+	 *  
+	 * @param t2   The TaskList to compare with
+	 * @return     true if the tasklists are equal, false otherwise
+	 */
+	public boolean isEqual(TaskList t2) {
+	    boolean isEqual = true;
+	    
+	    isEqual = isEqual && 
+	              (this.countFinished() == t2.countFinished()) &&
+	              (this.countTimedTask() == t2.countTimedTask()) &&
+	              (this.countUntimedTask() == t2.countUntimedTask());
+	    
+	    int i = 0;
+	    int j = 0;
+	    while (isEqual && (i < this.count())) {
+	        Task thisTask = this.getTask(i);
+	        Task thatTask = t2.getTask(i);
+
+    	    try {
+    	        if (thisTask instanceof DeadlineTask) {
+    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+    	                      (thatTask instanceof DeadlineTask) &&
+    	                      (thisTask.getDeadline() == thatTask.getDeadline()) &&
+    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+    	            
+    	        } else if (thisTask instanceof FixedTask) {
+                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+                              (thatTask instanceof FixedTask) &&
+                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
+                              (((FixedTask) thisTask).getStartTime() == ((FixedTask) thatTask).getStartTime()) &&
+                              (thisTask.getAddedTime() == thatTask.getAddedTime());
+
+    	        } else if (thisTask instanceof RepeatedTask) {
+                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+                              (thatTask instanceof RepeatedTask) &&
+                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
+                              (thisTask.getAddedTime() == thatTask.getAddedTime()) &&
+                              (((RepeatedTask) thisTask).getRepeatPeriod() == ((RepeatedTask) thatTask).getRepeatPeriod());
+                    
+    	        } else if (thisTask instanceof FloatingTask) {
+    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+    	                      (thatTask instanceof FloatingTask) &&
+    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+    	            
+    	        } else {
+    	            assert false;
+    	        }
+    	    } catch (TaskInvalidDateException e) {
+    	        assert false;
+    	    }
+    	    
+	    }
+	    
+	    while (isEqual && (j < this.countFinished())) {
+	        isEqual = this.getFinishedTasks().get(j).getDoneDate().equals(t2.getFinishedTasks().get(j).getDoneDate());
+	    }
+	    
+	    
+	    return isEqual;
 	}
 }

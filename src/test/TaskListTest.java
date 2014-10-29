@@ -15,9 +15,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import controller.UserInput;
+import exception.RedoException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
+import exception.UndoException;
 
 public class TaskListTest {
 
@@ -311,6 +313,119 @@ public class TaskListTest {
 		assertEquals("Late", result.get(2).getDescription());
 	}
 
+	@Test
+	public void testUndoRedo() throws TaskInvalidIdException, TaskInvalidDateException {
+	    TaskList tasks = new TaskList();
+	    
+	    // testing for invalid undo
+	    try {
+            tasks.undo();
+            assert false;
+        } catch (UndoException e) {
+            assert true;
+        }
+	    
+	    // testing for invalid redo
+	    try {
+	        tasks.redo();
+	        assert false;
+        } catch (RedoException e) {
+            assert true;
+        }
+	    
+	    try {
+	        TaskList controlList = addTasks();
+	        
+	        // test undo/redo for adding
+	        tasks = addTasks();
+	        assert (tasks.count() == 4);
+	        
+	        tasks.undo();
+	        tasks.undo();
+	        tasks.undo();
+	        tasks.undo();
+	        assert (tasks.count() == 0);
+
+	        tasks.redo();
+	        tasks.redo();
+	        tasks.redo();
+	        tasks.redo();
+	        assert (tasks.count() == 4);
+	        
+	        
+	        // test undo/redo for editing
+	        tasks.editTaskDescriptionOnly(4, "task one");
+	        tasks.editTaskDeadlineOnly(2, tomorrow);
+	        tasks.editTaskDescriptionDeadline(1, "task two", today);
+	        tasks.editTaskDescriptionTimes(3, "task three", yesterday, today);
+            assert (!tasks.isEqual(controlList));
+            
+            tasks.undo();
+            tasks.undo();
+            tasks.undo();
+            tasks.undo();
+            assert (tasks.isEqual(controlList));
+
+            tasks.redo();
+            tasks.redo();
+            tasks.redo();
+            tasks.redo();
+            
+            assertEquals(tasks.getTask(0).getDescription(), "task three");
+            assertEquals(((FixedTask) tasks.getTask(0)).getStartTime(), yesterday);
+            assertEquals(tasks.getTask(1).getDeadline(), today);
+            assertEquals(tasks.getTask(2).getDeadline(), tomorrow);
+            
+            
+            // test undo/redo for deleting tasks
+            tasks = addTasks();
+            List<Integer> taskIndexList = new ArrayList<Integer>();
+            taskIndexList.add(2);
+            taskIndexList.add(4);
+            tasks.deleteFromList(taskIndexList);
+            assert (tasks.count() == 2);
+            
+            tasks.undo();
+            assert (tasks.count() == 4);
+            
+            tasks.redo();
+            assert (tasks.count() == 2);
+            
+            tasks.clearList();
+            assert (tasks.count() == 0);
+
+            tasks.undo();
+            assert (tasks.count() == 2);
+            
+            tasks.redo();
+            assert (tasks.count() == 0);
+
+            
+            // test undo/redo for marking tasks done
+            tasks = addTasks();
+            taskIndexList.add(1);
+            taskIndexList.add(3);
+            tasks.markTaskDone(taskIndexList);
+            assert (tasks.countFinished() == 4);
+            assert (tasks.count() == 1);
+            
+            tasks.undo();
+            assert (tasks.countFinished() == 0);
+            assert (tasks.count() == 4);
+            
+            tasks.redo();
+            assert (tasks.countFinished() == 4);
+            assert (tasks.count() == 1);
+            
+	    } catch (UndoException e) {
+	        assert false;
+	    } catch (RedoException e) {
+	        assert false;
+	    } catch (TaskDoneException e) {
+	        assert false;
+        }
+	}
+	
 	void pause(int ms) {
 		try {
 			Thread.sleep(ms);
