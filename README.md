@@ -6,7 +6,7 @@ CS2103T Project of team W15-4j
 Current Stage
 ====
 
-Milestone V0.2
+Milestone V0.3
 
 User Guide
 ====
@@ -57,7 +57,7 @@ e.g. edit 2 from 9 to 11 (for timed tasks)
 
 3.When viewing tasks, to set a task to be repeated:
 ```
-edit <taskID> every <time>
+edit <taskID> every <time> [daily/weekly/monthly]
 ```
 e.g. edit 2 every Saturday
 
@@ -122,18 +122,14 @@ e.g. tag 3 CS2103T
 
 1.Finish a task with a specific ID
 ```
-complete <taskID>
 done <taskID>
-finish <taskID>
 ```
 
 e.g. done 1 (mark task 1 as done)
 
 2.Finish several tasks with ID1, ID2, ID3…
 ```
-complete <taskID1> <taskID2>...
 done <taskID1> <taskID2>...
-finish <taskID1> <taskID2>...
 ```
 
 e.g. done 1 2 3 (mark task 1, 2, 3 as done, separated by a space)
