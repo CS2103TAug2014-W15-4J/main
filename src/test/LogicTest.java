@@ -24,10 +24,14 @@ public class LogicTest {
     final String MESSAGE_REPEAT_TAG_SUCCESS = "Task already contains this tag.";
     final String MESSAGE_TAG_SUCCESS = "Task tagged successfully.";
     final String MESSAGE_UNTAG_SUCCESS = "Task untagged successfully.";
+    final String MESSAGE_UNDO_SUCCESS = "undo successful.";
+    final String MESSAGE_REDO_SUCCESS = "redo successful.";
     final String MESSAGE_FAIL = "Invalid command. Type 'help' to see the list of available commands.";
     final String MESSAGE_EMPTY = "Your task list is empty.";
     final String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
     final String MESSAGE_INVALID_DONE = "Error: task(s) already marked done.";
+    final String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+    final String MESSAGE_INVALID_REDO = "No next operation to redo.";
     
     final String COMMAND_SHOW = "show";
     final String COMMAND_CLEAR = "clear";
@@ -48,8 +52,9 @@ public class LogicTest {
     @Test
     public void testAdd() throws TaskInvalidDateException {
 
-        // clears the task list
+        // clears the task list and undo/redo stacks
         Logic.readAndExecuteCommands(COMMAND_CLEAR);
+        Logic.emptyUndoRedoStack();
 
         // order after adding: deadline, repeating, fixed, floating
         addTasks();
@@ -59,29 +64,29 @@ public class LogicTest {
         assertEquals(feedback, MESSAGE_FAIL);
 
 
-        // test the adding of a floating task (only description given)
+        // check the adding of a floating task (only description given) is successful
         Task floatingTask = Logic.getTask(3);
         assertEquals(floatingTask.getDescription(), "testing floatingtask");
 
 
-        // test the adding of a deadline task (description and one date given)
+        // check the adding of a deadline task (description and one date given) is successful
         Task deadlineTask = Logic.getTask(0);
         assertEquals(deadlineTask.getDescription(), "testing");
         assertEquals(deadlineTask.getDeadline(), deadline);
 
 
-        // test the adding of a fixed task
+        // check the adding of a fixed task (description and two dates given) is successful
         FixedTask fixedTask = (FixedTask) Logic.getTask(2);
         assertEquals(fixedTask.getDescription(), "meeting");
         assertEquals(fixedTask.getStartTime(), startTime);
         assertEquals(fixedTask.getDeadline(), endTime);
 
 
-        // test the adding of a repeated task
+        // check the adding of a repeated task (description, date and repeat period given) is successful
         RepeatedTask repeatedTask = (RepeatedTask) Logic.getTask(1);
         assertEquals(repeatedTask.getDescription(), "repeatingtask test");
         assertEquals(repeatedTask.getDeadline(), endTime);
-        assertEquals(repeatedTask.getRepeatPeriod(), "every MON");
+        assertEquals(repeatedTask.getRepeatPeriod(), "every MONDAY");
     }
     
     @Test
@@ -89,10 +94,12 @@ public class LogicTest {
 
         // clears the task list
         Logic.readAndExecuteCommands(COMMAND_CLEAR);
-
+        
         // order after adding: deadline, repeating, fixed, floating
         addTasks();
-
+        
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
 
         // trying to edit an invalid task id on boundaries <= 0, >=5
         try {
@@ -143,7 +150,7 @@ public class LogicTest {
         assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
 
         RepeatedTask repeatedTask = (RepeatedTask) Logic.getTask(0);
-        assertEquals(repeatedTask.getRepeatPeriod(), "every TUE");
+        assertEquals(repeatedTask.getRepeatPeriod(), "every TUESDAY");
         assertEquals(repeatedTask.getDeadline(), deadline);
 
 
@@ -166,7 +173,9 @@ public class LogicTest {
 
         // order after adding: deadline, repeating, fixed, floating
         addTasks();
-
+        
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
 
         // trying to edit an invalid task id on boundaries <= 0, >=5
         try {
@@ -203,12 +212,16 @@ public class LogicTest {
     
     @Test
     public void testMarkDone() {
+        
         // clears the task list
         Logic.readAndExecuteCommands(COMMAND_CLEAR);
         
         // add some tasks for marking done
         addTasks();
         
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
+
         // trying to mark done an invalid task id on boundaries <= 0, >=5
         try {
             Logic.readAndExecuteCommands("done 0");
@@ -248,15 +261,11 @@ public class LogicTest {
         assertEquals(feedback, MESSAGE_DONE_SUCCESS);
         assert task1.getIsDone();
         assert task3.getIsDone();
-
-
-        // testing the invalid marking done of an already done task
-        feedback = Logic.readAndExecuteCommands("done 1");
-        assertEquals(feedback, MESSAGE_INVALID_DONE);
     }
     
     @Test
     public void testTagging() {
+        
         // clears the task list
         Logic.readAndExecuteCommands(COMMAND_CLEAR);
 
@@ -264,6 +273,8 @@ public class LogicTest {
         addTasks();
         Task task = Logic.getTask(1);
 
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
 
         // testing to add an empty tag
         feedback = Logic.readAndExecuteCommands("tag 2");
@@ -285,6 +296,115 @@ public class LogicTest {
         // testing to add an invalid repeated tag (shows non-case sensitive as well)
         feedback = Logic.readAndExecuteCommands("tag 2 THIRD EYE");
         assertEquals(feedback, MESSAGE_REPEAT_TAG_SUCCESS);
+    }
+    
+    @Test
+    public void testUndoRedo() throws TaskInvalidDateException {
+   
+        // resets the task list and the undo/redo stacks
+        Logic.emptyUndoRedoStack();
+        Logic.setEmptyTaskList();
+       
+        
+        // testing the invalid undo/redo of a new tasklist
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+
+        // testing the undo/redo functionalities of add
+        testAdd();
+        feedback = Logic.readAndExecuteCommands("undo"); // undo add: repeated task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo add: fixed task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo add: deadline task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo add: floating task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+       
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
+        
+        // testing the undo/redo functionalities of edit
+        testEdit();
+        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: fixed task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: repeat task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: deadline task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: floating task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+       
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+        
+        // testing the undo/redo functionalities of delete
+        testDelete();
+        feedback = Logic.readAndExecuteCommands("undo"); // undo delete: multiple tasks
+        feedback = Logic.readAndExecuteCommands("undo"); // undo delete: one task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
+        
+        // testing the undo/redo functionalities of mark done
+        testMarkDone();
+        feedback = Logic.readAndExecuteCommands("undo"); // undo mark done: multiple tasks
+        feedback = Logic.readAndExecuteCommands("undo"); // undo mark done: one task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+        
+        // testing the undo/redo functionalities of tagging
+        testTagging();
+        feedback = Logic.readAndExecuteCommands("undo"); // undo a second tag on a task
+        feedback = Logic.readAndExecuteCommands("undo"); // undo a first tag on a task 
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("undo");
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands("redo");
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
     }
     
     /**

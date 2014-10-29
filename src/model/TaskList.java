@@ -1309,4 +1309,15 @@ public class TaskList {
 	    
 	    return isEqual;
 	}
+
+	/**
+	 * This method clears both the undoStack and the redoStack
+	 * This method is used for testing purposes
+	 */
+	public void clearUndoRedoStack() {
+	    undoStack.clear();
+	    redoStack.clear();
+	}
 }
+
+
