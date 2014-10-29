@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.text.*;
 
 
@@ -22,6 +23,7 @@ public class MainView extends Application {
 		Font.loadFont(MainView.class.getResource("Montserrat-Regular.ttf").toExternalForm(), 10);
 		scene.getStylesheets().add(getClass().getResource("MainView.css").toExternalForm());
 		primaryStage.setTitle("uClear");
+		primaryStage.getIcons().add(new Image("/view/uClear-icon.png"));
 		
 		if (getOS().equals("Mac OS X")) {
 			primaryStage.setMaxHeight(642);

@@ -24,21 +24,25 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
 public class MainViewController extends GridPane{
 	
-	final static String[] DEFAULT_COLORS = {
+	final static String[] DEFAULT_TAG_COLORS = {
 		"rgb(249, 233, 89)",
 		"rgb(239, 75, 133)",
 		"rgb(162, 100, 223)",
@@ -666,7 +670,7 @@ public class MainViewController extends GridPane{
 				Label space = new Label("  ");
 				
 				if (!tagColor.containsKey(tags[j].getText())) {
-					tagColor.put(tags[j].getText(), DEFAULT_COLORS[colorPointer]);
+					tagColor.put(tags[j].getText(), DEFAULT_TAG_COLORS[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
 				}
 				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
@@ -763,6 +767,21 @@ public class MainViewController extends GridPane{
 			Platform.exit();
 		}
 		
+		if (command.trim().toLowerCase().equals("option") || command.trim().toLowerCase().equals("settings")) {
+			Stage option = new Stage();
+			Pane testWindow = new Pane();
+			Label test = new Label("Haha, no settings here!");
+			testWindow.getChildren().add(test);
+			testWindow.setStyle("-fx-background-color: black");
+			Scene optionScene = new Scene(testWindow, 300, 300);
+			option.setTitle("Settings");
+			option.getIcons().add(new Image("/view/Settings-icon.png"));
+			option.setScene(optionScene);
+			option.show();
+			input.setText("");
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -792,10 +811,6 @@ public class MainViewController extends GridPane{
 		page[3].getChildren().clear();
 		
 		setHelpHomePage();
-		
-//		Text helpDoc = new Text(getHelpInfo());
-//		helpDoc.setStyle("-fx-text-fill: yellow");
-//		page[3].getChildren().add(helpDoc);
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
