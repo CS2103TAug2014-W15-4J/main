@@ -771,11 +771,27 @@ public class MainViewController extends GridPane{
 			Stage option = new Stage();
 			Pane testWindow = new Pane();
 			Label test = new Label("Haha, no settings here!");
+			test.setStyle("-fx-text-fill: orangered; -fx-font-size: 15");
 			testWindow.getChildren().add(test);
-			testWindow.setStyle("-fx-background-color: black");
+			testWindow.setStyle("-fx-background-color: black;");
 			Scene optionScene = new Scene(testWindow, 300, 300);
 			option.setTitle("Settings");
 			option.getIcons().add(new Image("/view/Settings-icon.png"));
+			option.setScene(optionScene);
+			option.show();
+			input.setText("");
+			return true;
+		}
+		
+		if (command.trim().toLowerCase().equals("fun")) {
+			Stage option = new Stage();
+			Pane testWindow = new Pane();
+			Label test = new Label("Like us on Facebook!");
+			test.setStyle("-fx-text-fill: skyblue; -fx-font-size: 28");
+			testWindow.getChildren().add(test);
+			testWindow.setStyle("-fx-background-color: black");
+			Scene optionScene = new Scene(testWindow, 300, 300);
+			option.setTitle("Fun");
 			option.setScene(optionScene);
 			option.show();
 			input.setText("");
@@ -1002,6 +1018,17 @@ public class MainViewController extends GridPane{
 		}
 		if (keyEvent.getCharacter().equals("h")) {
 			setTextField("help");
+			input.requestFocus();
+			input.selectEnd();
+		}
+		
+		if (keyEvent.getCharacter().equals("o")) {
+			setTextField("option");
+			input.requestFocus();
+			input.selectEnd();
+		}
+		if (keyEvent.getCharacter().equals("f")) {
+			setTextField("fun");
 			input.requestFocus();
 			input.selectEnd();
 		}
