@@ -84,27 +84,6 @@ public class MainViewController extends GridPane{
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
 	
-	final static String MESSAGE_HELP = "Current list of available commands: \n"
-			+ "- add a floating task     : add <description>\n"
-			+ "- add a deadline task     : add <description> by <time/date>\n"
-			+ "- add a fixed time        : add <description> <time/date1> to <time/date2>\n"
-			+ "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n"
-			+ "- edit a task description : edit <taskID> <description>\n"
-			+ "- edit a task time/date   : edit <taskID> <time/date>\n"
-			+ "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n"
-			+ "- clear all tasks         : clear\n"
-			+ "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n"
-			+ "- tag a task              : tag <taskID> <tag>\n"
-			+ "- untag a task            : untag <taskID> <tag>\n"
-			+ "- untag all tags from task: untag <taskID>\n"
-			+ "- show all tasks          : show / show all\n"
-			+ "- show tasks (add order)  : show added\n"
-			+ "- show tasks with tag     : show <tag>\n"
-			+ "- show tasks that are done: show done\n"
-			+ "(You can only delete or search tasks when displying tasks that are done)\n"
-			+ "- search tasks            : search <keyword>\n"
-			+ "- exit the program        : exit";
-	
 	@FXML
 	private Label uClear;
 	
@@ -138,6 +117,8 @@ public class MainViewController extends GridPane{
 	private Label[] fKeys;
 	private Label[] fKeysInfo;
 	
+	private boolean[] isCommandHelp;
+	
 	String command;
 	String feedback;
 	int pageCount;
@@ -168,6 +149,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setMainView() throws TaskInvalidDateException {
+		setIsCommandHelp();
 		initFadeEffect();
 		setPageCount(4);
 		setPages();
@@ -181,6 +163,14 @@ public class MainViewController extends GridPane{
 	
 	public ScrollPane[] getScrollPages() {
 		return scrollPage;
+	}
+	
+	private void setIsCommandHelp() {
+		isCommandHelp = new boolean[8];
+		
+		for (int i=0; i<8; i++) {
+			isCommandHelp[i] = false;
+		}
 	}
 	
 	private void setDisplayTitleText() {
@@ -224,6 +214,7 @@ public class MainViewController extends GridPane{
 		
 		setLeftKey();
 		setRightKey();
+		setEscKey();
 		for (int i=0; i<8; i++) {
 			setFKey(i);
 		}
@@ -277,7 +268,7 @@ public class MainViewController extends GridPane{
 	private void setRightKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 		     @Override 
-		     public void handle(KeyEvent event ) {
+		     public void handle(KeyEvent event) {
 		        if (event.getCode() == KeyCode.RIGHT) {
 //		        	event.consume();
 		        	boolean flag = true;
@@ -300,6 +291,26 @@ public class MainViewController extends GridPane{
 								e.printStackTrace();
 							}
 		    			}
+		        	}
+		        }
+		     }
+		});
+	}
+	
+	private void setEscKey() {
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+		     @Override 
+		     public void handle(KeyEvent event) {
+		        if (event.getCode() == KeyCode.ESCAPE) {
+//		        	event.consume();
+		        	boolean flag = true;
+		        	if (flag) {
+		        		flag = false;
+		        		
+		        		if (listDisplay.getCurrentPageIndex() == 3) {
+		        			setHelpHomePage();
+		        		}
+		        		
 		        	}
 		        }
 		     }
@@ -359,6 +370,9 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setHelpHomePage() {
+		page[3].getChildren().clear();
+		setRestTaskResponse();
+		
 		commandInfo = new GridPane[8];
 		fKeys = new Label[8];
 		fKeysInfo = new Label[8];
@@ -411,23 +425,153 @@ public class MainViewController extends GridPane{
 		commandInfo[index].setMaxSize(width, height);
 		commandInfo[index].setMinSize(width, height);
 	}
+	
+	private void setHelpForCommand(GridPane command, String descriptionString, String structureString, String exampleString) {
+		Label description = new Label("Description");
+		description.setStyle("-fx-text-fill: yellow");
+		Label structure = new Label("Structure");
+		structure.setStyle("-fx-text-fill: yellow");
+		Label example = new Label("Example");
+		example.setStyle("-fx-text-fill: yellow");
+		
+		command.setStyle("-fx-padding: 15; -fx-font-size: 14");
+		setGridPaneSize(command, 383, 140);
+		Label descriptionContent = new Label(descriptionString);
+		descriptionContent.setStyle("-fx-text-fill: lightgreen");
+		Label structureContent = new Label(structureString);
+		structureContent.setStyle("-fx-text-fill: lightgreen");
+		Label exampleContent = new Label(exampleString);
+		exampleContent.setStyle("-fx-text-fill: lightgreen");
+		
+		GridPane.setConstraints(description, 0, 0);
+		GridPane.setConstraints(descriptionContent, 0, 1);
+		GridPane.setConstraints(structure, 0, 2);
+		GridPane.setConstraints(structureContent, 0, 3);
+		GridPane.setConstraints(example, 0, 4);
+		GridPane.setConstraints(exampleContent, 0, 5);
+		command.getChildren().addAll(description, descriptionContent, structure, structureContent, example, exampleContent);
+	}
 
 	private void setHelpPage(int index) {
+		response.setText("Press \"Esc\" to return");
+		
 		if (index == 0) {
+			
+			Label add = new Label("ADD");
+			add.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane addFloatTask = new GridPane();
+			setHelpForCommand(addFloatTask, "      add a floating task", "      add <description>", "      add do homework");
+			
+			GridPane addDeadlineTask = new GridPane();
+			setHelpForCommand(addDeadlineTask, "      add a deadline task", "      add <description> by <time/date>", "      add do homework by Oct 31");
+			
+			GridPane addRepeatedTask = new GridPane();
+			setHelpForCommand(addRepeatedTask, "      add a repeated task", "      add <description> every <time/date> <period>", "      add do homework every week");
+			
+			GridPane addFixedTask = new GridPane();
+			setHelpForCommand(addFixedTask, "      add a fixed task", "      add <description> <time/date1> to <time/date2>", "      add do homework Nov 10 to Nov 20");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(add, addFloatTask, addDeadlineTask, addRepeatedTask, addFixedTask);
 			
 		} else if (index == 1) {
 			
+			Label delete = new Label("DELETE");
+			delete.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane deleteOneTask = new GridPane();
+			setHelpForCommand(deleteOneTask, "      delete one task", "      delete <taskID>", "      delete 1");
+			
+			GridPane deleteManyTasks = new GridPane();
+			setHelpForCommand(deleteManyTasks, "      delete many tasks", "      delete <taskID_1> <taskID_2> ...", "      delete 1 2 3");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(delete, deleteOneTask, deleteManyTasks);
+			
 		} else if (index == 2) {
+			
+			Label done = new Label("DONE");
+			done.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane doneOneTask = new GridPane();
+			setHelpForCommand(doneOneTask, "      mark one task done", "      done <taskID>", "      done 1");
+			
+			GridPane doneManyTasks = new GridPane();
+			setHelpForCommand(doneManyTasks, "      mark many tasks done", "      done <taskID_1> <taskID_2> ...", "      done 1 2 3");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(done, doneOneTask, doneManyTasks);
 			
 		} else if (index == 3) {
 			
+			Label edit = new Label("EDIT");
+			edit.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane editTaskDescription = new GridPane();
+			setHelpForCommand(editTaskDescription, "      edit task description of one task", "      edit <taskID> <new description>", "      edit 1 sleep");
+			
+			GridPane editTaskTime = new GridPane();
+			setHelpForCommand(editTaskTime, "      edit task time of one task", "      edit <taskID> <new time>", "      edit 1 Oct 31");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(edit, editTaskDescription, editTaskTime);
+			
 		} else if (index == 4) {
+			
+			Label search = new Label("SEARCH");
+			search.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane searchKeyword = new GridPane();
+			setHelpForCommand(searchKeyword, "      search tasks with keyword", "      search <keyword>", "      search school");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(search, searchKeyword);
 			
 		} else if (index == 5) {
 			
+			Label show = new Label("SHOW");
+			show.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane showAll = new GridPane();
+			setHelpForCommand(showAll, "      show all ongoing tasks", "      show all", "      show all");
+			
+			GridPane showDone = new GridPane();
+			setHelpForCommand(showDone, "      show all done tasks", "      show done", "      show done");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(show, showAll, showDone);
+			
 		} else if (index == 6) {
 			
+			Label tag = new Label("TAG");
+			tag.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane tagOneTask = new GridPane();
+			setHelpForCommand(tagOneTask, "      tag one task", "      tag <taskID> <tag>", "      tag 1 important");
+			
+			GridPane untagOneTag = new GridPane();
+			setHelpForCommand(untagOneTag, "      remove a tag from one task", "      untag <taskID> <tag>", "      untag 1 important");
+			
+			GridPane untagAllTags = new GridPane();
+			setHelpForCommand(untagAllTags, "      remove all tags from one task", "      untag <taskID>", "      untag 1");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(tag, tagOneTask, untagOneTag, untagAllTags);
+			
 		} else {
+			
+			Label otherCommands = new Label("OTHER COMMANDS");
+			otherCommands.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			
+			GridPane clear = new GridPane();
+			setHelpForCommand(clear, "      remove all tasks", "      clear", "      clear");
+			
+			GridPane exit = new GridPane();
+			setHelpForCommand(exit, "      exit uClear", "      exit", "      exit");
+			
+			page[3].getChildren().clear();
+			page[3].getChildren().addAll(otherCommands, clear, exit);
 			
 		}
 	}
@@ -595,7 +739,7 @@ public class MainViewController extends GridPane{
 				}
 			}
 		} else {
-			response.setText("Press F1 - F8 for more details.");
+			response.setText("Press \"F1\" - \"F8\" for more details.");
 		}
 	}
 
