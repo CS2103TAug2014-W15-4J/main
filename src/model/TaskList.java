@@ -169,11 +169,9 @@ public class TaskList {
      */
 	private void addToList(Task task) {
 	    if (task.getIsDone()) {
-	        System.out.println(this.tasksFinished.getClass());
 	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
 	        
 	    } else {
-	        System.out.println(this.tasksUntimed.getClass());
     		if (task instanceof FloatingTask) {
     			((SortedArrayList<Task>) this.tasksUntimed).addOrder(task);
     
@@ -748,7 +746,6 @@ public class TaskList {
 		if (isShowingDone) {
 			for (Task task : tasksFinished) {
 				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
-					System.out.println("find one");
 					result.add(task);
 					continue; // find one
 				} else {

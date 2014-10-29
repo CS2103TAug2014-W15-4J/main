@@ -160,7 +160,6 @@ public class Storage {
 			logger.log(Level.WARNING, "I/O error when loading tasks.");
 			throw new Error(ERROR_IO);
 		}
-//		System.out.println(xml.toString());
 		logger.log(Level.INFO, "Loading completed.");
 		return (TaskList)xstream.fromXML(xml.toString());
 	}
