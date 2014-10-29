@@ -16,6 +16,7 @@ import java.util.List;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -590,6 +591,7 @@ public class MainViewController extends GridPane{
 	private void updateDisplay() throws TaskInvalidDateException {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		taskList = getTaskList();
+		taskList.setShowDisplayListToFalse();
 		
 		setOnePageView(currentPageNum);
 	}
@@ -784,7 +786,7 @@ public class MainViewController extends GridPane{
 		}
 		
 		if (command.trim().toLowerCase().equals("fun")) {
-			Stage option = new Stage();
+			final Stage option = new Stage();
 			Pane testWindow = new Pane();
 			Label test = new Label("Like us on Facebook!");
 			test.setStyle("-fx-text-fill: skyblue; -fx-font-size: 28");
@@ -795,6 +797,14 @@ public class MainViewController extends GridPane{
 			option.setScene(optionScene);
 			option.show();
 			input.setText("");
+			PauseTransition pause = new PauseTransition(Duration.seconds(3));
+			pause.setOnFinished(new EventHandler<ActionEvent>() {
+			    @Override
+			    public void handle(ActionEvent event) {
+			        option.hide();
+			    }
+			});
+			pause.play();
 			return true;
 		}
 		
