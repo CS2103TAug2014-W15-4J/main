@@ -692,6 +692,29 @@ public class Parser {
 				dates.add(realDate);
 			}
 		}
+		if(dates.size()==2){
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
+			// System.out.println(timeRest);
+			if (!(timeRestFormat.format(dates.get(0)).equals(DEADLINE_ONETIME)||
+					timeRestFormat.format(dates.get(1)).equals(DEADLINE_ONETIME))) {
+				String dateBeginTime = timeFormat1.format(dates.get(0));
+				String dateEndTime = timeFormat1.format(dates.get(1));
+				Date realDate = null;
+				dates.clear();
+				try {
+					realDate = timeFormat2.parse(dateBeginTime + BEGIN_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+				try {
+					realDate = timeFormat2.parse(dateEndTime + END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+			}
+		}
 		input.addDate(dates);
 		log.info("exit command");
 		return input;

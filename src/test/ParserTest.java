@@ -15,7 +15,7 @@ import controller.UserInput.RepeatDate;
 
 public class ParserTest {
 
-	@Test
+//	@Test
 	public void taskTypeTest() {
 		// test add floating
 		Parser parser = new Parser();
@@ -89,5 +89,10 @@ public class ParserTest {
 		String test10 = "";
 		input = parser.parse(test10);
 		assertFalse(input.getValid());
+	}
+	public static void main(String args[]){
+		Parser parser=new Parser();
+		
+		System.out.print(parser.parse("show Nov 7 to Dec 10").getDate());
 	}
 }
