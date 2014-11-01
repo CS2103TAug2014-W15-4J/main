@@ -90,5 +90,4 @@ public class ParserTest {
 		input = parser.parse(test10);
 		assertFalse(input.getValid());
 	}
-
 }

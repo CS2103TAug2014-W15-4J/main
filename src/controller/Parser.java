@@ -41,8 +41,8 @@ public class Parser {
 	private static final String DEADLINE_ONETIME = "00000";
 	private static final String END_OF_DAY_TIME = "235959999";
 	private static final String BEGIN_OF_DAY_TIME = "000000000";
-	private static final String SHOW_THIS_WEEK = " *(?i)this +week *";
-	private static final String SHOW_NEXT_WEEK = " *(?i)next +week *";
+	private static final String SHOW_THIS_WEEK = "this week";
+	private static final String SHOW_NEXT_WEEK = "next week";
 	private static Logger log = Logger.getLogger("controller.Parser");
 
 	/**
@@ -590,23 +590,34 @@ public class Parser {
 		List<Date> dates = new ArrayList<Date>();
 		SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
 		SimpleDateFormat timeFormat2 = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		if (content.contains(SHOW_THIS_WEEK)) {
-			if (!content.replaceAll(SHOW_THIS_WEEK, "").equals("")) {
+		SimpleDateFormat weekFormat = new SimpleDateFormat("EEE");
+		Date today = new Date();
+		if (content.toLowerCase().contains(SHOW_THIS_WEEK)) {
+			if (!content.toLowerCase().replaceAll(SHOW_THIS_WEEK, "").trim()
+					.equals("")) {
 				input.add(content);
 				log.info("exit command");
 				return input;
 			} else {
-				Calendar c = Calendar.getInstance();
-				c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				Calendar beginDate = Calendar.getInstance();
+				Calendar endDate = Calendar.getInstance();
+				if (weekFormat.format(today).equals("Sun")) {
+					beginDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					endDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+				} else {
+					beginDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					endDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+					for (int i = 0; i < Calendar.DAY_OF_WEEK; i++)
+						endDate.roll(Calendar.DATE, true);
+				}
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
-							+ BEGIN_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(beginDate
+							.getTime()) + BEGIN_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
-				c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
-							+ END_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(endDate
+							.getTime()) + END_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
 			}
@@ -614,22 +625,38 @@ public class Parser {
 			log.info("exit command");
 			return input;
 		}
-		if (content.contains(SHOW_NEXT_WEEK)) {
-			if (!content.replaceAll(SHOW_NEXT_WEEK, "").equals("")) {
+		if (content.toLowerCase().contains(SHOW_NEXT_WEEK)) {
+			if (!content.toLowerCase().replaceAll(SHOW_NEXT_WEEK, "").trim()
+					.equals("")) {
 				input.add(content);
 				return input;
 			} else {
-				Calendar c = Calendar.getInstance();
-				c.set(Calendar.DAY_OF_WEEK + 1, Calendar.MONDAY);
+				Calendar beginDate = Calendar.getInstance();
+				Calendar endDate = Calendar.getInstance();
+				if (weekFormat.format(today).equals("Sun")) {
+					beginDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					for (int i = 0; i < Calendar.DAY_OF_WEEK; i++)
+						beginDate.roll(Calendar.DATE, true);
+					endDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+					for (int i = 0; i < Calendar.DAY_OF_WEEK; i++)
+						endDate.roll(Calendar.DATE, true);
+
+				} else {
+					beginDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					for (int i = 0; i < Calendar.DAY_OF_WEEK; i++)
+						beginDate.roll(Calendar.DATE, true);
+					endDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+					for (int i = 0; i < 2*Calendar.DAY_OF_WEEK; i++)
+						endDate.roll(Calendar.DATE, true);
+				}
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
-							+ BEGIN_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(beginDate
+							.getTime()) + BEGIN_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
-				c.set(Calendar.DAY_OF_WEEK + 1, Calendar.SUNDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
-							+ END_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(endDate
+							.getTime()) + END_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
 			}
