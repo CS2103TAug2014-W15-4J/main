@@ -1,6 +1,9 @@
 package controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -35,6 +38,11 @@ public class Parser {
 
 	private static final String EDIT_NOTIME = "no-time";
 	private static final String EDIT_NOREPEAT = "no-repeat";
+	private static final String DEADLINE_ONETIME = "00000";
+	private static final String END_OF_DAY_TIME = "235959999";
+	private static final String BEGIN_OF_DAY_TIME = "000000000";
+	private static final String SHOW_THIS_WEEK = " *(?i)this +week *";
+	private static final String SHOW_NEXT_WEEK = " *(?i)next +week *";
 	private static Logger log = Logger.getLogger("controller.Parser");
 	/**
 	 * @param input
@@ -305,6 +313,7 @@ public class Parser {
 	 * @return UserInput for parseAdd or parseEdit
 	 *
 	 *         this is for deadline task for add command or edit command
+	 * @throws ParseException 
 	 */
 
 	private UserInput parseDeadline(UserInput input, String content,
@@ -325,6 +334,23 @@ public class Parser {
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
+			SimpleDateFormat timeRestFormat=new SimpleDateFormat("ssSSS");
+			String timeRest = timeRestFormat.format(dates.get(0));
+			//System.out.println(timeRest);
+			if(!timeRest.equals(DEADLINE_ONETIME)){
+				SimpleDateFormat timeFormat1= new SimpleDateFormat("yyyyMMdd");
+				String dateTime=timeFormat1.format(dates.get(0));
+				//System.out.println(dateTime);
+				SimpleDateFormat timeFormat2= new SimpleDateFormat("yyyyMMddHHmmssSSS");
+				Date realDate=null;
+				try {
+					realDate = timeFormat2.parse(dateTime+END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.clear();
+				dates.add(realDate);
+			}
 			input.add(description);
 			input.beDeadline();
 			input.addDate(dates);
@@ -555,8 +581,85 @@ public class Parser {
 			log.info("exit command");
 			return input;
 		}
-		input.addShow(content);
-		log.info("exit command");
+		List<Date> dates=new ArrayList<Date>();
+		SimpleDateFormat timeFormat1= new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat timeFormat2= new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		if (content.contains(SHOW_THIS_WEEK)){
+			if(!content.replaceAll(SHOW_THIS_WEEK, "").equals("")){
+				input.add(content);
+				return input;
+			}
+			else{
+				Calendar c=Calendar.getInstance();
+				c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+BEGIN_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+				c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+END_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+			}
+			input.addDate(dates);
+			return input;
+		}
+		if (content.contains(SHOW_NEXT_WEEK)){
+			if(!content.replaceAll(SHOW_NEXT_WEEK, "").equals("")){
+				input.add(content);
+				return input;
+			}
+			else{
+				Calendar c=Calendar.getInstance();
+				c.set(Calendar.DAY_OF_WEEK+1, Calendar.MONDAY);
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+BEGIN_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+				c.set(Calendar.DAY_OF_WEEK+1, Calendar.SUNDAY);
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+END_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+			}
+			input.addDate(dates);
+			return input;
+		}
+		ParseTime times = new ParseTime();
+		times.parseTime(content);
+		dates=times.getDates();
+		if(dates==null){
+		  input.addShow(content);
+		  log.info("exit command");
+		  return input;
+		}
+		if(dates.size()>2)
+			return errorCommand();
+		if(dates.size()==1){
+			SimpleDateFormat timeRestFormat=new SimpleDateFormat("ssSSS");
+			String timeRest = timeRestFormat.format(dates.get(0));
+			//System.out.println(timeRest);
+			if(!timeRest.equals(DEADLINE_ONETIME)){
+				String dateTime=timeFormat1.format(dates.get(0));
+				//System.out.println(dateTime);
+				Date realDate=null;
+				try {
+					realDate = timeFormat2.parse(dateTime+BEGIN_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.clear();
+				dates.add(realDate);
+				try {
+					realDate = timeFormat2.parse(dateTime+END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+			}
+		}
+		input.addDate(dates);
 		return input;
 	}
 
