@@ -801,14 +801,7 @@ public class TaskList {
 
 			tasksToDisplay = tags.get(tag.toLowerCase());
 			// check overdue for each task
-			for (Task task : tasksToDisplay) {
-				try {
-					task.checkOverdue();
-				} catch (TaskInvalidDateException e) {
-					logger.log(Level.WARNING,
-							"Invalid Deadline when checking Overdue!");
-				}
-			}
+			checkOverdue(this.tasksToDisplay);
 
 			isDisplay = true;
 
@@ -818,18 +811,19 @@ public class TaskList {
 		}
 
 	}
-
+	
+	/**
+	 * This method will prepare a list for displaying, the order is decide by the boolean 
+	 * value isDisplayedByAddTime. 
+	 * If isDisplayedByAddTime is true, the result will be ordered by added time;
+	 * if isDisplayedByAddTime is false, the result will be ordered by deadline.
+	 * @param isDisplayedByAddTime
+	 * @return
+	 */
 	public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
 		List<Task> output;
 		// check overdue for each task
-		for (Task task : tasksTimed) {
-			try {
-				task.checkOverdue();
-			} catch (TaskInvalidDateException e) {
-				logger.log(Level.WARNING,
-						"Invalid Deadline when checking Overdue!");
-			}
-		}
+		checkOverdue(this.tasksTimed);
 
 		if (isDisplayedByAddTime) {
 			// using comparator AddedDateComparator
@@ -853,6 +847,23 @@ public class TaskList {
 		return output;
 	}
 	
+	/**
+	 * This method will let tasks in listToCheck  check if 
+	 * they are overdue, and update their properties.
+	 * 
+	 * @param listToCheck the list to be checked
+	 */
+	private void checkOverdue(List<Task> listToCheck) {
+		for (Task task : listToCheck) {
+			try {
+				task.checkOverdue();
+			} catch (TaskInvalidDateException e) {
+				logger.log(Level.WARNING,
+						"Invalid Deadline when checking Overdue!");
+			}
+		}
+	}
+
 	public boolean isShowingDone() {
 		return this.isShowingDone;
 	}
