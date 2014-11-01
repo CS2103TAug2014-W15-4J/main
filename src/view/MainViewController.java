@@ -211,7 +211,7 @@ public class MainViewController extends GridPane{
 			scrollPage[i] = new ScrollPane();
 			setScrollPage(i);
 			page[i] = new VBox();
-			page[i].setPrefHeight(listDisplay.getPrefHeight());
+			page[i].setPrefHeight(listDisplay.getPrefHeight()-66);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
 			page[i].setStyle("-fx-background-color: rgb(127,127,127)");
 			scrollPage[i].setContent(page[i]);
@@ -840,6 +840,7 @@ public class MainViewController extends GridPane{
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
+		listDisplay.requestFocus();
 	}
 	
 	private void displaySearchCommand(String searchKey) throws TaskInvalidDateException {
