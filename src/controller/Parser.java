@@ -629,7 +629,7 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		dates=times.getDates();
-		if(dates==null){
+		if(dates.size()==0){
 		  input.addShow(content);
 		  log.info("exit command");
 		  return input;
