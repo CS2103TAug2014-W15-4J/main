@@ -793,7 +793,62 @@ public class TaskList {
 		tasksToDisplay = result;
 		return tasksToDisplay;
 	}
+	
+	/**
+	 * This method will find out the tasks which deadline is within the given
+	 * range. 
+	 * Notice: For displaying purpose, all the floating tasks will be added as well.
+	 * @param showDate the input time range
+	 * @return A list of tasks that satisfied the range
+	 * @throws TaskInvalidDateException
+	 */
+	public List<Task> getDateRangeTask(List<Date> showDate) throws TaskInvalidDateException {
+		assert(showDate.size() == 2);
+		
+		ArrayList<Task> output = new ArrayList<Task>();
+		Date startTime = showDate.get(0);
+		Date endTime = showDate.get(1);
+		
+		// find task within the date range
+		for (Task task : tasksTimed) {
+			if (task.getDeadline().after(startTime) && task.getDeadline().before(endTime)) {
+				output.add(task);
+			}
+		}
+		
+		// add all floating task
+		output.addAll(tasksUntimed);
+		isDisplay = true;
+		tasksToDisplay = output;
+		return output;
+	}
 
+	/**
+	 * This methods will find out the tasks that are overdue.
+	 * @return a list of overdue tasks.
+	 */
+	public List<Task> getOverdueTask() {
+		List<Task> output = new ArrayList<Task>();
+		for (Task task : this.tasksTimed) {
+			try {
+				task.checkOverdue();
+				if (task.isOverdue) {
+					output.add(task);
+				}
+			} catch (TaskInvalidDateException e) {
+				logger.log(Level.WARNING,
+						"Invalid Deadline when checking Overdue!");
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * 
+	 * @param tag
+	 * @return
+	 * @throws TaskNoSuchTagException
+	 */
 	public List<Task> prepareDisplayList(String tag)
 			throws TaskNoSuchTagException {
 

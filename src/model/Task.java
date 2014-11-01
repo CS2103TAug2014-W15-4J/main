@@ -122,7 +122,6 @@ public abstract class Task {
 	}
 
 	public void setStartTime(Date startDate) {
-	    // TODO Auto-generated method stub
 	    
     }
 	
@@ -149,7 +148,7 @@ public abstract class Task {
 		if (this.isDone) {
 			return "Status: Done";
 		} else if (this.isOverdue) {
-			return "Status: OVERDUED!!!";
+			return "Status: OVERDUE!!!";
 		} else {
 			return "Status: Ongoing";
 		}

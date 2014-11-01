@@ -125,10 +125,6 @@ public class Logic {
 		storage.save(listOfTasks);
 	}
 
-	public static String getDisplayInfo() {
-		return display();
-	}
-
 	/**
 	 * @param userInput
 	 * @return feedback string
@@ -301,7 +297,8 @@ public class Logic {
 
 		} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
 			String showCommand = userCommand.getShowCommand();
-			return display(showCommand);
+			List<Date> showDate = userCommand.getDate();
+			return display(showCommand, showDate);
 
 		} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
 			listOfTasks.setShowDisplayListToFalse();
@@ -526,15 +523,24 @@ public class Logic {
 	/**
 	 * 
 	 * @param userCommand
+	 * @param showDate the given date period for displaying
 	 * @return user's task information
 	 * 
 	 *         This method displays the user's tasks information, specified by
 	 *         userCommand
 	 */
-	private static String display(String userCommand) {
+	private static String display(String userCommand, List<Date> showDate) {
 
-		assert userCommand != null;
-
+		assert (userCommand != null);
+		System.out.println(showDate);
+		if (!showDate.isEmpty()) {
+			listOfTasks.setNotShowingDone();
+			try {
+				return displayTasks(listOfTasks.getDateRangeTask(showDate));
+			} catch (TaskInvalidDateException e) {
+				return MESSAGE_INVALID_DATE;
+			}
+		}
 		if (userCommand.equals("all")) {
 			listOfTasks.setNotShowingDone();
 			return displayTasks(listOfTasks.prepareDisplayList(false));
@@ -545,6 +551,9 @@ public class Logic {
 
 		} else if (userCommand.equals("done")) {
 			return displayTasks(listOfTasks.getFinishedTasks());
+
+		}  else if (userCommand.equals("overdue")) {
+			return displayTasks(listOfTasks.getOverdueTask());
 
 		} else {
 			listOfTasks.setNotShowingDone();
@@ -558,40 +567,6 @@ public class Logic {
 			}
 
 		}
-	}
-
-	/**
-	 * This method will display user's tasks information.
-	 * 
-	 */
-	private static String display() {
-		if (listOfTasks.count() == 0) {
-			// empty task list
-			return MESSAGE_EMPTY_TASK_LIST;
-		}
-
-		StringBuilder taskDisplay = new StringBuilder();
-		taskDisplay.append("\nCurrent tasks:\n");
-		for (int i = 0; i < listOfTasks.count(); i++) {
-			Task task = listOfTasks.getTask(i);
-			taskDisplay.append((i + 1));
-			taskDisplay.append(". ");
-			taskDisplay.append(task.toString());
-			taskDisplay.append("\n\n");
-		}
-		taskDisplay.append(displayProgress());
-
-		return taskDisplay.toString();
-	}
-
-	private static String displayProgress() {
-		StringBuilder display = new StringBuilder();
-		display.append("\nProgress: ");
-		display.append(listOfTasks.count() - listOfTasks.countFinished());
-		display.append(" Unfinished / ");
-		display.append(listOfTasks.count());
-		display.append(" Total\n");
-		return display.toString();
 	}
 
 	/**
