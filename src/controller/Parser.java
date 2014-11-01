@@ -44,6 +44,7 @@ public class Parser {
 	private static final String SHOW_THIS_WEEK = " *(?i)this +week *";
 	private static final String SHOW_NEXT_WEEK = " *(?i)next +week *";
 	private static Logger log = Logger.getLogger("controller.Parser");
+
 	/**
 	 * @param input
 	 * @return UserInput after parsing
@@ -54,7 +55,7 @@ public class Parser {
 	public UserInput parse(String input) {
 		// let the logger only display warning log message.
 		log.setLevel(Level.WARNING);
-		
+
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
 		String content = null;
@@ -99,35 +100,38 @@ public class Parser {
 			return errorCommand();
 		}
 	}
-	
-	private String parseCommand(String command){
-		if(command.equals(CMD_EXIT)||command.equals("e"))
+
+	private String parseCommand(String command) {
+		if (command.equals(CMD_EXIT) || command.equals("e"))
 			return CMD_EXIT;
-		if(command.equals(CMD_HELP)||command.equals("h"))
+		if (command.equals(CMD_HELP) || command.equals("h"))
 			return CMD_HELP;
-		if(command.equals(CMD_ADD)||command.equals("+"))
+		if (command.equals(CMD_ADD) || command.equals("+"))
 			return CMD_ADD;
-		if(command.equals(CMD_DELETE)||command.equals("-"))
+		if (command.equals(CMD_DELETE) || command.equals("-"))
 			return CMD_DELETE;
-		if(command.equals(CMD_CLEAR)||command.equals("--")||command.equals("cl"))
+		if (command.equals(CMD_CLEAR) || command.equals("--")
+				|| command.equals("cl"))
 			return CMD_CLEAR;
-		if(command.equals(CMD_SEARCH)||command.equals("?")||command.equals("s"))
+		if (command.equals(CMD_SEARCH) || command.equals("?")
+				|| command.equals("s"))
 			return CMD_SEARCH;
-		if(command.equals(CMD_EDIT)||command.equals("<")||command.equals("ed"))
+		if (command.equals(CMD_EDIT) || command.equals("<")
+				|| command.equals("ed"))
 			return CMD_EDIT;
-		if(command.equals(CMD_DONE)||command.equals("d"))
+		if (command.equals(CMD_DONE) || command.equals("d"))
 			return CMD_DONE;
-		if(command.equals(CMD_SHOW)||command.equals("sh"))
+		if (command.equals(CMD_SHOW) || command.equals("sh"))
 			return CMD_SHOW;
-		if(command.equals(CMD_TAG)||command.equals("t"))
+		if (command.equals(CMD_TAG) || command.equals("t"))
 			return CMD_TAG;
-		if(command.equals(CMD_UNTAG)||command.equals("ut"))
+		if (command.equals(CMD_UNTAG) || command.equals("ut"))
 			return CMD_UNTAG;
-		if(command.equals(CMD_UNDO)||command.equals("b"))
+		if (command.equals(CMD_UNDO) || command.equals("b"))
 			return CMD_UNDO;
-		if(command.equals(CMD_REDO)||command.equals("r"))
+		if (command.equals(CMD_REDO) || command.equals("r"))
 			return CMD_REDO;
-		if(command.equals(CMD_EXPORT)||command.equals("ex"))
+		if (command.equals(CMD_EXPORT) || command.equals("ex"))
 			return CMD_EXPORT;
 		return command;
 	}
@@ -142,13 +146,13 @@ public class Parser {
 	private UserInput parseRedo(String content) {
 		log.info("entering redo command");
 		if (content != null && !content.equals("")) {
-		    
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.REDO);
 		log.info("exit redo command");
-		return input;	
+		return input;
 	}
 
 	/**
@@ -161,7 +165,7 @@ public class Parser {
 	private UserInput parseUndo(String content) {
 		log.info("entering undo command");
 		if (content != null && !content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -180,7 +184,7 @@ public class Parser {
 	private UserInput parseExit(String content) {
 		log.info("entering exit command");
 		if (content != null && !content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -202,7 +206,7 @@ public class Parser {
 	private UserInput parseHelp(String content) {
 		log.info("entering help command");
 		if (content != null && !content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -234,7 +238,7 @@ public class Parser {
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
-		default: 
+		default:
 			return parseFixed(input, content, times);
 		}
 	}
@@ -262,17 +266,17 @@ public class Parser {
 			return parseFloat(input, content);
 		}
 		switch (repeatDate.trim().toLowerCase()) {
-		case "daily":{
+		case "daily": {
 			input.addRepeatDate(RepeatDate.DAILY);
 			tempContent = content.replaceAll("(?i)daily", "").trim();
 			break;
 		}
-		case "weekly":{
+		case "weekly": {
 			input.addRepeatDate(RepeatDate.WEEKLY);
 			tempContent = content.replaceAll("(?i)weekly", "").trim();
 			break;
 		}
-		case "monthly":{
+		case "monthly": {
 			input.addRepeatDate(RepeatDate.MONTHLY);
 			tempContent = content.replaceAll("(?i)monthly", "").trim();
 			break;
@@ -313,7 +317,7 @@ public class Parser {
 	 * @return UserInput for parseAdd or parseEdit
 	 *
 	 *         this is for deadline task for add command or edit command
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 
 	private UserInput parseDeadline(UserInput input, String content,
@@ -334,17 +338,18 @@ public class Parser {
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
-			SimpleDateFormat timeRestFormat=new SimpleDateFormat("ssSSS");
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			//System.out.println(timeRest);
-			if(!timeRest.equals(DEADLINE_ONETIME)){
-				SimpleDateFormat timeFormat1= new SimpleDateFormat("yyyyMMdd");
-				String dateTime=timeFormat1.format(dates.get(0));
-				//System.out.println(dateTime);
-				SimpleDateFormat timeFormat2= new SimpleDateFormat("yyyyMMddHHmmssSSS");
-				Date realDate=null;
+			// System.out.println(timeRest);
+			if (!timeRest.equals(DEADLINE_ONETIME)) {
+				SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
+				String dateTime = timeFormat1.format(dates.get(0));
+				// System.out.println(dateTime);
+				SimpleDateFormat timeFormat2 = new SimpleDateFormat(
+						"yyyyMMddHHmmssSSS");
+				Date realDate = null;
 				try {
-					realDate = timeFormat2.parse(dateTime+END_OF_DAY_TIME);
+					realDate = timeFormat2.parse(dateTime + END_OF_DAY_TIME);
 				} catch (ParseException e) {
 					realDate = dates.get(0);
 				}
@@ -373,9 +378,9 @@ public class Parser {
 			ParseTime times) {
 		log.info("fixed task found");
 		String description = null;
-		if(times.getDates().size()==1) {
-            return parseDeadline(input, description, times);
-        }
+		if (times.getDates().size() == 1) {
+			return parseDeadline(input, description, times);
+		}
 		try {
 			description = times.getText();
 		} catch (NullPointerException e) {
@@ -387,9 +392,9 @@ public class Parser {
 			}
 		}
 		List<Date> dates = times.getDates();
-		if(dates.size()!=2) {
-            return parseFloat(input, content);
-        }
+		if (dates.size() != 2) {
+			return parseFloat(input, content);
+		}
 		input.add(description);
 		input.addDate(dates);
 		return input;
@@ -459,7 +464,7 @@ public class Parser {
 	private UserInput parseDelete(String content) {
 		log.info("entering delete command");
 		if (!trueNumberFormat(content)) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -488,7 +493,7 @@ public class Parser {
 	private UserInput parseClear(String content) {
 		log.info("entering clear command");
 		if (content != null && !content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -508,7 +513,7 @@ public class Parser {
 	private UserInput parseEdit(String content) {
 		log.info("entering edit command");
 		if (content == null || content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -545,7 +550,7 @@ public class Parser {
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
-		default: 
+		default:
 			return parseFixed(input, content, times);
 		}
 	}
@@ -581,78 +586,79 @@ public class Parser {
 			log.info("exit command");
 			return input;
 		}
-		List<Date> dates=new ArrayList<Date>();
-		SimpleDateFormat timeFormat1= new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat2= new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		if (content.contains(SHOW_THIS_WEEK)){
-			if(!content.replaceAll(SHOW_THIS_WEEK, "").equals("")){
+		input.addShow(content);
+		List<Date> dates = new ArrayList<Date>();
+		SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat timeFormat2 = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		if (content.contains(SHOW_THIS_WEEK)) {
+			if (!content.replaceAll(SHOW_THIS_WEEK, "").equals("")) {
 				input.add(content);
+				log.info("exit command");
 				return input;
-			}
-			else{
-				Calendar c=Calendar.getInstance();
+			} else {
+				Calendar c = Calendar.getInstance();
 				c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+BEGIN_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
+							+ BEGIN_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
 				c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+END_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
+							+ END_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
 			}
 			input.addDate(dates);
+			log.info("exit command");
 			return input;
 		}
-		if (content.contains(SHOW_NEXT_WEEK)){
-			if(!content.replaceAll(SHOW_NEXT_WEEK, "").equals("")){
+		if (content.contains(SHOW_NEXT_WEEK)) {
+			if (!content.replaceAll(SHOW_NEXT_WEEK, "").equals("")) {
 				input.add(content);
 				return input;
-			}
-			else{
-				Calendar c=Calendar.getInstance();
-				c.set(Calendar.DAY_OF_WEEK+1, Calendar.MONDAY);
+			} else {
+				Calendar c = Calendar.getInstance();
+				c.set(Calendar.DAY_OF_WEEK + 1, Calendar.MONDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+BEGIN_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
+							+ BEGIN_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
-				c.set(Calendar.DAY_OF_WEEK+1, Calendar.SUNDAY);
+				c.set(Calendar.DAY_OF_WEEK + 1, Calendar.SUNDAY);
 				try {
-					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())+END_OF_DAY_TIME));
+					dates.add(timeFormat2.parse(timeFormat1.format(c.getTime())
+							+ END_OF_DAY_TIME));
 				} catch (ParseException e) {
 				}
 			}
 			input.addDate(dates);
+			log.info("exit command");
 			return input;
 		}
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
-		dates=times.getDates();
-		if(dates.size()==0){
-		  input.addShow(content);
-		  log.info("exit command");
-		  return input;
-		}
-		if(dates.size()>2)
+		dates = times.getDates();
+		if (dates.size() > 2)
 			return errorCommand();
-		if(dates.size()==1){
-			SimpleDateFormat timeRestFormat=new SimpleDateFormat("ssSSS");
+		if (dates.size() == 1) {
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			//System.out.println(timeRest);
-			if(!timeRest.equals(DEADLINE_ONETIME)){
-				String dateTime=timeFormat1.format(dates.get(0));
-				//System.out.println(dateTime);
-				Date realDate=null;
+			// System.out.println(timeRest);
+			if (!timeRest.equals(DEADLINE_ONETIME)) {
+				String dateTime = timeFormat1.format(dates.get(0));
+				// System.out.println(dateTime);
+				Date realDate = null;
 				try {
-					realDate = timeFormat2.parse(dateTime+BEGIN_OF_DAY_TIME);
+					realDate = timeFormat2.parse(dateTime + BEGIN_OF_DAY_TIME);
 				} catch (ParseException e) {
 					realDate = dates.get(0);
 				}
 				dates.clear();
 				dates.add(realDate);
 				try {
-					realDate = timeFormat2.parse(dateTime+END_OF_DAY_TIME);
+					realDate = timeFormat2.parse(dateTime + END_OF_DAY_TIME);
 				} catch (ParseException e) {
 					realDate = dates.get(0);
 				}
@@ -660,6 +666,7 @@ public class Parser {
 			}
 		}
 		input.addDate(dates);
+		log.info("exit command");
 		return input;
 	}
 
@@ -692,7 +699,7 @@ public class Parser {
 	private UserInput parseDone(String content) {
 		log.info("entering done command");
 		if (!trueNumberFormat(content)) {
-			
+
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -714,7 +721,7 @@ public class Parser {
 	private UserInput parseTag(String content) {
 		log.info("entering tag command");
 		if (content == null || content.equals("")) {
-			
+
 			return errorCommand();
 		}
 		String[] contentSplit = content.split(" ", 2);
@@ -734,12 +741,14 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
+
 	/**
 	 * Untag command parsing
+	 * 
 	 * @param content
 	 * @return
 	 */
-	
+
 	private UserInput parseUntag(String content) {
 		log.info("entering delete command");
 		if (content == null || content.equals("")) {
