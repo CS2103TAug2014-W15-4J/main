@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -837,26 +838,72 @@ public class TaskList {
 	 * This method will find out the tasks which deadline is within the given
 	 * range. 
 	 * Notice: For displaying purpose, all the floating tasks will be added as well.
-	 * @param showDate the input time range
-	 * @return A list of tasks that satisfied the range
+	 * @param showDate     the input time range
+	 * @return A list of tasks that satisfies the range
 	 * @throws TaskInvalidDateException
 	 */
 	public List<Task> getDateRangeTask(List<Date> showDate) throws TaskInvalidDateException {
 		assert(showDate.size() == 2);
 		
-		ArrayList<Task> output = new ArrayList<Task>();
+		SortedArrayList<Task> output = new SortedArrayList<Task>(new DeadlineComparator());
 		Date startTime = showDate.get(0);
 		Date endTime = showDate.get(1);
 		
 		// find task within the date range
 		for (Task task : tasksTimed) {
-			if (task.getDeadline().after(startTime) && task.getDeadline().before(endTime)) {
+		    if (task instanceof RepeatedTask) {
+		        // repeated tasks are checked separately
+		    } else if (task.getDeadline().after(startTime) && task.getDeadline().before(endTime)) {
 				output.add(task);
 			}
 		}
 		
+		Calendar taskTimeCal = Calendar.getInstance();
+		Calendar searchTimeStartCal = Calendar.getInstance();
+		Calendar searchTimeEndCal = Calendar.getInstance();
+		
+		searchTimeStartCal.setTime(startTime);
+		searchTimeEndCal.setTime(endTime);
+		
+		// search if repeat task is in date range
+		for (Task task : tasksRepeated) {
+		    RepeatedTask repeatedTask = (RepeatedTask) task;
+		    taskTimeCal.setTime(task.getDeadline());		    
+		    String periodString = repeatedTask.getRepeatPeriod();
+		    
+		    if (periodString.equals("daily")) {
+		        if ((taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		            
+		            output.addOrder(repeatedTask);
+		        }
+
+		    } else if (periodString.split(" ")[0].equals("every")) {
+
+		        if ((taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) && 
+		            (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		            
+		            output.addOrder(repeatedTask);
+		        }
+
+            } else if (periodString.split(" ")[0].equals("day")) {
+                
+                if ((taskTimeCal.get(Calendar.DAY_OF_MONTH) >= searchTimeStartCal.get(Calendar.DAY_OF_MONTH)) && 
+                    (taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH)) &&
+                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) &&
+                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
+                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+                    
+                    output.addOrder(repeatedTask);
+                }
+            } 
+		}
+		
 		// add all floating task
-		output.addAll(tasksUntimed);
+		output.addAllUnordered(tasksUntimed);
 		isDisplay = true;
 		tasksToDisplay = output;
 		return output;
@@ -922,9 +969,9 @@ public class TaskList {
 		if (isDisplayedByAddTime) {
 			// using comparator AddedDateComparator
 			output = new SortedArrayList<Task>(this.count(),
-					new AddedDateComparator());
-			output.addAll(tasksTimed);
-			output.addAll(tasksUntimed);
+					                           new AddedDateComparator());
+			((SortedArrayList<Task>) output).addAllOrdered(tasksTimed);
+			((SortedArrayList<Task>) output).addAllOrdered(tasksUntimed);
 			isDisplay = true;
 			tasksToDisplay = output;
 
