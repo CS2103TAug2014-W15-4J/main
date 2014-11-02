@@ -1226,4 +1226,22 @@ public class TaskList {
 	public int countFinished() {
 		return this.totalFinished;
 	}
+	
+	/**
+	 * This method find out the separation index between non-floating task and
+	 * floating task.
+	 * If not found, return -1;
+	 * 
+	 * @param taskList
+	 * @return
+	 */
+	public int indexOfFirstFloatingTask(List<Task> taskList) {
+		for (int i = 0;i< taskList.size();i++) {
+			Task task = taskList.get(i);
+			if (task instanceof FloatingTask) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }

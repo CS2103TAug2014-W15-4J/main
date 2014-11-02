@@ -50,6 +50,36 @@ public class TaskListTest {
 		/* This is a boundary case for the ‘above valid index’ partition */
 		assertTrue(tasks.isInvalidIndex(51));
 	}
+	
+	@Test
+	public void testIndexOfFirstFloatingTask() {
+		TaskList tasks = new TaskList();
+		
+		// test for unfound case
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("Non-floating task", new Date(i));
+		}
+		
+		List<Task> listOfTask = tasks.prepareDisplayList(false);
+		assertEquals(50, listOfTask.size());
+		
+		assertEquals(-1, tasks.indexOfFirstFloatingTask(listOfTask));
+		
+		// test for found case
+		tasks = new TaskList();
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("Non-floating task", new Date(i));
+		}
+		
+		for (int i = 0; i < 10; i++) {
+			tasks.addToList("Floating task");
+		}
+		
+		listOfTask = tasks.prepareDisplayList(false);
+		assertEquals(60, listOfTask.size());
+		
+		assertEquals(50, tasks.indexOfFirstFloatingTask(listOfTask));
+	}
 
 	@Test
 	public void testAddingTask() {
