@@ -11,7 +11,9 @@ import exception.TaskInvalidDateException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -87,6 +89,7 @@ public class MainViewController extends GridPane{
 	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
 	
+	final static String TITLE_TODAY_TASKS = "Today Tasks";
 	final static String TITLE_ALL_TASKS = "All Tasks";
 	final static String TITLE_DONE_TASKS = "Done Tasks";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
@@ -193,7 +196,7 @@ public class MainViewController extends GridPane{
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
 		if (currentPageNum == TODAY_TASKS_PAGE_INDEX) {
-			
+			displayTitleText.setText(TITLE_TODAY_TASKS);
 		} else if (currentPageNum == UNDONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_ALL_TASKS);
 		} else if (currentPageNum == DONE_TASKS_PAGE_INDEX) {
@@ -275,7 +278,7 @@ public class MainViewController extends GridPane{
 				return scrollPage[pageIndex];
 			}
 		});
-		displayExistingTasks();
+		displayTodayTasks();
 	}
 	
 	private void setHelpHomePage() {
@@ -483,6 +486,14 @@ public class MainViewController extends GridPane{
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(otherCommands, clear, exit);
 			
 		}
+	}
+	
+	private void displayTodayTasks() throws TaskInvalidDateException {
+		loadTaskList();
+		taskList = getTaskList();
+		List<Task> todayTask = new ArrayList<Task>();
+		
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
 	}
 	
 	private void displayExistingTasks() throws TaskInvalidDateException {
@@ -838,8 +849,6 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayShowAllCommand() throws TaskInvalidDateException {
-		taskList.setNotShowingDone();
-		taskList.setShowDisplayListToFalse();
 		listDisplay.setCurrentPageIndex(UNDONE_TASKS_PAGE_INDEX);
 		setDisplayTitleText();
 		setRestTaskResponse();
@@ -847,11 +856,16 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayShowDoneCommand() throws TaskInvalidDateException {		
-		taskList.setShowDisplayListToFalse();
 		setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
+	}
+	
+	private void displayShowTodayCommand() throws TaskInvalidDateException {
+		List<Task> todayTask = taskList.getDateRangeTask(new ArrayList<Date>());
+		
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
 	}
 	
 	private void displayOtherCommand() throws TaskInvalidDateException {
@@ -880,9 +894,15 @@ public class MainViewController extends GridPane{
 			displaySearchCommand();
 		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
 				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
+			taskList.setNotShowingDone();
+			taskList.setShowDisplayListToFalse();
 			displayShowAllCommand();
 		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
+			taskList.setShowDisplayListToFalse();
 			displayShowDoneCommand();
+		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 9).equals("show today")
+				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 9).equals("show tdy")) {
+			displayShowTodayCommand();
 		// except show, search and help
 		} else {
 			displayOtherCommand();
@@ -898,7 +918,7 @@ public class MainViewController extends GridPane{
 			if (!isSpecialCommand()) {
 				feedback = executeCommand(command);
 				taskList = getTaskList();
-				if (listDisplay.getCurrentPageIndex() != 1) {
+				if (listDisplay.getCurrentPageIndex() != 2) {
 					taskList.setNotShowingDone();
 				}
 				setTextFieldEmpty();
@@ -922,9 +942,11 @@ public class MainViewController extends GridPane{
 	@FXML
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException {
 		if (keyEvent.getCharacter().equals("1")) {
-			
+			setDisplayTitleText();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
+			taskList.setShowDisplayListToFalse();
+			taskList.setNotShowingDone();
 			displayShowAllCommand();
 		}
 		if (keyEvent.getCharacter().equals("3")) {
@@ -984,9 +1006,11 @@ public class MainViewController extends GridPane{
 			        	if (flag) {
 			        		flag = false;
 			        		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
-			        			
+			        			setDisplayTitleText();
 			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			    				try {
+			    					taskList.setShowDisplayListToFalse();
+			    					taskList.setNotShowingDone();
 									displayShowAllCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
@@ -1024,6 +1048,8 @@ public class MainViewController extends GridPane{
 			        		flag = false;
 			        		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			        			try {
+			        				taskList.setShowDisplayListToFalse();
+			    					taskList.setNotShowingDone();
 									displayShowAllCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
