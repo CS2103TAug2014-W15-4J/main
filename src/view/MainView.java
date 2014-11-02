@@ -19,7 +19,7 @@ public class MainView extends Application {
 	public void start(Stage primaryStage) throws IOException, TaskInvalidDateException {
 		MainViewController mvc = new MainViewController();
 		
-		Scene scene = new Scene(mvc, 383, 620);
+		Scene scene = new Scene(mvc, 900, 620);
 		Font.loadFont(MainView.class.getResource("Montserrat-Regular.ttf").toExternalForm(), 10);
 		scene.getStylesheets().add(getClass().getResource("MainView.css").toExternalForm());
 		primaryStage.setTitle("uClear");
@@ -27,10 +27,10 @@ public class MainView extends Application {
 		
 		if (getOS().equals("Mac OS X")) {
 			primaryStage.setMaxHeight(642);
-			primaryStage.setMaxWidth(383);
+			primaryStage.setMaxWidth(900);
 		} else {
 			primaryStage.setMaxHeight(658);
-			primaryStage.setMaxWidth(399);
+			primaryStage.setMaxWidth(900);
 		}
 		
 		primaryStage.setMinHeight(primaryStage.getMaxHeight());

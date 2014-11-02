@@ -2,8 +2,11 @@ package view;
 
 import controller.Logic;
 import controller.UserInput.CMD;
+import model.FixedTask;
+import model.RepeatedTask;
 import model.TaskList;
 import model.Task;
+import model.Task.Type;
 import exception.TaskInvalidDateException;
 
 import java.io.IOException;
@@ -134,6 +137,7 @@ public class MainViewController extends GridPane{
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
 	
+	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat("MMM dd, EE  HH : mm");
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss");
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
@@ -213,7 +217,7 @@ public class MainViewController extends GridPane{
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight()-66);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			page[i].setStyle("-fx-background-color: rgb(127,127,127)");
+			page[i].setStyle("-fx-background-color: rgb(127,127,127); -fx-padding: 20");
 			scrollPage[i].setContent(page[i]);
 		}
 		
@@ -233,115 +237,6 @@ public class MainViewController extends GridPane{
 		scrollPage[index].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 	
-	private void setLeftKey() {
-		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
-		     @Override 
-		     public void handle(KeyEvent event ) {
-		        if (event.getCode() == KeyCode.LEFT) {
-//		        	event.consume();
-		        	boolean flag = true;
-		        	if (flag) {
-		        		flag = false;
-		        		if (listDisplay.getCurrentPageIndex() == 0) {
-		    				try {
-								displayShowAllCommand();
-							} catch (TaskInvalidDateException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		    			} else if (listDisplay.getCurrentPageIndex() == 1) {
-		    				try {
-								displayShowDoneCommand();
-							} catch (TaskInvalidDateException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		    			} else if (listDisplay.getCurrentPageIndex() == 2) {
-		    				try {
-								displaySearchCommand(searchKey);
-							} catch (TaskInvalidDateException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		    			}
-		        	}
-		        }
-		     }
-		});
-	}
-	
-	private void setRightKey() {
-		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
-		     @Override 
-		     public void handle(KeyEvent event) {
-		        if (event.getCode() == KeyCode.RIGHT) {
-//		        	event.consume();
-		        	boolean flag = true;
-		        	if (flag) {
-		        		flag = false;
-		        		if (listDisplay.getCurrentPageIndex() == 3) {
-		    				displayHelpCommand();
-		    			} else if (listDisplay.getCurrentPageIndex() == 1) {
-		    				try {
-								displayShowDoneCommand();
-							} catch (TaskInvalidDateException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		    			} else if (listDisplay.getCurrentPageIndex() == 2) {
-		    				try {
-								displaySearchCommand(searchKey);
-							} catch (TaskInvalidDateException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		    			}
-		        	}
-		        }
-		     }
-		});
-	}
-	
-	private void setEscKey() {
-		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
-		     @Override 
-		     public void handle(KeyEvent event) {
-		        if (event.getCode() == KeyCode.ESCAPE) {
-//		        	event.consume();
-		        	boolean flag = true;
-		        	if (flag) {
-		        		flag = false;
-		        		
-		        		if (listDisplay.getCurrentPageIndex() == 3) {
-		        			setHelpHomePage();
-		        		}
-		        		
-		        	}
-		        }
-		     }
-		});
-	}
-	
-	private void setFKey(final int index) {
-		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
-		     @Override 
-		     public void handle(KeyEvent event ) {
-		        if (event.getCode() == F_KEYS[index]) {
-//		        	event.consume();
-		        	boolean flag = true;
-		        	if (flag) {
-		        		flag = false;
-		        		if (listDisplay.getCurrentPageIndex() == 3) {
-		    				setHelpPage(index);
-		    			}
-		        	}
-		        }
-		     }
-		});
-	}
-	
-	
-
 	private void setFont() {
 	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
 	    uClear.setStyle("-fx-font-size: 35");
@@ -385,7 +280,7 @@ public class MainViewController extends GridPane{
 		for (int i=0; i<7; i++) {
 			
 			commandInfo[i] = new GridPane();
-			setHelpHBoxSize(i, 383, 40);
+			setHelpHBoxSize(i, 900, 40);
 			
 			fKeys[i] = new Label(F_KEYS[i].toString());
 			fKeys[i].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
@@ -406,7 +301,7 @@ public class MainViewController extends GridPane{
 		}
 		
 		commandInfo[7] = new GridPane();
-		setHelpHBoxSize(7, 383, 40);
+		setHelpHBoxSize(7, 900, 40);
 		
 		fKeys[7] = new Label(F_KEYS[7].toString());
 		fKeys[7].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
@@ -440,7 +335,7 @@ public class MainViewController extends GridPane{
 		example.setStyle("-fx-text-fill: yellow");
 		
 		command.setStyle("-fx-padding: 15; -fx-font-size: 14");
-		setGridPaneSize(command, 383, 140);
+		setGridPaneSize(command, 900, 140);
 		Label descriptionContent = new Label(descriptionString);
 		descriptionContent.setStyle("-fx-text-fill: lightgreen");
 		Label structureContent = new Label(structureString);
@@ -601,9 +496,7 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.countUndone(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-			
-			setGridPaneSize(taskLayout, 383, 100);
+			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(150,150,150); -fx-border-color: skyblue");
 			
 			setTaskFormat(taskLayout, i);
 			
@@ -611,65 +504,135 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	private void setTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
+		if (task.getType().equals(Type.FLOAT)) {
+			setGridPaneSize(taskLayout, 850, 60);
+			setFloatTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.DEADLINE)) {
+			setGridPaneSize(taskLayout, 850, 90);
+			setDeadlineTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.FIXED)) {
+			setGridPaneSize(taskLayout, 850, 120);
+			setFixedTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.REPEATED)) {
+			setGridPaneSize(taskLayout, 850, 120);
+			setRepeatedTaskFormat(taskLayout, task, index);
+		} 
+	}
+	
 	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
 		Task task = taskList.getTask(index);
 		
-		setDescription(taskLayout, task, index);
-		
-		setDeadline(taskLayout, task);
-		
-		setStatus(taskLayout, task);
-		
-		setTags(taskLayout, task);	
+		if (task.getType().equals(Type.FLOAT)) {
+			setGridPaneSize(taskLayout, 850, 60);
+			setFloatTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.DEADLINE)) {
+			setGridPaneSize(taskLayout, 850, 90);
+			setDeadlineTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.FIXED)) {
+			setGridPaneSize(taskLayout, 850, 120);
+			setFixedTaskFormat(taskLayout, task, index);
+		} else if (task.getType().equals(Type.REPEATED)) {
+			setGridPaneSize(taskLayout, 850, 120);
+			setRepeatedTaskFormat(taskLayout, task, index);
+		} 
 	}
 	
-	private void setTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		
-		setDescription(taskLayout, task, index);
-		
-		setDeadline(taskLayout, task);
-		
-		setStatus(taskLayout, task);
-		
-		setTags(taskLayout, task);	
+	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) {
+		setDisplayIndex(taskLayout, index);
+		setTaskType(taskLayout, task);
+		setDescription(taskLayout, task);
+		setTags(taskLayout, task);
 	}
 	
-	private void setDescription(GridPane taskLayout, Task task, int index) {
-		Label description = new Label((index+1) +". " + task.getDescription());
+	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
+		setDisplayIndex(taskLayout, index);
+		setTaskType(taskLayout, task);
+		setDescription(taskLayout, task);
+		setDeadline(taskLayout, task);
+		setTags(taskLayout, task);
+	}
+	
+	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
+		setDisplayIndex(taskLayout, index);
+		setTaskType(taskLayout, task);
+		setDescription(taskLayout, task);
+		setStartTime(taskLayout, task);
+		setDeadline(taskLayout, task);
+		setTags(taskLayout, task);
+	}
+	
+	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
+		setDisplayIndex(taskLayout, index);
+		setTaskType(taskLayout, task);
+		setDescription(taskLayout, task);
+		setDeadline(taskLayout, task);
+		setRepeatPeriod(taskLayout, task);
+		setTags(taskLayout, task);
+	}
+	
+	private void setDisplayIndex(GridPane taskLayout, int index) {
+		Label displayIndex = new Label(Integer.toString(index+1));
+		displayIndex.setPrefSize(50, 100);
+		displayIndex.setStyle("-fx-text-fill: rgb(175,225,252)");
+		GridPane.setConstraints(displayIndex, 0, 0, 1, 4);
+		taskLayout.getChildren().add(displayIndex);
+	}
+	
+	private void setTaskType(GridPane taskLayout, Task task) {
+		Label type = new Label(task.getType().toString());
+		type.setStyle("-fx-text-fill: rgb(175,225,252)");
+		GridPane.setConstraints(type, 1, 0, 1, 1);
+		taskLayout.getChildren().add(type);
+	}
+	
+	private void setDescription(GridPane taskLayout, Task task) {
+		Label description = new Label(task.getDescription());
 		description.setStyle("-fx-text-fill: rgb(175,225,252)");
-		GridPane.setConstraints(description, 0, 0, 10, 1);
+		GridPane.setConstraints(description, 2, 0, 1, 1);
 		taskLayout.getChildren().add(description);
 	}
 	
 	private void setDeadline(GridPane taskLayout, Task task) throws TaskInvalidDateException {
 		Label deadline = new Label();
 		
-		if (task.getType().equals(Task.Type.FLOAT)) {
-			deadline.setText("Deadline: No deadline");
-		} else {
-			deadline.setText("Deadline: " + dateFormat.format(task.getDeadline()));
-		}
+		deadline.setText("Deadline: " + taskTimeFormat.format(task.getDeadline()));
 		
 		deadline.setStyle("-fx-text-fill: rgb(249,192,162)");
-		GridPane.setConstraints(deadline, 0, 1, 10, 1);
+		
+		if (task.getType().equals(Type.DEADLINE) || task.getType().equals(Type.REPEATED)) {
+			GridPane.setConstraints(deadline, 1, 1, 2, 1);
+		} else if (task.getType().equals(Type.FIXED)) {
+			GridPane.setConstraints(deadline, 1, 2, 2, 1);
+		}
+		
 		taskLayout.getChildren().add(deadline);
 	}
 	
-	private void setStatus(GridPane taskLayout, Task task) {
-		Label status = new Label(task.displayDone());
-		status.setStyle("-fx-text-fill: yellow");
-		GridPane.setConstraints(status, 0, 2, 10, 1);
-		taskLayout.getChildren().add(status);
+	private void setStartTime(GridPane taskLayout, Task task) {
+		FixedTask fixedTask = (FixedTask)task;
+		Label startTime = new Label("Start Time: " + taskTimeFormat.format(fixedTask.getStartTime()));
+		startTime.setStyle("-fx-text-fill: rgb(249,192,162)");
+		GridPane.setConstraints(startTime, 1, 1, 2, 1);
+		taskLayout.getChildren().add(startTime);
+	}
+	
+	private void setRepeatPeriod(GridPane taskLayout, Task task) {
+		RepeatedTask repeatedTask = (RepeatedTask)task;
+		Label repeatPeriod = new Label(repeatedTask.getRepeatPeriod());
+		repeatPeriod.setStyle("-fx-text-fill: rgb(249,192,162)");
+		GridPane.setConstraints(repeatPeriod, 1, 2, 2, 1);
+		taskLayout.getChildren().add(repeatPeriod);
 	}
 	
 	private void setTags(GridPane taskLayout, Task task) {
+		Type taskType = task.getType();
 		if (task.getTags().size() > 0) {
 			Label[] tags = new Label[task.getTags().size()];
 			
 			for (int j=0; j<task.getTags().size(); j++) {
 				List<String> tagList = task.getTags();
 				tags[j] = new Label(tagList.get(j));
-				Label space = new Label("  ");
 				
 				if (!tagColor.containsKey(tags[j].getText())) {
 					tagColor.put(tags[j].getText(), DEFAULT_TAG_COLORS[colorPointer]);
@@ -677,17 +640,30 @@ public class MainViewController extends GridPane{
 				}
 				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
 				
-				space.setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
-				GridPane.setConstraints(tags[j], 2*j, 3);
-				GridPane.setConstraints(space, 2*j+1, 3);
-				taskLayout.getChildren().addAll(space, tags[j]);
+				if (taskType.equals(Type.FLOAT)) {
+					GridPane.setConstraints(tags[j], 2*j+1, 1);
+				} else if (taskType.equals(Type.DEADLINE)) {
+					GridPane.setConstraints(tags[j], 2*j+1, 2);
+				} else if (taskType.equals(Type.FIXED) || taskType.equals(Type.REPEATED)) {
+					GridPane.setConstraints(tags[j], 2*j+1, 3);
+				}
+				
+				taskLayout.getChildren().add(tags[j]);
 			}
 			
 		} else {
 			Label[] tags = new Label[1];
 			tags[0] = new Label("None");
 			tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-			GridPane.setConstraints(tags[0], 0, 3);
+			
+			if (taskType.equals(Type.FLOAT)) {
+				GridPane.setConstraints(tags[0], 1, 1);
+			} else if (taskType.equals(Type.DEADLINE)) {
+				GridPane.setConstraints(tags[0], 1, 2);
+			} else if (taskType.equals(Type.FIXED) || taskType.equals(Type.REPEATED)) {
+				GridPane.setConstraints(tags[0], 1, 3);
+			}
+			
 			taskLayout.getChildren().add(tags[0]);
 		}
 	}
@@ -856,7 +832,7 @@ public class MainViewController extends GridPane{
 				GridPane taskLayout = new GridPane();
 				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
 				
-				setGridPaneSize(taskLayout, 383, 100);
+				setGridPaneSize(taskLayout, 900, 100);
 				
 				setTaskFormat(taskLayout, task, i);
 				
@@ -887,7 +863,7 @@ public class MainViewController extends GridPane{
 			GridPane taskLayout = new GridPane();
 			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
 			
-			setGridPaneSize(taskLayout, 383, 100);
+			setGridPaneSize(taskLayout, 900, 100);
 			
 			setTaskFormat(taskLayout, task, i);
 			
@@ -911,7 +887,7 @@ public class MainViewController extends GridPane{
 				GridPane taskLayout = new GridPane();
 				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
 				
-				setGridPaneSize(taskLayout, 383, 100);
+				setGridPaneSize(taskLayout, 900, 100);
 				
 				setTaskFormat(taskLayout, task, i);
 				
@@ -927,9 +903,9 @@ public class MainViewController extends GridPane{
 				GridPane taskLayout = new GridPane();
 				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
 				
-				setGridPaneSize(taskLayout, 383, 100);
+				setGridPaneSize(taskLayout, 900, 100);
 				
-				setTaskFormat(taskLayout, task, i);
+				setTaskFormat(taskLayout, task, i); 
 				
 				page[2].getChildren().add(taskLayout);
 			}
@@ -937,7 +913,7 @@ public class MainViewController extends GridPane{
 		response.setText(feedback);
 		
 		if (feedback.length() > 10) {
-			response.setStyle("-fx-font-size: 15;-fx-text-fill: rgb(68,217,117)");
+			response.setStyle("-fx-text-fill: rgb(68,217,117)");
 		} else {
 			response.setStyle("-fx-text-fill: rgb(68,217,117)");
 		}
@@ -1044,5 +1020,112 @@ public class MainViewController extends GridPane{
 			input.selectEnd();
 		}
 	}
+
+	private void setLeftKey() {
+			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			     @Override 
+			     public void handle(KeyEvent event ) {
+			        if (event.getCode() == KeyCode.LEFT) {
+	//		        	event.consume();
+			        	boolean flag = true;
+			        	if (flag) {
+			        		flag = false;
+			        		if (listDisplay.getCurrentPageIndex() == 0) {
+			    				try {
+									displayShowAllCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+			    				try {
+									displayShowDoneCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+			    				try {
+									displaySearchCommand(searchKey);
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			}
+			        	}
+			        }
+			     }
+			});
+		}
+
+	private void setRightKey() {
+			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			     @Override 
+			     public void handle(KeyEvent event) {
+			        if (event.getCode() == KeyCode.RIGHT) {
+	//		        	event.consume();
+			        	boolean flag = true;
+			        	if (flag) {
+			        		flag = false;
+			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			    				displayHelpCommand();
+			    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+			    				try {
+									displayShowDoneCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+			    				try {
+									displaySearchCommand(searchKey);
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			}
+			        	}
+			        }
+			     }
+			});
+		}
+
+	private void setEscKey() {
+			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			     @Override 
+			     public void handle(KeyEvent event) {
+			        if (event.getCode() == KeyCode.ESCAPE) {
+	//		        	event.consume();
+			        	boolean flag = true;
+			        	if (flag) {
+			        		flag = false;
+			        		
+			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			        			setHelpHomePage();
+			        		}
+			        		
+			        	}
+			        }
+			     }
+			});
+		}
+
+	private void setFKey(final int index) {
+			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			     @Override 
+			     public void handle(KeyEvent event ) {
+			        if (event.getCode() == F_KEYS[index]) {
+	//		        	event.consume();
+			        	boolean flag = true;
+			        	if (flag) {
+			        		flag = false;
+			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			    				setHelpPage(index);
+			    			}
+			        	}
+			        }
+			     }
+			});
+		}
 
 }
