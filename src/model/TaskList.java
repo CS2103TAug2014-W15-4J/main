@@ -83,6 +83,7 @@ public class TaskList {
 	private List<Task> tasksFinished;
 	@XStreamAlias("TaskToDisplay")
 	private List<Task> tasksToDisplay;
+	private List<Task> tasksRepeated;
 
 	
 	@XStreamAlias("showDisplay")
@@ -107,6 +108,7 @@ public class TaskList {
 		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
 		this.tasksFinished = new SortedArrayList<Task>(new DoneDateComparator());
 		this.tasksToDisplay = new ArrayList<Task>();
+		this.tasksRepeated = new ArrayList<Task>();
 		this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
 		this.tags = new HashMap<String, List<Task>>();
 		this.totalFinished = 0;
@@ -168,6 +170,7 @@ public class TaskList {
      * @param task      The task to be added
      */
 	private void addToList(Task task) {
+	    
 	    if (task.getIsDone()) {
 	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
 	        
@@ -177,9 +180,12 @@ public class TaskList {
     
     		} else {
     			((SortedArrayList<Task>) this.tasksTimed).addOrder(task);
+    			addToTaskRepeated(task);
     		}
     		this.totalTasks++;
 	    }
+	    
+	    
 	}
 
 	/**
@@ -227,6 +233,7 @@ public class TaskList {
 	public void addToList(String description, Date time, RepeatDate repeatDate) {
 		Task newTask = new RepeatedTask(description, time, repeatDate);
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
+		this.tasksRepeated.add(newTask);
 		this.totalTasks++;
 		logger.log(Level.INFO, "A repeated task added");
 		
@@ -460,6 +467,7 @@ public class TaskList {
 	private void deleteFromList(Task task) {
 	    if (tasksTimed.contains(task)) {
 	        tasksTimed.remove(task);
+	        deleteFromTasksRepeated(task);
 	    } else {
 	        tasksUntimed.remove(task);
 	    }
@@ -484,7 +492,9 @@ public class TaskList {
 					if (indexToRemove>this.tasksFinished.size() || indexToRemove<=0) {
 						throw new TaskInvalidIdException("Error index for deleting!");
 					} else {
-						tasksRemoved.add(this.tasksFinished.remove(indexToRemove - 1));
+					    Task taskRemoved = this.tasksFinished.remove(indexToRemove - 1); 
+					    deleteFromTasksRepeated(taskRemoved);
+					    tasksRemoved.add(taskRemoved);
 					}
 					this.totalTasks--;
 				} else {
@@ -494,6 +504,7 @@ public class TaskList {
 
 					} else {
 						Task taskToRemove = getTask(indexToRemove - 1);
+						deleteFromTasksRepeated(taskToRemove);
 						tasksRemoved.add(taskToRemove);
 						// if the index comes from a list used for displaying, use
 						// time to find
@@ -523,6 +534,34 @@ public class TaskList {
 			}
 			addToUndoList(LastCommand.DELETE, tasksRemoved);
 		}
+	}
+	
+	/**
+	 * This method deletes the specified task from tasksRepeat list,
+	 * if the list contains the task and the task is a RepeatedTask
+	 *  
+	 * @param taskToRemove The task to be removed from tasksRepeat
+	 */
+	private void deleteFromTasksRepeated(Task taskToRemove) {
+	    if (taskToRemove instanceof RepeatedTask) {
+	        if (tasksRepeated.contains(taskToRemove)) {
+	            tasksRepeated.remove(taskToRemove);
+	        }
+	    }
+	}
+	
+	/**
+	 * This method adds the specified task to tasksRepeat list,
+	 * if the list does not contain the task and the task is a RepeatedTask
+	 * 
+	 * @param taskToAdd    The task to be added to tasksRepeat
+	 */
+	private void addToTaskRepeated(Task taskToAdd) {
+	    if (taskToAdd instanceof RepeatedTask) {
+	        if (!tasksRepeated.contains(taskToAdd)) {
+	            tasksRepeated.add(taskToAdd);
+	        }
+	    }
 	}
 
     public void clearList() {
