@@ -11,11 +11,11 @@ import exception.TaskInvalidDateException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -147,8 +147,8 @@ public class MainViewController extends GridPane{
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
 	
-	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat("MMM dd, EE  HH : mm");
-	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss");
+	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat("MMM dd, EE  HH : mm", Locale.US);
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss", Locale.US);
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
@@ -278,10 +278,11 @@ public class MainViewController extends GridPane{
 				return scrollPage[pageIndex];
 			}
 		});
+		loadTaskListToController();
 		displayTodayTasks();
 	}
 	
-	private void setHelpHomePage() {
+	private void setHelpHomePage() throws TaskInvalidDateException {
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		setRestTaskResponse();
 		
@@ -489,10 +490,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayTodayTasks() throws TaskInvalidDateException {
-		loadTaskListToController();
-		List<Task> todayTask = new ArrayList<Task>();
-		
-		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, getTodayTaskList());
 	}
 	
 	private void loadTaskListToController() throws TaskInvalidDateException {
@@ -738,8 +736,17 @@ public class MainViewController extends GridPane{
 		gridPane.setMinSize(width, height);
 	}	
 	
-	private void setRestTaskResponse() {
-		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+	private void setRestTaskResponse() throws TaskInvalidDateException {
+		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+			List<Task> todayTasks = getTodayTaskList();
+			if (todayTasks.size() > 1) {
+				response.setText(String.format(MANY_TASKS_NOT_DONE, todayTasks.size()));
+			} else if (todayTasks.size() == 1) {
+				response.setText(ONE_TASK_NOT_DONE);
+			} else {
+				response.setText(ALL_TASKS_DONE);
+			}
+		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			if (taskList.countUndone() > 1) {
 				response.setText(String.format(MANY_TASKS_NOT_DONE, taskList.countUndone()));
 			} else if (taskList.countUndone() == 1) {
@@ -843,6 +850,13 @@ public class MainViewController extends GridPane{
 		return Logic.getTaskList();
 	}
 	
+	private List<Task> getTodayTaskList() throws TaskInvalidDateException {
+		List<Date> today = Logic.getDateList("show today");
+		List<Task> todayTask = taskList.getDateRangeTask(today);
+		
+		return todayTask;
+	}
+	
 	private void setTextField(String content) {
 		input.setText(content);
 	}
@@ -851,7 +865,7 @@ public class MainViewController extends GridPane{
 		setTextField("");
 	}
 	
-	private void displayHelpCommand() {
+	private void displayHelpCommand() throws TaskInvalidDateException {
 		listDisplay.setCurrentPageIndex(HELP_DOC_PAGE_INDEX);
 		
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
@@ -888,9 +902,11 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayShowTodayCommand() throws TaskInvalidDateException {
-		List<Task> todayTask = taskList.getDateRangeTask(new ArrayList<Date>());
+		List<Task> todayTask = getTodayTaskList();
 		
 		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
+		setDisplayTitleText();
+		setRestTaskResponse();
 	}
 	
 	private void displayOtherCommand() throws TaskInvalidDateException {
@@ -955,7 +971,12 @@ public class MainViewController extends GridPane{
 
 					@Override
 					public void handle(ActionEvent event) {
-						setRestTaskResponse();
+						try {
+							setRestTaskResponse();
+						} catch (TaskInvalidDateException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						response.setStyle("-fx-font-size: 20;-fx-text-fill: rgb(241,109,82)");
 					}
 					
@@ -968,6 +989,7 @@ public class MainViewController extends GridPane{
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException {
 		if (keyEvent.getCharacter().equals("1")) {
 			setDisplayTitleText();
+			displayTodayTasks();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
 			taskList.setShowDisplayListToFalse();
@@ -1031,7 +1053,13 @@ public class MainViewController extends GridPane{
 			        	if (flag) {
 			        		flag = false;
 			        		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
-			        			setDisplayTitleText();
+			        			try {
+			        				setDisplayTitleText();
+									displayTodayTasks();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			    				try {
 			    					taskList.setShowDisplayListToFalse();
@@ -1081,7 +1109,12 @@ public class MainViewController extends GridPane{
 									e.printStackTrace();
 								}
 			        		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
-			    				displayHelpCommand();
+			    				try {
+									displayHelpCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			    				try {
 									displayShowDoneCommand();
@@ -1114,7 +1147,12 @@ public class MainViewController extends GridPane{
 			        		flag = false;
 			        		
 			        		if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
-			        			setHelpHomePage();
+			        			try {
+									setHelpHomePage();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 			        		}
 			        		
 			        	}
