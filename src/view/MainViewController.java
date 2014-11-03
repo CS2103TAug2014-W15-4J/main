@@ -709,8 +709,10 @@ public class MainViewController extends GridPane{
 	
 	private void setRepeatPeriod(GridPane taskLayout, Task task) {
 		RepeatedTask repeatedTask = (RepeatedTask)task;
-		Label repeatPeriod = new Label(repeatedTask.getRepeatPeriod());
-		repeatPeriod.setStyle("-fx-text-fill: rgb(20,68,106)");
+		Label repeatPeriod = new Label("Repeat Period: " + repeatedTask.getRepeatPeriod());
+		repeatPeriod.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
+		repeatPeriod.setPrefSize(800, 30);
+		repeatPeriod.setMaxHeight(30);
 		GridPane.setConstraints(repeatPeriod, 1, 2, 3, 1);
 		taskLayout.getChildren().add(repeatPeriod);
 	}
@@ -718,7 +720,7 @@ public class MainViewController extends GridPane{
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
 		HBox tagBox = new HBox();
-		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-border-color:red; -fx-valignment: center;");
+		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-valignment: center;");
 		tagBox.setAlignment(Pos.CENTER_LEFT);
 		tagBox.setSpacing(20);
 		tagBox.setPrefSize(800, 30);
