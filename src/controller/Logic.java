@@ -532,7 +532,6 @@ public class Logic {
 	private static String display(String userCommand, List<Date> showDate) {
 
 		assert (userCommand != null);
-		System.out.println(showDate);
 		if (!showDate.isEmpty()) {
 			listOfTasks.setNotShowingDone();
 			try {

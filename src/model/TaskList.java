@@ -811,7 +811,8 @@ public class TaskList {
 		
 		// find task within the date range
 		for (Task task : tasksTimed) {
-			if (task.getDeadline().after(startTime) && task.getDeadline().before(endTime)) {
+			if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
+					(task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 				output.add(task);
 			}
 		}
