@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -83,6 +84,8 @@ public class TaskList {
 	private List<Task> tasksFinished;
 	@XStreamAlias("TaskToDisplay")
 	private List<Task> tasksToDisplay;
+	@XStreamAlias("TaskRepeated")
+	private List<Task> tasksRepeated;
 
 	
 	@XStreamAlias("showDisplay")
@@ -107,6 +110,7 @@ public class TaskList {
 		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
 		this.tasksFinished = new SortedArrayList<Task>(new DoneDateComparator());
 		this.tasksToDisplay = new ArrayList<Task>();
+		this.tasksRepeated = new ArrayList<Task>();
 		this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
 		this.tags = new HashMap<String, List<Task>>();
 		this.totalFinished = 0;
@@ -168,6 +172,7 @@ public class TaskList {
      * @param task      The task to be added
      */
 	private void addToList(Task task) {
+	    
 	    if (task.getIsDone()) {
 	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
 	        
@@ -177,9 +182,12 @@ public class TaskList {
     
     		} else {
     			((SortedArrayList<Task>) this.tasksTimed).addOrder(task);
+    			addToTaskRepeated(task);
     		}
     		this.totalTasks++;
 	    }
+	    
+	    
 	}
 
 	/**
@@ -227,6 +235,7 @@ public class TaskList {
 	public void addToList(String description, Date time, RepeatDate repeatDate) {
 		Task newTask = new RepeatedTask(description, time, repeatDate);
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
+		this.tasksRepeated.add(newTask);
 		this.totalTasks++;
 		logger.log(Level.INFO, "A repeated task added");
 		
@@ -460,6 +469,7 @@ public class TaskList {
 	private void deleteFromList(Task task) {
 	    if (tasksTimed.contains(task)) {
 	        tasksTimed.remove(task);
+	        deleteFromTasksRepeated(task);
 	    } else {
 	        tasksUntimed.remove(task);
 	    }
@@ -484,7 +494,9 @@ public class TaskList {
 					if (indexToRemove>this.tasksFinished.size() || indexToRemove<=0) {
 						throw new TaskInvalidIdException("Error index for deleting!");
 					} else {
-						tasksRemoved.add(this.tasksFinished.remove(indexToRemove - 1));
+					    Task taskRemoved = this.tasksFinished.remove(indexToRemove - 1); 
+					    deleteFromTasksRepeated(taskRemoved);
+					    tasksRemoved.add(taskRemoved);
 					}
 					this.totalTasks--;
 				} else {
@@ -494,6 +506,7 @@ public class TaskList {
 
 					} else {
 						Task taskToRemove = getTask(indexToRemove - 1);
+						deleteFromTasksRepeated(taskToRemove);
 						tasksRemoved.add(taskToRemove);
 						// if the index comes from a list used for displaying, use
 						// time to find
@@ -523,6 +536,34 @@ public class TaskList {
 			}
 			addToUndoList(LastCommand.DELETE, tasksRemoved);
 		}
+	}
+	
+	/**
+	 * This method deletes the specified task from tasksRepeat list,
+	 * if the list contains the task and the task is a RepeatedTask
+	 *  
+	 * @param taskToRemove The task to be removed from tasksRepeat
+	 */
+	private void deleteFromTasksRepeated(Task taskToRemove) {
+	    if (taskToRemove instanceof RepeatedTask) {
+	        if (tasksRepeated.contains(taskToRemove)) {
+	            tasksRepeated.remove(taskToRemove);
+	        }
+	    }
+	}
+	
+	/**
+	 * This method adds the specified task to tasksRepeat list,
+	 * if the list does not contain the task and the task is a RepeatedTask
+	 * 
+	 * @param taskToAdd    The task to be added to tasksRepeat
+	 */
+	private void addToTaskRepeated(Task taskToAdd) {
+	    if (taskToAdd instanceof RepeatedTask) {
+	        if (!tasksRepeated.contains(taskToAdd)) {
+	            tasksRepeated.add(taskToAdd);
+	        }
+	    }
 	}
 
     public void clearList() {
@@ -798,27 +839,74 @@ public class TaskList {
 	 * This method will find out the tasks which deadline is within the given
 	 * range. 
 	 * Notice: For displaying purpose, all the floating tasks will be added as well.
-	 * @param showDate the input time range
-	 * @return A list of tasks that satisfied the range
+	 * @param showDate     the input time range
+	 * @return A list of tasks that satisfies the range
 	 * @throws TaskInvalidDateException
 	 */
 	public List<Task> getDateRangeTask(List<Date> showDate) throws TaskInvalidDateException {
 		assert(showDate.size() == 2);
 		
-		ArrayList<Task> output = new ArrayList<Task>();
+		SortedArrayList<Task> output = new SortedArrayList<Task>(new DeadlineComparator());
 		Date startTime = showDate.get(0);
 		Date endTime = showDate.get(1);
 		
 		// find task within the date range
 		for (Task task : tasksTimed) {
-			if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
+			if (task instanceof RepeatedTask) {
+		        // repeated tasks are checked separately
+		    } else if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
 					(task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
+
 				output.add(task);
 			}
 		}
 		
+		Calendar taskTimeCal = Calendar.getInstance();
+		Calendar searchTimeStartCal = Calendar.getInstance();
+		Calendar searchTimeEndCal = Calendar.getInstance();
+		
+		searchTimeStartCal.setTime(startTime);
+		searchTimeEndCal.setTime(endTime);
+		
+		// search if repeat task is in date range
+		for (Task task : tasksRepeated) {
+		    RepeatedTask repeatedTask = (RepeatedTask) task;
+		    taskTimeCal.setTime(task.getDeadline());		    
+		    String periodString = repeatedTask.getRepeatPeriod();
+		    
+		    if (periodString.equals("daily")) {
+		        if ((taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		            
+		            output.addOrder(repeatedTask);
+		        }
+
+		    } else if (periodString.split(" ")[0].equals("every")) {
+
+		        if ((taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) && 
+		            (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		            
+		            output.addOrder(repeatedTask);
+		        }
+
+            } else if (periodString.split(" ")[0].equals("day")) {
+                
+                if ((taskTimeCal.get(Calendar.DAY_OF_MONTH) >= searchTimeStartCal.get(Calendar.DAY_OF_MONTH)) && 
+                    (taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH)) &&
+                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) &&
+                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
+                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
+                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+                    
+                    output.addOrder(repeatedTask);
+                }
+            } 
+		}
+		
 		// add all floating task
-		output.addAll(tasksUntimed);
+		output.addAllUnordered(tasksUntimed);
 		isDisplay = true;
 		tasksToDisplay = output;
 		return output;
@@ -884,9 +972,9 @@ public class TaskList {
 		if (isDisplayedByAddTime) {
 			// using comparator AddedDateComparator
 			output = new SortedArrayList<Task>(this.count(),
-					new AddedDateComparator());
-			output.addAll(tasksTimed);
-			output.addAll(tasksUntimed);
+					                           new AddedDateComparator());
+			((SortedArrayList<Task>) output).addAllOrdered(tasksTimed);
+			((SortedArrayList<Task>) output).addAllOrdered(tasksUntimed);
 			isDisplay = true;
 			tasksToDisplay = output;
 
@@ -1237,7 +1325,7 @@ public class TaskList {
 	 * @return
 	 */
 	public int indexOfFirstFloatingTask(List<Task> taskList) {
-		for (int i = 0;i< taskList.size();i++) {
+		for (int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if (task instanceof FloatingTask) {
 				return i;
@@ -1245,4 +1333,80 @@ public class TaskList {
 		}
 		return -1;
 	}
+
+	/**
+	 * This method compares two TaskLists, 
+	 * and returns true if all tasks in both task lists are equal
+	 * This method is used for testing purposes
+	 *  
+	 * @param t2   The TaskList to compare with
+	 * @return     true if the tasklists are equal, false otherwise
+	 */
+	public boolean isEqual(TaskList t2) {
+	    boolean isEqual = true;
+	    
+	    isEqual = isEqual && 
+	              (this.countFinished() == t2.countFinished()) &&
+	              (this.countTimedTask() == t2.countTimedTask()) &&
+	              (this.countUntimedTask() == t2.countUntimedTask());
+	    
+	    int i = 0;
+	    int j = 0;
+	    while (isEqual && (i < this.count())) {
+	        Task thisTask = this.getTask(i);
+	        Task thatTask = t2.getTask(i);
+
+    	    try {
+    	        if (thisTask instanceof DeadlineTask) {
+    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+    	                      (thatTask instanceof DeadlineTask) &&
+    	                      (thisTask.getDeadline() == thatTask.getDeadline()) &&
+    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+    	            
+    	        } else if (thisTask instanceof FixedTask) {
+                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+                              (thatTask instanceof FixedTask) &&
+                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
+                              (((FixedTask) thisTask).getStartTime() == ((FixedTask) thatTask).getStartTime()) &&
+                              (thisTask.getAddedTime() == thatTask.getAddedTime());
+
+    	        } else if (thisTask instanceof RepeatedTask) {
+                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+                              (thatTask instanceof RepeatedTask) &&
+                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
+                              (thisTask.getAddedTime() == thatTask.getAddedTime()) &&
+                              (((RepeatedTask) thisTask).getRepeatPeriod() == ((RepeatedTask) thatTask).getRepeatPeriod());
+                    
+    	        } else if (thisTask instanceof FloatingTask) {
+    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
+    	                      (thatTask instanceof FloatingTask) &&
+    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+    	            
+    	        } else {
+    	            assert false;
+    	        }
+    	    } catch (TaskInvalidDateException e) {
+    	        assert false;
+    	    }
+    	    
+	    }
+	    
+	    while (isEqual && (j < this.countFinished())) {
+	        isEqual = this.getFinishedTasks().get(j).getDoneDate().equals(t2.getFinishedTasks().get(j).getDoneDate());
+	    }
+	    
+	    
+	    return isEqual;
+	}
+
+	/**
+	 * This method clears both the undoStack and the redoStack
+	 * This method is used for testing purposes
+	 */
+	public void clearUndoRedoStack() {
+	    undoStack.clear();
+	    redoStack.clear();
+	}
 }
+
+

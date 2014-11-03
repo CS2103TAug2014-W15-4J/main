@@ -39,13 +39,16 @@ public class SortedArrayList<T> extends ArrayList<T> {
        
     }
     
-    @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAllOrdered(Collection<? extends T> c) {
         Iterator<? extends T> i = c.iterator();
         while (i.hasNext()) {
             addOrder(i.next());
         }
         return true;
+    }
+    
+    public boolean addAllUnordered(Collection<? extends T> c) {
+        return super.addAll(c);
     }
     
     /** 

@@ -736,5 +736,14 @@ public class Logic {
 	public static Task getTask(int taskId) {
 		return listOfTasks.getTask(taskId);
 	}
+	
+	/**
+	 * this method empties the undoStack and redoStack
+	 * 
+	 * this method is for testing purposes only
+	 */
+	public static void emptyUndoRedoStack() {
+	    listOfTasks.clearUndoRedoStack();
+	}
 
 }

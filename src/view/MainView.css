@@ -10,7 +10,7 @@
 #date {
 	-fx-text-fill: rgb(179,168,150);
 	-fx-alignment: center-right;
-	-fx-label-padding: 0.0 20.0 0.0 0.0;
+	-fx-label-padding: 0.0 10 0.0 0.0;
 }
 
 #response {

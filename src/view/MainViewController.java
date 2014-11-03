@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -87,10 +89,18 @@ public class MainViewController extends GridPane{
 	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
 	
+	final static String TITLE_TODAY_TASKS = "Today Tasks";
 	final static String TITLE_ALL_TASKS = "All Tasks";
 	final static String TITLE_DONE_TASKS = "Done Tasks";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
+	
+	final static int TOTAL_PAGE_NUM = 5;
+	final static int TODAY_TASKS_PAGE_INDEX = 0;
+	final static int UNDONE_TASKS_PAGE_INDEX = 1;
+	final static int DONE_TASKS_PAGE_INDEX = 2;
+	final static int SEARCH_RESULT_PAGE_INDEX = 3;
+	final static int HELP_DOC_PAGE_INDEX = 4;
 	
 	@FXML
 	private Label uClear;
@@ -160,7 +170,7 @@ public class MainViewController extends GridPane{
 	private void setMainView() throws TaskInvalidDateException {
 		setIsCommandHelp();
 		initFadeEffect();
-		setPageCount(4);
+		setPageCount(TOTAL_PAGE_NUM);
 		setPages();
 		setFont();
 		initTagColor();
@@ -185,13 +195,15 @@ public class MainViewController extends GridPane{
 	private void setDisplayTitleText() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
-		if (currentPageNum == 0) {
+		if (currentPageNum == TODAY_TASKS_PAGE_INDEX) {
+			displayTitleText.setText(TITLE_TODAY_TASKS);
+		} else if (currentPageNum == UNDONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_ALL_TASKS);
-		} else if (currentPageNum == 1) {
+		} else if (currentPageNum == DONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_DONE_TASKS);
-		} else if (currentPageNum == 2) {
+		} else if (currentPageNum == SEARCH_RESULT_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_SEARCH_RESULT);
-		} else {
+		} else if (currentPageNum == HELP_DOC_PAGE_INDEX){
 			displayTitleText.setText(TITLE_HELP_PAGE);
 		}
 	}
@@ -240,7 +252,7 @@ public class MainViewController extends GridPane{
 	private void setFont() {
 	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
 	    uClear.setStyle("-fx-font-size: 35");
-	    date.setStyle("-fx-font-size: 15");
+	    date.setStyle("-fx-font-size: 25");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
 	    displayTitleText.setStyle("-fx-font-size: 25");
@@ -266,11 +278,11 @@ public class MainViewController extends GridPane{
 				return scrollPage[pageIndex];
 			}
 		});
-		displayExistingTasks();
+		displayTodayTasks();
 	}
 	
 	private void setHelpHomePage() {
-		page[3].getChildren().clear();
+		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		setRestTaskResponse();
 		
 		commandInfo = new GridPane[8];
@@ -293,7 +305,7 @@ public class MainViewController extends GridPane{
 			GridPane.setConstraints(fKeysInfo[i], 1, 0);
 			commandInfo[i].getChildren().add(1, fKeysInfo[i]);
 			
-			page[3].getChildren().add(commandInfo[i]);
+			page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[i]);
 			
 			GridPane.setMargin(fKeys[i], new Insets(5, 50, 5, 15));
 			GridPane.setMargin(fKeysInfo[i], new Insets(5, 15, 5, 15));
@@ -314,7 +326,7 @@ public class MainViewController extends GridPane{
 		GridPane.setConstraints(fKeysInfo[7], 1, 0);
 		commandInfo[7].getChildren().add(fKeysInfo[7]);
 		
-		page[3].getChildren().add(commandInfo[7]);
+		page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[7]);
 		
 		GridPane.setMargin(fKeys[7], new Insets(5, 50, 5, 15));
 		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 15));
@@ -372,8 +384,8 @@ public class MainViewController extends GridPane{
 			GridPane addFixedTask = new GridPane();
 			setHelpForCommand(addFixedTask, "      add a fixed task", "      add <description> <time/date1> to <time/date2>", "      add do homework Nov 10 to Nov 20");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(add, addFloatTask, addDeadlineTask, addRepeatedTask, addFixedTask);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(add, addFloatTask, addDeadlineTask, addRepeatedTask, addFixedTask);
 			
 		} else if (index == 1) {
 			
@@ -386,8 +398,8 @@ public class MainViewController extends GridPane{
 			GridPane deleteManyTasks = new GridPane();
 			setHelpForCommand(deleteManyTasks, "      delete many tasks", "      delete <taskID_1> <taskID_2> ...", "      delete 1 2 3");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(delete, deleteOneTask, deleteManyTasks);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(delete, deleteOneTask, deleteManyTasks);
 			
 		} else if (index == 2) {
 			
@@ -400,8 +412,8 @@ public class MainViewController extends GridPane{
 			GridPane doneManyTasks = new GridPane();
 			setHelpForCommand(doneManyTasks, "      mark many tasks done", "      done <taskID_1> <taskID_2> ...", "      done 1 2 3");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(done, doneOneTask, doneManyTasks);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(done, doneOneTask, doneManyTasks);
 			
 		} else if (index == 3) {
 			
@@ -414,8 +426,8 @@ public class MainViewController extends GridPane{
 			GridPane editTaskTime = new GridPane();
 			setHelpForCommand(editTaskTime, "      edit task time of one task", "      edit <taskID> <new time>", "      edit 1 Oct 31");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(edit, editTaskDescription, editTaskTime);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(edit, editTaskDescription, editTaskTime);
 			
 		} else if (index == 4) {
 			
@@ -425,8 +437,8 @@ public class MainViewController extends GridPane{
 			GridPane searchKeyword = new GridPane();
 			setHelpForCommand(searchKeyword, "      search tasks with keyword", "      search <keyword>", "      search school");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(search, searchKeyword);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(search, searchKeyword);
 			
 		} else if (index == 5) {
 			
@@ -439,8 +451,8 @@ public class MainViewController extends GridPane{
 			GridPane showDone = new GridPane();
 			setHelpForCommand(showDone, "      show all done tasks", "      show done", "      show done");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(show, showAll, showDone);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(show, showAll, showDone);
 			
 		} else if (index == 6) {
 			
@@ -456,8 +468,8 @@ public class MainViewController extends GridPane{
 			GridPane untagAllTags = new GridPane();
 			setHelpForCommand(untagAllTags, "      remove all tags from one task", "      untag <taskID>", "      untag 1");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(tag, tagOneTask, untagOneTag, untagAllTags);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(tag, tagOneTask, untagOneTag, untagAllTags);
 			
 		} else {
 			
@@ -470,25 +482,22 @@ public class MainViewController extends GridPane{
 			GridPane exit = new GridPane();
 			setHelpForCommand(exit, "      exit uClear", "      exit", "      exit");
 			
-			page[3].getChildren().clear();
-			page[3].getChildren().addAll(otherCommands, clear, exit);
+			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
+			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(otherCommands, clear, exit);
 			
 		}
 	}
 	
-	private void displayExistingTasks() throws TaskInvalidDateException {
-		loadTaskList();
-		taskList = getTaskList();
+	private void displayTodayTasks() throws TaskInvalidDateException {
+		loadTaskListToController();
+		List<Task> todayTask = new ArrayList<Task>();
 		
-		setOnePageView(0);
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
 	}
 	
-	private void updateDisplay() throws TaskInvalidDateException {
-		int currentPageNum = listDisplay.getCurrentPageIndex();
+	private void loadTaskListToController() throws TaskInvalidDateException {
+		loadTaskList();
 		taskList = getTaskList();
-		taskList.setShowDisplayListToFalse();
-		
-		setOnePageView(currentPageNum);
 	}
 	
 	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
@@ -496,11 +505,63 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.countUndone(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(150,150,150); -fx-border-color: skyblue");
+			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(83,210,194);");
 			
 			setTaskFormat(taskLayout, i);
 			
+			GridPane taskDivision = new GridPane();
+			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
+			setGridPaneSize(taskDivision, 900, 20);
+			
+			if (i == 0) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
+			
 			page[pageIndex].getChildren().add(taskLayout);
+			page[pageIndex].getChildren().add(taskDivision);
+			
+			if (i == taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
+		}
+	}
+	
+	private void setOnePageView(int pageIndex, List<Task> specificTaskList) throws TaskInvalidDateException {
+		listDisplay.setCurrentPageIndex(pageIndex);
+		page[pageIndex].getChildren().clear();
+		
+		for (int i=0; i<specificTaskList.size(); i++) {
+			GridPane taskLayout = new GridPane();
+			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(83,210,194);");
+			
+			setTaskFormat(taskLayout, specificTaskList.get(i), i);
+			
+			GridPane taskDivision = new GridPane();
+			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
+			setGridPaneSize(taskDivision, 900, 20);
+			
+			if (i == 0) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
+			
+			page[pageIndex].getChildren().add(taskLayout);
+			page[pageIndex].getChildren().add(taskDivision);
+			
+			if (i == taskList.indexOfFirstFloatingTask(specificTaskList)-1) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
 		}
 	}
 	
@@ -541,6 +602,7 @@ public class MainViewController extends GridPane{
 	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) {
 		setDisplayIndex(taskLayout, index);
 		setTaskType(taskLayout, task);
+		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setTags(taskLayout, task);
 	}
@@ -548,6 +610,7 @@ public class MainViewController extends GridPane{
 	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
 		setTaskType(taskLayout, task);
+		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
 		setTags(taskLayout, task);
@@ -556,6 +619,7 @@ public class MainViewController extends GridPane{
 	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
 		setTaskType(taskLayout, task);
+		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStartTime(taskLayout, task);
 		setDeadline(taskLayout, task);
@@ -565,6 +629,7 @@ public class MainViewController extends GridPane{
 	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
 		setTaskType(taskLayout, task);
+		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
 		setRepeatPeriod(taskLayout, task);
@@ -574,22 +639,29 @@ public class MainViewController extends GridPane{
 	private void setDisplayIndex(GridPane taskLayout, int index) {
 		Label displayIndex = new Label(Integer.toString(index+1));
 		displayIndex.setPrefSize(50, 100);
-		displayIndex.setStyle("-fx-text-fill: rgb(175,225,252)");
+		displayIndex.setStyle("-fx-text-fill: rgb(20,68,106); -fx-alignment: center; -fx-font-size: 40");
 		GridPane.setConstraints(displayIndex, 0, 0, 1, 4);
 		taskLayout.getChildren().add(displayIndex);
 	}
 	
 	private void setTaskType(GridPane taskLayout, Task task) {
 		Label type = new Label(task.getType().toString());
-		type.setStyle("-fx-text-fill: rgb(175,225,252)");
+		type.setPrefSize(120, 50);
+		type.setStyle("-fx-text-fill: rgb(20,68,106); -fx-alignment: center; -fx-background-color: rgb(88,239,121)");
 		GridPane.setConstraints(type, 1, 0, 1, 1);
 		taskLayout.getChildren().add(type);
 	}
 	
+	private void setSpace(GridPane taskLayout) {
+		Label space = new Label("  ");
+		GridPane.setConstraints(space, 2, 0, 1, 1);
+		taskLayout.getChildren().add(space);
+	}
+	
 	private void setDescription(GridPane taskLayout, Task task) {
 		Label description = new Label(task.getDescription());
-		description.setStyle("-fx-text-fill: rgb(175,225,252)");
-		GridPane.setConstraints(description, 2, 0, 1, 1);
+		description.setStyle("-fx-text-fill: rgb(20,68,106); ");
+		GridPane.setConstraints(description, 3, 0, 1, 1);
 		taskLayout.getChildren().add(description);
 	}
 	
@@ -598,12 +670,12 @@ public class MainViewController extends GridPane{
 		
 		deadline.setText("Deadline: " + taskTimeFormat.format(task.getDeadline()));
 		
-		deadline.setStyle("-fx-text-fill: rgb(249,192,162)");
+		deadline.setStyle("-fx-text-fill: rgb(20,68,106)");
 		
 		if (task.getType().equals(Type.DEADLINE) || task.getType().equals(Type.REPEATED)) {
-			GridPane.setConstraints(deadline, 1, 1, 2, 1);
+			GridPane.setConstraints(deadline, 1, 1, 3, 1);
 		} else if (task.getType().equals(Type.FIXED)) {
-			GridPane.setConstraints(deadline, 1, 2, 2, 1);
+			GridPane.setConstraints(deadline, 1, 2, 3, 1);
 		}
 		
 		taskLayout.getChildren().add(deadline);
@@ -612,21 +684,23 @@ public class MainViewController extends GridPane{
 	private void setStartTime(GridPane taskLayout, Task task) {
 		FixedTask fixedTask = (FixedTask)task;
 		Label startTime = new Label("Start Time: " + taskTimeFormat.format(fixedTask.getStartTime()));
-		startTime.setStyle("-fx-text-fill: rgb(249,192,162)");
-		GridPane.setConstraints(startTime, 1, 1, 2, 1);
+		startTime.setStyle("-fx-text-fill: rgb(20,68,106)");
+		GridPane.setConstraints(startTime, 1, 1, 3, 1);
 		taskLayout.getChildren().add(startTime);
 	}
 	
 	private void setRepeatPeriod(GridPane taskLayout, Task task) {
 		RepeatedTask repeatedTask = (RepeatedTask)task;
 		Label repeatPeriod = new Label(repeatedTask.getRepeatPeriod());
-		repeatPeriod.setStyle("-fx-text-fill: rgb(249,192,162)");
-		GridPane.setConstraints(repeatPeriod, 1, 2, 2, 1);
+		repeatPeriod.setStyle("-fx-text-fill: rgb(20,68,106)");
+		GridPane.setConstraints(repeatPeriod, 1, 2, 3, 1);
 		taskLayout.getChildren().add(repeatPeriod);
 	}
 	
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
+		HBox tagBox = new HBox();
+		tagBox.setSpacing(20);
 		if (task.getTags().size() > 0) {
 			Label[] tags = new Label[task.getTags().size()];
 			
@@ -638,60 +712,34 @@ public class MainViewController extends GridPane{
 					tagColor.put(tags[j].getText(), DEFAULT_TAG_COLORS[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
 				}
-				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2;");
+				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2; -fx-border-color: red;");
 				
-				if (taskType.equals(Type.FLOAT)) {
-					GridPane.setConstraints(tags[j], 2*j+1, 1);
-				} else if (taskType.equals(Type.DEADLINE)) {
-					GridPane.setConstraints(tags[j], 2*j+1, 2);
-				} else if (taskType.equals(Type.FIXED) || taskType.equals(Type.REPEATED)) {
-					GridPane.setConstraints(tags[j], 2*j+1, 3);
-				}
-				
-				taskLayout.getChildren().add(tags[j]);
+				tagBox.getChildren().add(tags[j]);
 			}
 			
-		} else {
-			Label[] tags = new Label[1];
-			tags[0] = new Label("None");
-			tags[0].setStyle("-fx-background-color: black; -fx-text-fill: white");
-			
-			if (taskType.equals(Type.FLOAT)) {
-				GridPane.setConstraints(tags[0], 1, 1);
-			} else if (taskType.equals(Type.DEADLINE)) {
-				GridPane.setConstraints(tags[0], 1, 2);
-			} else if (taskType.equals(Type.FIXED) || taskType.equals(Type.REPEATED)) {
-				GridPane.setConstraints(tags[0], 1, 3);
-			}
-			
-			taskLayout.getChildren().add(tags[0]);
 		}
+		
+		if (taskType.equals(Type.FLOAT)) {
+			GridPane.setConstraints(tagBox, 1, 1, 3, 1);
+			taskLayout.getChildren().add(tagBox);
+		} else if (taskType.equals(Type.DEADLINE)) {
+			GridPane.setConstraints(tagBox, 1, 2, 3, 1);
+			taskLayout.getChildren().add(tagBox);
+		} else if (taskType.equals(Type.FIXED) || taskType.equals(Type.REPEATED)) {
+			GridPane.setConstraints(tagBox, 1, 3, 3, 1);
+			taskLayout.getChildren().add(tagBox);
+		}
+		
 	}
 	
 	private void setGridPaneSize(GridPane gridPane, double width, double height) {
 		gridPane.setPrefSize(width, height);
 		gridPane.setMaxSize(width, height);
 		gridPane.setMinSize(width, height);
-	}
-	
-	private void closePage() {
-		int currentPageNum = listDisplay.getCurrentPageIndex();
-		
-		page[currentPageNum].getChildren().clear();
-	}
-	
-	private void clearPage(int pageIndex) {
-		page[pageIndex].getChildren().clear();
-	}
-	
-	private void setMainDisplay() throws TaskInvalidDateException {
-		int currentPageNum = listDisplay.getCurrentPageIndex();
-		clearPage(currentPageNum);
-		updateDisplay();
-	}
+	}	
 	
 	private void setRestTaskResponse() {
-		if (listDisplay.getCurrentPageIndex() == 0) {
+		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			if (taskList.countUndone() > 1) {
 				response.setText(String.format(MANY_TASKS_NOT_DONE, taskList.countUndone()));
 			} else if (taskList.countUndone() == 1) {
@@ -699,7 +747,7 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText(ALL_TASKS_DONE);
 			}
-		} else if (listDisplay.getCurrentPageIndex() == 1) {
+		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			if (taskList.countFinished() == 0) {
 				response.setText("You haven't finished any tasks yet!");
 			} else if (taskList.countFinished() == 1) {
@@ -707,7 +755,7 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
 			}
-		} else if (listDisplay.getCurrentPageIndex() == 2) {
+		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey == null) {
 				response.setText("No Result.");
 			} else {
@@ -720,8 +768,10 @@ public class MainViewController extends GridPane{
 					response.setText(count + "results shown.");
 				}
 			}
-		} else {
+		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX){
 			response.setText("Press \"F1\" - \"F8\" for more details.");
+		} else {
+			
 		}
 	}
 
@@ -733,13 +783,7 @@ public class MainViewController extends GridPane{
 		return Logic.readAndExecuteCommands(command);
 	}
 	
-	private boolean isSpecialCommand() throws TaskInvalidDateException {
-		if (command.trim().toLowerCase().equals("close")) {
-			closePage();
-			setTextFieldEmpty();
-			return true;
-		}
-		
+	private boolean isSpecialCommand() throws TaskInvalidDateException {		
 		if (command.trim().toLowerCase().equals("exit")) {
 			saveTaskList();
 			Platform.exit();
@@ -808,9 +852,9 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayHelpCommand() {
-		listDisplay.setCurrentPageIndex(3);
+		listDisplay.setCurrentPageIndex(HELP_DOC_PAGE_INDEX);
 		
-		page[3].getChildren().clear();
+		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		
 		setHelpHomePage();
 		
@@ -819,104 +863,49 @@ public class MainViewController extends GridPane{
 		listDisplay.requestFocus();
 	}
 	
-	private void displaySearchCommand(String searchKey) throws TaskInvalidDateException {
-		listDisplay.setCurrentPageIndex(2);
-		
-		page[2].getChildren().clear();
-		
+	private void displaySearchCommand() throws TaskInvalidDateException {
 		if (searchKey != null) {
-			ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
-			for (int i=0; i<searchTaskList.size(); i++) {
-				
-				Task task = searchTaskList.get(i);
-				GridPane taskLayout = new GridPane();
-				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-				
-				setGridPaneSize(taskLayout, 900, 100);
-				
-				setTaskFormat(taskLayout, task, i);
-				
-				page[2].getChildren().add(taskLayout);
-			}
+			setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
+		} else {
+			listDisplay.setCurrentPageIndex(SEARCH_RESULT_PAGE_INDEX);
 		}
-		
 		setDisplayTitleText();
 		setRestTaskResponse();
 	}
 	
 	private void displayShowAllCommand() throws TaskInvalidDateException {
-		taskList.setNotShowingDone();
-		listDisplay.setCurrentPageIndex(0);
+		listDisplay.setCurrentPageIndex(UNDONE_TASKS_PAGE_INDEX);
 		setDisplayTitleText();
 		setRestTaskResponse();
-		setMainDisplay();
+		setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 	}
 	
-	private void displayShowDoneCommand() throws TaskInvalidDateException {
-		listDisplay.setCurrentPageIndex(1);
-		page[1].getChildren().clear();
-		
-		ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
-		for (int i=0; i<doneTaskList.size(); i++) {
-			
-			Task task = doneTaskList.get(i);
-			GridPane taskLayout = new GridPane();
-			taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-			
-			setGridPaneSize(taskLayout, 900, 100);
-			
-			setTaskFormat(taskLayout, task, i);
-			
-			page[1].getChildren().add(taskLayout);
-		}
+	private void displayShowDoneCommand() throws TaskInvalidDateException {		
+		setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
+	}
+	
+	private void displayShowTodayCommand() throws TaskInvalidDateException {
+		List<Task> todayTask = taskList.getDateRangeTask(new ArrayList<Date>());
+		
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
 	}
 	
 	private void displayOtherCommand() throws TaskInvalidDateException {
-		if (listDisplay.getCurrentPageIndex() == 0) {
-			setMainDisplay();
-		} else if (listDisplay.getCurrentPageIndex() == 1) {
-			page[1].getChildren().clear();
-			
-			ArrayList<Task> doneTaskList = (ArrayList<Task>)taskList.getFinishedTasks();
-			for (int i=0; i<doneTaskList.size(); i++) {
-				
-				Task task = doneTaskList.get(i);
-				GridPane taskLayout = new GridPane();
-				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-				
-				setGridPaneSize(taskLayout, 900, 100);
-				
-				setTaskFormat(taskLayout, task, i);
-				
-				page[1].getChildren().add(taskLayout);
-			}
-		} else if (listDisplay.getCurrentPageIndex() == 2) {
-			page[2].getChildren().clear();
-			
-			ArrayList<Task> searchTaskList = (ArrayList<Task>)taskList.searchTaskByKeyword(searchKey);
-			for (int i=0; i<searchTaskList.size(); i++) {
-				
-				Task task = searchTaskList.get(i);
-				GridPane taskLayout = new GridPane();
-				taskLayout.setStyle("-fx-padding: 15; -fx-font-size: 15");
-				
-				setGridPaneSize(taskLayout, 900, 100);
-				
-				setTaskFormat(taskLayout, task, i); 
-				
-				page[2].getChildren().add(taskLayout);
+		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+			setOnePageView(UNDONE_TASKS_PAGE_INDEX);
+		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
+			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
+		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
+			if (searchKey != null) {
+				setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
 			}
 		}
-		response.setText(feedback);
 		
-		if (feedback.length() > 10) {
-			response.setStyle("-fx-text-fill: rgb(68,217,117)");
-		} else {
-			response.setStyle("-fx-text-fill: rgb(68,217,117)");
-		}
+		response.setText(feedback);
+		response.setStyle("-fx-text-fill: rgb(68,217,117)");
 		
 		fadeOut.playFromStart();
 		setDisplayTitleText();
@@ -927,12 +916,18 @@ public class MainViewController extends GridPane{
 			displayHelpCommand();
 		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
 			searchKey = command.trim().substring(7);
-			displaySearchCommand(searchKey);
+			displaySearchCommand();
 		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
 				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
+			taskList.setNotShowingDone();
+			taskList.setShowDisplayListToFalse();
 			displayShowAllCommand();
 		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
+			taskList.setShowDisplayListToFalse();
 			displayShowDoneCommand();
+		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 9).equals("show today")
+				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 9).equals("show tdy")) {
+			displayShowTodayCommand();
 		// except show, search and help
 		} else {
 			displayOtherCommand();
@@ -948,7 +943,7 @@ public class MainViewController extends GridPane{
 			if (!isSpecialCommand()) {
 				feedback = executeCommand(command);
 				taskList = getTaskList();
-				if (listDisplay.getCurrentPageIndex() != 1) {
+				if (listDisplay.getCurrentPageIndex() != 2) {
 					taskList.setNotShowingDone();
 				}
 				setTextFieldEmpty();
@@ -972,15 +967,20 @@ public class MainViewController extends GridPane{
 	@FXML
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException {
 		if (keyEvent.getCharacter().equals("1")) {
-			displayShowAllCommand();
+			setDisplayTitleText();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
-			displayShowDoneCommand();
+			taskList.setShowDisplayListToFalse();
+			taskList.setNotShowingDone();
+			displayShowAllCommand();
 		}
 		if (keyEvent.getCharacter().equals("3")) {
-			displaySearchCommand(searchKey);
+			displayShowDoneCommand();
 		}
 		if (keyEvent.getCharacter().equals("4")) {
+			displaySearchCommand();
+		}
+		if (keyEvent.getCharacter().equals("5")) {
 			displayHelpCommand();
 		}
 		if (keyEvent.getCharacter().equals("a")) {
@@ -1030,23 +1030,27 @@ public class MainViewController extends GridPane{
 			        	boolean flag = true;
 			        	if (flag) {
 			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == 0) {
+			        		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+			        			setDisplayTitleText();
+			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			    				try {
+			    					taskList.setShowDisplayListToFalse();
+			    					taskList.setNotShowingDone();
 									displayShowAllCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-			    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			    				try {
 									displayShowDoneCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-			    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			    				try {
-									displaySearchCommand(searchKey);
+									displaySearchCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1067,18 +1071,27 @@ public class MainViewController extends GridPane{
 			        	boolean flag = true;
 			        	if (flag) {
 			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			        		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+			        			try {
+			        				taskList.setShowDisplayListToFalse();
+			    					taskList.setNotShowingDone();
+									displayShowAllCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			        		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
 			    				displayHelpCommand();
-			    			} else if (listDisplay.getCurrentPageIndex() == 1) {
+			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			    				try {
 									displayShowDoneCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-			    			} else if (listDisplay.getCurrentPageIndex() == 2) {
+			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			    				try {
-									displaySearchCommand(searchKey);
+									displaySearchCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1100,7 +1113,7 @@ public class MainViewController extends GridPane{
 			        	if (flag) {
 			        		flag = false;
 			        		
-			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			        		if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
 			        			setHelpHomePage();
 			        		}
 			        		
@@ -1119,7 +1132,7 @@ public class MainViewController extends GridPane{
 			        	boolean flag = true;
 			        	if (flag) {
 			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == 3) {
+			        		if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
 			    				setHelpPage(index);
 			    			}
 			        	}
