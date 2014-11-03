@@ -252,7 +252,7 @@ public class MainViewController extends GridPane{
 	private void setFont() {
 	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
 	    uClear.setStyle("-fx-font-size: 35");
-	    date.setStyle("-fx-font-size: 15");
+	    date.setStyle("-fx-font-size: 25");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
 	    displayTitleText.setStyle("-fx-font-size: 25");
@@ -489,18 +489,15 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayTodayTasks() throws TaskInvalidDateException {
-		loadTaskList();
-		taskList = getTaskList();
+		loadTaskListToController();
 		List<Task> todayTask = new ArrayList<Task>();
 		
 		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
 	}
 	
-	private void displayExistingTasks() throws TaskInvalidDateException {
+	private void loadTaskListToController() throws TaskInvalidDateException {
 		loadTaskList();
 		taskList = getTaskList();
-		
-		setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 	}
 	
 	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
@@ -516,8 +513,22 @@ public class MainViewController extends GridPane{
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
 			setGridPaneSize(taskDivision, 900, 20);
 			
+			if (i == 0) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
+			
 			page[pageIndex].getChildren().add(taskLayout);
 			page[pageIndex].getChildren().add(taskDivision);
+			
+			if (i == taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
 		}
 	}
 	
@@ -535,8 +546,22 @@ public class MainViewController extends GridPane{
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
 			setGridPaneSize(taskDivision, 900, 20);
 			
+			if (i == 0) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
+			
 			page[pageIndex].getChildren().add(taskLayout);
 			page[pageIndex].getChildren().add(taskDivision);
+			
+			if (i == taskList.indexOfFirstFloatingTask(specificTaskList)-1) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				setGridPaneSize(floatDivision, 850, 10);
+				page[pageIndex].getChildren().add(floatDivision);
+			}
 		}
 	}
 	
