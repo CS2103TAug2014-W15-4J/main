@@ -660,7 +660,8 @@ public class MainViewController extends GridPane{
 	
 	private void setDescription(GridPane taskLayout, Task task) {
 		Label description = new Label(task.getDescription());
-		description.setStyle("-fx-text-fill: rgb(20,68,106); ");
+		description.setPrefSize(800, 40);
+		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:26;");
 		GridPane.setConstraints(description, 1, 0, 1, 1);
 		taskLayout.getChildren().add(description);
 	}
@@ -669,8 +670,8 @@ public class MainViewController extends GridPane{
 		Label deadline = new Label();
 		
 		deadline.setText("Deadline: " + taskTimeFormat.format(task.getDeadline()));
-		
-		deadline.setStyle("-fx-text-fill: rgb(20,68,106)");
+
+		deadline.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:14;");
 		
 		if (task.getType().equals(Type.DEADLINE) || task.getType().equals(Type.REPEATED)) {
 			GridPane.setConstraints(deadline, 1, 1, 3, 1);
