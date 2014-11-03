@@ -65,7 +65,7 @@
 }
 
 #listDisplay {
-	-fx-max-page-indicator-count: 5;
+	-fx-max-page-indicator-count: 6;
 	-fx-arrows-visible: false;
 	-fx-tooltip-visible: false;
 	-fx-page-information-visible: false;
@@ -85,4 +85,8 @@
     -fx-background-color: transparent, transparent, #e5e5e5, white, white;
     -fx-translate-y: -10;
     -fx-effect: dropshadow(one-pass-box, #bdbdbd, 3, 0, 0, 2);
+}
+
+.taskCard {
+	-fx-border-color: red;
 }
