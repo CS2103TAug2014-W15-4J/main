@@ -89,3 +89,9 @@
     -fx-translate-y: -10;
     -fx-effect: dropshadow(one-pass-box, #bdbdbd, 3, 0, 0, 2);
 }
+
+.status-card {
+	-fx-font-weight: heavy;
+	 -fx-font-size:18;
+	 -fx-text-fill: white;
+}

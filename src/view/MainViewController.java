@@ -626,7 +626,7 @@ public class MainViewController extends GridPane{
 	
 
 	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index, false);
+		setDisplayIndex(taskLayout, index, false, task.getIsDone());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStatus(taskLayout, task);
@@ -634,7 +634,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index, task.getIsOverdue());
+		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStatus(taskLayout, task);
@@ -643,7 +643,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index, task.getIsOverdue());
+		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStatus(taskLayout, task);
@@ -653,7 +653,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index, task.getIsOverdue());
+		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStatus(taskLayout, task);
@@ -662,14 +662,16 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
-	private void setDisplayIndex(GridPane taskLayout, int index, boolean overdue) {
+	private void setDisplayIndex(GridPane taskLayout, int index, boolean isOverdue, boolean isDone) {
 		Label displayIndex = new Label(Integer.toString(index+1));
 	
 		displayIndex.setMaxHeight(140);
 		displayIndex.setMinWidth(50);
 		displayIndex.setMaxWidth(50);
-		if (overdue) {
+		if (isOverdue) {
 			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#F44336;");
+		} else if (isDone) {
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#4CAF50;");
 		} else {
 			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
 		}
@@ -686,7 +688,7 @@ public class MainViewController extends GridPane{
 	
 	private void setDescription(GridPane taskLayout, Task task) {
 		Label description = new Label(task.getDescription());
-		description.setPrefSize(800, 30);
+		description.setPrefSize(650, 30);
 		description.setMaxHeight(30);
 		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:24;");
 		GridPane.setConstraints(description, 1, 0, 1, 1);
@@ -695,30 +697,37 @@ public class MainViewController extends GridPane{
 	
 	private void setStatus(GridPane taskLayout, Task task) throws TaskInvalidDateException {
 		Label status = new Label();
+		status.setPrefWidth(150);
+		status.setMaxHeight(140);
+		status.setMinWidth(100);
+		status.setMaxWidth(150);
+		status.setAlignment(Pos.CENTER);
+		status.getStyleClass().add("status-card");
+		
 		if (task.getType().equals(Type.FLOAT)) {
 			if (task.getIsDone()) {
 				status.setText("DONE");
-				status.setStyle("-fx-text-fill: rgb(64,238,81);");
+				status.setStyle("-fx-background-color: #4CAF50;");
 			} else {
 				status.setText("ONGOING");
-				status.setStyle("-fx-text-fill: rgb(242,242,60);");
+				status.setStyle("-fx-background-color: #29b6f6;");
 			}
 		} else {
 			task.checkOverdue();
 			if (task.getIsOverdue()) {
 				status.setText("OVERDUE");
-				status.setStyle("-fx-text-fill: rgb(247,57,11);");
+				status.setStyle("-fx-background-color: #F44336;");
 			} else {
 				if (task.getIsDone()) {
 					status.setText("DONE");
-					status.setStyle("-fx-text-fill: rgb(64,238,81);");
+					status.setStyle("-fx-background-color: #4CAF50;");
 				} else {
 					status.setText("ONGOING");
-					status.setStyle("-fx-text-fill: rgb(242,242,60);");
+					status.setStyle("-fx-background-color: #29b6f6;");
 				}
 			}
 		}
-		GridPane.setConstraints(status, 2, 0, 1, 4);
+		GridPane.setConstraints(status, 2, 0, 1, 5);
 		taskLayout.getChildren().add(status);
 	}
 	
@@ -726,7 +735,7 @@ public class MainViewController extends GridPane{
 		Label deadline = new Label();
 		
 		deadline.setText("Deadline: " + taskTimeFormat.format(task.getDeadline()));
-		deadline.setPrefSize(800, 30);
+		deadline.setPrefSize(650, 30);
 		deadline.setMaxHeight(30);
 		deadline.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
 		
@@ -743,7 +752,7 @@ public class MainViewController extends GridPane{
 		FixedTask fixedTask = (FixedTask)task;
 		Label startTime = new Label("Start Time: " + taskTimeFormat.format(fixedTask.getStartTime()));
 		
-		startTime.setPrefSize(800, 30);
+		startTime.setPrefSize(650, 30);
 		startTime.setMaxHeight(30);
 		startTime.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
 		
@@ -755,7 +764,7 @@ public class MainViewController extends GridPane{
 		RepeatedTask repeatedTask = (RepeatedTask)task;
 		Label repeatPeriod = new Label("Repeat Period: " + repeatedTask.getRepeatPeriod());
 		repeatPeriod.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
-		repeatPeriod.setPrefSize(800, 30);
+		repeatPeriod.setPrefSize(650, 30);
 		repeatPeriod.setMaxHeight(30);
 		GridPane.setConstraints(repeatPeriod, 1, 2, 3, 1);
 		taskLayout.getChildren().add(repeatPeriod);
@@ -767,7 +776,7 @@ public class MainViewController extends GridPane{
 		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-valignment: center;");
 		tagBox.setAlignment(Pos.CENTER_LEFT);
 		tagBox.setSpacing(20);
-		tagBox.setPrefSize(800, 30);
+		tagBox.setPrefSize(650, 30);
 		tagBox.setMaxHeight(30);
 		if (task.getTags().size() > 0) {
 			Label[] tags = new Label[task.getTags().size()];
