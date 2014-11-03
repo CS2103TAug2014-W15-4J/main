@@ -533,6 +533,7 @@ public class MainViewController extends GridPane{
 		for (int i=0; i<specificTaskList.size(); i++) {
 			GridPane taskLayout = new GridPane();
 			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(83,210,194);");
+			taskLayout.getStyleClass().add("taskCard");
 			
 			setTaskFormat(taskLayout, specificTaskList.get(i), i);
 			
