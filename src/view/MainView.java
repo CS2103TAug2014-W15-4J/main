@@ -20,7 +20,7 @@ public class MainView extends Application {
 		MainViewController mvc = new MainViewController();
 		
 		Scene scene = new Scene(mvc, 900, 620);
-		Font.loadFont(MainView.class.getResource("Montserrat-Regular.ttf").toExternalForm(), 10);
+		Font.loadFont(MainView.class.getResource("Roboto-Regular.ttf").toExternalForm(), 10);
 		scene.getStylesheets().add(getClass().getResource("MainView.css").toExternalForm());
 		primaryStage.setTitle("uClear");
 		primaryStage.getIcons().add(new Image("/view/uClear-icon.png"));

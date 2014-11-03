@@ -1,21 +1,22 @@
-#title {
-	-fx-background-color: rgb(3,38,58);
+#wholePane {
+	-fx-font-family: roboto;
 }
 
-#uClear {
-	-fx-text-fill: rgb(250,218,141);
-	-fx-label-padding: 0.0 0.0 0.0 15.0;
+#title {
+	-fx-background-color: #03a9f4;
+	-fx-effect: dropshadow(three-pass-box, #192a3b, 3, 0, 0, 3);
 }
+
 
 #date {
-	-fx-text-fill: rgb(179,168,150);
+	-fx-text-fill: white;
 	-fx-alignment: center-right;
 	-fx-label-padding: 0.0 10 0.0 0.0;
 }
 
 #response {
-	-fx-text-fill: rgb(241,109,82);
-	-fx-label-padding: 0.0 0.0 5.0 15.0;
+	-fx-text-fill: #e51c23;
+	-fx-label-padding: 0.0 0.0 5.0 50;
 }
 
 .titleDivision {
@@ -23,20 +24,24 @@
 }
 
 #displayTitle {
-	-fx-background-color: rgb(127,127,127);
+	-fx-background-color: #03a9f4;
 }
 
 #displayTitleText {
-	-fx-text-fill: rgb(56,245,217);
-	-fx-padding: 0 0 0 15;
+	-fx-text-fill: white;
+	-fx-padding: 0 0 0 50;
+}
+
+.feedbackText {
+	-fx-background-color: white;
 }
 
 #mainDisplay {
-	-fx-background-color: rgb(127,127,127);
+
 }
 
 #listDisplay {
-	-fx-background-color: rgb(127,127,127);
+
 }
 
 #inputPane {
@@ -54,12 +59,18 @@
 	-fx-page-information-visible: false;
 }
 
+.scroll-bar {
+	-fx-opacity: 0;
+}
+
 .pagination .pagination-control .bullet-button {
-    -fx-background-color: transparent, #DDF1F8, #5ED3D7, #5ED3D7, black;
-    -fx-translate-y: 15;
+    -fx-background-color: transparent, transparent, #03a9f4, #03a9f4, #03a9f4;
+    -fx-translate-y: -10;
+    -fx-effect: dropshadow( one-pass-box, #bdbdbd, 3, 0, 0, 2);
 }
  
 .pagination .pagination-control .bullet-button:selected {   
-    -fx-background-color: transparent, #DDF1F8, #5ED3D7, #5ED3D7, #5ED3D7;
-    -fx-translate-y: 15;
+    -fx-background-color: transparent, transparent, #e5e5e5, white, white;
+    -fx-translate-y: -10;
+    -fx-effect: dropshadow(one-pass-box, #bdbdbd, 3, 0, 0, 2);
 }

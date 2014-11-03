@@ -103,9 +103,6 @@ public class MainViewController extends GridPane{
 	final static int HELP_DOC_PAGE_INDEX = 4;
 	
 	@FXML
-	private Label uClear;
-	
-	@FXML
 	private Label date;
 	
 	@FXML
@@ -227,9 +224,9 @@ public class MainViewController extends GridPane{
 			scrollPage[i] = new ScrollPane();
 			setScrollPage(i);
 			page[i] = new VBox();
-			page[i].setPrefHeight(listDisplay.getPrefHeight()-66);
+			page[i].setPrefHeight(listDisplay.getPrefHeight()+66);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			page[i].setStyle("-fx-background-color: rgb(200,200,200); -fx-padding: 20");
+			page[i].setStyle("-fx-background-color: white; -fx-padding: 20;");
 			scrollPage[i].setContent(page[i]);
 		}
 		
@@ -243,16 +240,15 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setScrollPage(int index) {
-		scrollPage[index].setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 127, 127, 127));
+		scrollPage[index].setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 255, 255, 255));
 		scrollPage[index].setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
 		scrollPage[index].setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPage[index].setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 	
 	private void setFont() {
-	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
-	    uClear.setStyle("-fx-font-size: 35");
-	    date.setStyle("-fx-font-size: 25");
+//	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
+	    date.setStyle("-fx-font-size: 15");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
 	    displayTitleText.setStyle("-fx-font-size: 25");
@@ -956,7 +952,7 @@ public class MainViewController extends GridPane{
 					@Override
 					public void handle(ActionEvent event) {
 						setRestTaskResponse();
-						response.setStyle("-fx-font-size: 20;-fx-text-fill: rgb(241,109,82)");
+						response.setStyle("-fx-font-size: 20;-fx-text-fill: #e51c23");
 					}
 					
 				});
