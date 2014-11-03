@@ -11,7 +11,7 @@
 #date {
 	-fx-text-fill: white;
 	-fx-alignment: center-right;
-	-fx-label-padding: 0.0 10 0.0 0.0;
+	-fx-label-padding: 0.0 50 0.0 0.0;
 }
 
 #response {
@@ -61,7 +61,7 @@
 }
 
 #input {
-	-fx-prompt-text-fill: rgb(179,179,179);
+	-fx-prompt-text-fill: #616161;
 	-fx-background-color:  #212121;
 	-fx-border-color: #212121 #212121 #03a9f4 #212121;
 	-fx-text-fill: white;

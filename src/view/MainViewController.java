@@ -236,7 +236,7 @@ public class MainViewController extends GridPane{
 			scrollPage[i] = new ScrollPane();
 			setScrollPage(i);
 			page[i] = new VBox();
-			page[i].setPrefHeight(listDisplay.getPrefHeight()+66);
+			page[i].setPrefHeight(listDisplay.getPrefHeight() - 50);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
 			page[i].setStyle("-fx-background-color: white; -fx-padding: 0 0 0 20;");
 			scrollPage[i].setContent(page[i]);
@@ -262,10 +262,10 @@ public class MainViewController extends GridPane{
 	
 	private void setFont() {
 //	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
-	    date.setStyle("-fx-font-size: 15");
+	    date.setStyle("-fx-font-size: 18");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
-	    displayTitleText.setStyle("-fx-font-size: 25");
+	    displayTitleText.setStyle("-fx-font-size: 34");
 	}
 
 	private void initTagColor() {
@@ -306,10 +306,10 @@ public class MainViewController extends GridPane{
 			setHelpHBoxSize(i, 900, 40);
 			
 			fKeys[i] = new Label(F_KEYS[i].toString());
-			fKeys[i].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
+			fKeys[i].setStyle("-fx-padding: 0 0 0 50; -fx-font-size: 24; -fx-text-fill: #03a9f4");
 			
 			fKeysInfo[i] = new Label(F_KEY_COMMAND[i].toString());
-			fKeysInfo[i].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: lightgreen");
+			fKeysInfo[i].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: rgb(0,0,0,87)");
 			
 			GridPane.setConstraints(fKeys[i], 0, 0);
 			commandInfo[i].getChildren().add(0, fKeys[i]);
@@ -318,19 +318,18 @@ public class MainViewController extends GridPane{
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[i]);
 			
-			GridPane.setMargin(fKeys[i], new Insets(5, 50, 5, 15));
-			GridPane.setMargin(fKeysInfo[i], new Insets(5, 15, 5, 15));
+			GridPane.setMargin(fKeys[i], new Insets(5, 15, 5, 0));
+			GridPane.setMargin(fKeysInfo[i], new Insets(5, 15, 5, 16));
 			
 		}
-		
 		commandInfo[7] = new GridPane();
 		setHelpHBoxSize(7, 900, 40);
 		
 		fKeys[7] = new Label(F_KEYS[7].toString());
-		fKeys[7].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: skyblue");
+		fKeys[7].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: #03a9f4");
 		
 		fKeysInfo[7] = new Label("OTHER COMMANDS");
-		fKeysInfo[7].setStyle("-fx-padding: 0; -fx-font-size: 20; -fx-text-fill: lightgreen");
+		fKeysInfo[7].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: rgb(0,0,0,87)");
 		
 		GridPane.setConstraints(fKeys[7], 0, 0);
 		commandInfo[7].getChildren().add(fKeys[7]);
@@ -339,8 +338,8 @@ public class MainViewController extends GridPane{
 		
 		page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[7]);
 		
-		GridPane.setMargin(fKeys[7], new Insets(5, 50, 5, 15));
-		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 15));
+		GridPane.setMargin(fKeys[7], new Insets(5, 15, 5, 50));
+		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 16));
 	}
 	
 	private void setHelpHBoxSize(int index, double width, double height) {
@@ -351,20 +350,20 @@ public class MainViewController extends GridPane{
 	
 	private void setHelpForCommand(GridPane command, String descriptionString, String structureString, String exampleString) {
 		Label description = new Label("Description");
-		description.setStyle("-fx-text-fill: yellow");
+		description.setStyle("-fx-text-fill:  #03a9f4");
 		Label structure = new Label("Structure");
-		structure.setStyle("-fx-text-fill: yellow");
+		structure.setStyle("-fx-text-fill:  #03a9f4");
 		Label example = new Label("Example");
-		example.setStyle("-fx-text-fill: yellow");
+		example.setStyle("-fx-text-fill:  #03a9f4");
 		
-		command.setStyle("-fx-padding: 15; -fx-font-size: 14");
+		command.setStyle("-fx-padding: 0 5 10 50; -fx-font-size: 18");
 		setGridPaneSize(command, 900, 140);
 		Label descriptionContent = new Label(descriptionString);
-		descriptionContent.setStyle("-fx-text-fill: lightgreen");
+		descriptionContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
 		Label structureContent = new Label(structureString);
-		structureContent.setStyle("-fx-text-fill: lightgreen");
+		structureContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
 		Label exampleContent = new Label(exampleString);
-		exampleContent.setStyle("-fx-text-fill: lightgreen");
+		exampleContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
 		
 		GridPane.setConstraints(description, 0, 0);
 		GridPane.setConstraints(descriptionContent, 0, 1);
@@ -377,11 +376,11 @@ public class MainViewController extends GridPane{
 
 	private void setHelpPage(int index) {
 		response.setText("Press \"Esc\" to return");
-		
+		page[HELP_DOC_PAGE_INDEX].setSpacing(20);
 		if (index == 0) {
 			
 			Label add = new Label("ADD");
-			add.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			add.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane addFloatTask = new GridPane();
 			setHelpForCommand(addFloatTask, "      add a floating task", "      add <description>", "      add do homework");
@@ -401,7 +400,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 1) {
 			
 			Label delete = new Label("DELETE");
-			delete.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			delete.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane deleteOneTask = new GridPane();
 			setHelpForCommand(deleteOneTask, "      delete one task", "      delete <taskID>", "      delete 1");
@@ -415,7 +414,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 2) {
 			
 			Label done = new Label("DONE");
-			done.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			done.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane doneOneTask = new GridPane();
 			setHelpForCommand(doneOneTask, "      mark one task done", "      done <taskID>", "      done 1");
@@ -429,7 +428,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 3) {
 			
 			Label edit = new Label("EDIT");
-			edit.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			edit.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane editTaskDescription = new GridPane();
 			setHelpForCommand(editTaskDescription, "      edit task description of one task", "      edit <taskID> <new description>", "      edit 1 sleep");
@@ -443,7 +442,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 4) {
 			
 			Label search = new Label("SEARCH");
-			search.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			search.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane searchKeyword = new GridPane();
 			setHelpForCommand(searchKeyword, "      search tasks with keyword", "      search <keyword>", "      search school");
@@ -454,7 +453,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 5) {
 			
 			Label show = new Label("SHOW");
-			show.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			show.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane showAll = new GridPane();
 			setHelpForCommand(showAll, "      show all ongoing tasks", "      show all", "      show all");
@@ -468,7 +467,7 @@ public class MainViewController extends GridPane{
 		} else if (index == 6) {
 			
 			Label tag = new Label("TAG");
-			tag.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			tag.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane tagOneTask = new GridPane();
 			setHelpForCommand(tagOneTask, "      tag one task", "      tag <taskID> <tag>", "      tag 1 important");
@@ -485,7 +484,7 @@ public class MainViewController extends GridPane{
 		} else {
 			
 			Label otherCommands = new Label("OTHER COMMANDS");
-			otherCommands.setStyle("-fx-text-fill: tomato; -fx-padding: 0 0 0 15; -fx-font-size: 24");
+			otherCommands.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
 			
 			GridPane clear = new GridPane();
 			setHelpForCommand(clear, "      remove all tasks", "      clear", "      clear");
@@ -619,14 +618,14 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) {
-		setDisplayIndex(taskLayout, index);
+		setDisplayIndex(taskLayout, index, false);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setTags(taskLayout, task);
 	}
 	
 	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index);
+		setDisplayIndex(taskLayout, index, task.getIsOverdue());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
@@ -634,7 +633,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index);
+		setDisplayIndex(taskLayout, index, task.getIsOverdue());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStartTime(taskLayout, task);
@@ -643,7 +642,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
-		setDisplayIndex(taskLayout, index);
+		setDisplayIndex(taskLayout, index, task.getIsOverdue());
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
@@ -651,14 +650,18 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
-	private void setDisplayIndex(GridPane taskLayout, int index) {
+	private void setDisplayIndex(GridPane taskLayout, int index, boolean overdue) {
 		Label displayIndex = new Label(Integer.toString(index+1));
 	
 		displayIndex.setMaxHeight(140);
 		displayIndex.setMinWidth(50);
 		displayIndex.setMaxWidth(50);
+		if (overdue) {
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#F44336;");
+		} else {
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
+		}
 		
-		displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
 		GridPane.setConstraints(displayIndex, 0, 0, 1, 5);
 		taskLayout.getChildren().add(displayIndex);
 	}
@@ -1015,6 +1018,7 @@ public class MainViewController extends GridPane{
 		}
 		
 		response.setText(feedback);
+		
 		response.setStyle("-fx-text-fill: rgb(68,217,117)");
 		
 		fadeOut.playFromStart();

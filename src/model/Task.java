@@ -164,6 +164,10 @@ public abstract class Task {
 		}
 	}
 	
+	public boolean getIsOverdue() {
+		return isOverdue;
+	}
+	
 	@Override
     public abstract String toString();
 	
