@@ -762,6 +762,10 @@ public class TaskList {
 		return this.tasksFinished;
 	}
 	
+	public boolean isTagContained(String tag) {
+		return tags.containsKey(tag.toLowerCase());
+	}
+	
 	public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
 		if (tags.containsKey(tag.toLowerCase())) {
 			List<Task> taskListOfTag = tags.get(tag.toLowerCase());

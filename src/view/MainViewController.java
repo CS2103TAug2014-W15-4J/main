@@ -92,19 +92,21 @@ public class MainViewController extends GridPane{
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
 	
 	final static String TITLE_TODAY_TASKS = "Today Tasks";
+	final static String TITLE_PERIOD_TASKS = "Period Tasks";
 	final static String TITLE_ALL_TASKS = "All Tasks";
 	final static String TITLE_DONE_TASKS = "Done Tasks";
 	final static String TITLE_TASKS_WITH_TAG = "Tasks With Specific Tag";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
 	
-	final static int TOTAL_PAGE_NUM = 6;
+	final static int TOTAL_PAGE_NUM = 7;
 	final static int TODAY_TASKS_PAGE_INDEX = 0;
-	final static int UNDONE_TASKS_PAGE_INDEX = 1;
-	final static int DONE_TASKS_PAGE_INDEX = 2;
-	final static int TASKS_WITH_TAG_INDEX = 3;
-	final static int SEARCH_RESULT_PAGE_INDEX = 4;
-	final static int HELP_DOC_PAGE_INDEX = 5;
+	final static int PERIOD_TASKS_PAGE_INDEX = 1;
+	final static int UNDONE_TASKS_PAGE_INDEX = 2;
+	final static int DONE_TASKS_PAGE_INDEX = 3;
+	final static int TASKS_WITH_TAG_PAGE_INDEX = 4;
+	final static int SEARCH_RESULT_PAGE_INDEX = 5;
+	final static int HELP_DOC_PAGE_INDEX = 6;
 	
 	@FXML
 	private Label date;
@@ -145,6 +147,7 @@ public class MainViewController extends GridPane{
 	
 	String searchKey;
 	String showTag;
+	String showPeriod;
 	
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
@@ -199,11 +202,13 @@ public class MainViewController extends GridPane{
 		
 		if (currentPageNum == TODAY_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_TODAY_TASKS);
+		} else if (currentPageNum == PERIOD_TASKS_PAGE_INDEX) {
+			displayTitleText.setText(TITLE_PERIOD_TASKS);
 		} else if (currentPageNum == UNDONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_ALL_TASKS);
 		} else if (currentPageNum == DONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_DONE_TASKS);
-		} else if (currentPageNum == TASKS_WITH_TAG_INDEX) {
+		} else if (currentPageNum == TASKS_WITH_TAG_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_TASKS_WITH_TAG);
 		} else if (currentPageNum == SEARCH_RESULT_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_SEARCH_RESULT);
@@ -498,6 +503,17 @@ public class MainViewController extends GridPane{
 		setOnePageView(TODAY_TASKS_PAGE_INDEX, getTodayTaskList());
 	}
 	
+	private void displayPeriodTasks() throws TaskInvalidDateException {
+		setOnePageView(PERIOD_TASKS_PAGE_INDEX, getPeriodTaskList(showPeriod));
+	}
+	
+	private List<Task> getPeriodTaskList(String userCommand) throws TaskInvalidDateException {
+		List<Date> periodDate = Logic.getDateList(userCommand);
+		List<Task> periodTasks = taskList.getDateRangeTask(periodDate);
+		
+		return periodTasks;
+	}
+	
 	private void loadTaskListToController() throws TaskInvalidDateException {
 		loadTaskList();
 		taskList = getTaskList();
@@ -756,6 +772,19 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText(ALL_TASKS_DONE);
 			}
+		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+			if (showPeriod == null) {
+				response.setText("No Period Set!");
+			} else {
+				List<Task> periodTasks = getPeriodTaskList(showPeriod);
+				if (periodTasks.size() > 1) {
+					response.setText(String.format(MANY_TASKS_NOT_DONE, periodTasks.size()));
+				} else if (periodTasks.size() == 1) {
+					response.setText(ONE_TASK_NOT_DONE);
+				} else {
+					response.setText(ALL_TASKS_DONE);
+				}
+			}
 		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			if (taskList.countUndone() > 1) {
 				response.setText(String.format(MANY_TASKS_NOT_DONE, taskList.countUndone()));
@@ -772,17 +801,21 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
 			}
-		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			if (showTag == null) {
 				response.setText("No Task With This Tag!");
 			} else {
-				List<Task> tagTasks = getTagTaskList(showTag);
-				if (tagTasks.size() > 1) {
-					response.setText(String.format(MANY_TASKS_NOT_DONE, tagTasks.size()));
-				} else if (tagTasks.size() == 1) {
-					response.setText(ONE_TASK_NOT_DONE);
+				if (taskList.isTagContained(showTag)) {
+					List<Task> tagTasks = getTagTaskList(showTag);
+					if (tagTasks.size() > 1) {
+						response.setText(String.format(MANY_TASKS_NOT_DONE, tagTasks.size()));
+					} else if (tagTasks.size() == 1) {
+						response.setText(ONE_TASK_NOT_DONE);
+					} else {
+						response.setText(ALL_TASKS_DONE);
+					}
 				} else {
-					response.setText(ALL_TASKS_DONE);
+					response.setText("No Such Tag!");
 				}
 			}
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
@@ -932,19 +965,34 @@ public class MainViewController extends GridPane{
 	
 	private void displayShowTagCommand() throws TaskNoSuchTagException, TaskInvalidDateException {
 		if (showTag != null) {
-			List<Task> tagTasks = taskList.getTasksWithTag(showTag);
-			setOnePageView(TASKS_WITH_TAG_INDEX, tagTasks);
+			if (taskList.isTagContained(showTag)) {
+				List<Task> tagTasks = taskList.getTasksWithTag(showTag);
+				setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, tagTasks);
+			} else {
+				listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_PAGE_INDEX);
+			}
 		} else {
-			listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_INDEX);
+			listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_PAGE_INDEX);
 		}
 		setDisplayTitleText();
 		setRestTaskResponse();
 	}
 	
-	private void displayShowTodayCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
-		List<Task> todayTask = getTodayTaskList();
+	private void displayShowPeriodCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
+		if (showPeriod != null) {
+			displayPeriodTasks();
+		} else {
+			listDisplay.setCurrentPageIndex(PERIOD_TASKS_PAGE_INDEX);
+		}
 		
-		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
+		setDisplayTitleText();
+		setRestTaskResponse();
+	}
+	
+	private void displayShowTodayCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
+		List<Task> todayTasks = getTodayTaskList();
+		
+		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTasks);
 		setDisplayTitleText();
 		setRestTaskResponse();
 	}
@@ -952,12 +1000,14 @@ public class MainViewController extends GridPane{
 	private void displayOtherCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			displayTodayTasks();
+		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+			displayPeriodTasks();
 		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
-		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
-			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getTasksWithTag(showTag));
+		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
+			setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, taskList.getTasksWithTag(showTag));
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey != null) {
 				setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
@@ -989,12 +1039,21 @@ public class MainViewController extends GridPane{
 				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show tdy")) {
 			displayShowTodayCommand();
 		} else if (command.trim().length() > 4 && command.trim().toLowerCase().substring(0, 4).equals("show")) {
-			showTag = command.trim().toLowerCase().substring(5);
-			displayShowTagCommand();
+			if (!isShowDateCommand(command)) {
+				showTag = command.trim().toLowerCase().substring(5);
+				displayShowTagCommand();
+			} else {
+				showPeriod = command;
+				displayShowPeriodCommand();
+			}
 		// except show, search and help
 		} else {
 			displayOtherCommand();
 		}
+	}
+	
+	private boolean isShowDateCommand(String userCommand) {
+		return Logic.isShowDateCommand(userCommand);
 	}
 	
 	@FXML
@@ -1044,20 +1103,23 @@ public class MainViewController extends GridPane{
 			displayTodayTasks();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
+			displayTodayTasks();
+		}
+		if (keyEvent.getCharacter().equals("3")) {
 			taskList.setShowDisplayListToFalse();
 			taskList.setNotShowingDone();
 			displayShowAllCommand();
 		}
-		if (keyEvent.getCharacter().equals("3")) {
+		if (keyEvent.getCharacter().equals("4")) {
 			displayShowDoneCommand();
 		}
-		if (keyEvent.getCharacter().equals("4")) {
+		if (keyEvent.getCharacter().equals("5")) {
 			displayShowTagCommand();
 		}
-		if (keyEvent.getCharacter().equals("5")) {
+		if (keyEvent.getCharacter().equals("6")) {
 			displaySearchCommand();
 		}
-		if (keyEvent.getCharacter().equals("6")) {
+		if (keyEvent.getCharacter().equals("7")) {
 			displayHelpCommand();
 		}
 		if (keyEvent.getCharacter().equals("a")) {
@@ -1117,6 +1179,16 @@ public class MainViewController extends GridPane{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+			        		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+			        			try {
+									displayShowPeriodCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			    				try {
 			    					taskList.setShowDisplayListToFalse();
@@ -1139,7 +1211,7 @@ public class MainViewController extends GridPane{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			    				try {
 									displayShowTagCommand();
 								} catch (TaskNoSuchTagException
@@ -1173,7 +1245,17 @@ public class MainViewController extends GridPane{
 			        	boolean flag = true;
 			        	if (flag) {
 			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+			        		if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+			        			try {
+									displayShowPeriodCommand();
+								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			        			try {
 			        				taskList.setShowDisplayListToFalse();
 			    					taskList.setNotShowingDone();
@@ -1205,7 +1287,7 @@ public class MainViewController extends GridPane{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			    				try {
 									displayShowTagCommand();
 								} catch (TaskNoSuchTagException
