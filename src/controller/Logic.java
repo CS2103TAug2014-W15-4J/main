@@ -124,6 +124,18 @@ public class Logic {
 	public static void saveTaskList() {
 		storage.save(listOfTasks);
 	}
+	
+	public static List<Date> getDateList(String userInput) {
+		Parser parser = new Parser();
+		UserInput userCommand = parser.parse(userInput);
+		List<Date> showDate = null;
+		if (userCommand.getCommand() == UserInput.CMD.SHOW) {
+			showDate = userCommand.getDate();
+		} else {
+			
+		}
+		return showDate;
+	}
 
 	/**
 	 * @param userInput
@@ -324,7 +336,7 @@ public class Logic {
 					userCommand.getDescription());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
-			return SearchTask(userCommand.getDescription());
+			return searchTask(userCommand.getDescription());
 
 		} else if (userCommand.getCommand() == UserInput.CMD.UNDO) {
 		    return undo();
@@ -481,7 +493,7 @@ public class Logic {
 	 * @return the search result
 	 * 
 	 */
-	private static String SearchTask(String keyword) {
+	private static String searchTask(String keyword) {
 		List<Task> result = listOfTasks.searchTaskByKeyword(keyword);
 		if (result.size() == 0) {
 			// disable user from manipulating on search result directly
