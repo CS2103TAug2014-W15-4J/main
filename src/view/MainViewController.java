@@ -508,7 +508,6 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<taskList.countUndone(); i++) {
 			GridPane taskLayout = new GridPane();
-//			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(83,210,194);");
 			taskLayout.getStyleClass().add("taskCard");
       
 			setTaskFormat(taskLayout, i);
@@ -526,7 +525,6 @@ public class MainViewController extends GridPane{
 			
 			page[pageIndex].setSpacing(10);
 			page[pageIndex].getChildren().add(taskLayout);
-//			page[pageIndex].getChildren().add(taskDivision);
 			
 			if (i == taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1) {
 				GridPane floatDivision = new GridPane();
@@ -543,7 +541,6 @@ public class MainViewController extends GridPane{
 		
 		for (int i=0; i<specificTaskList.size(); i++) {
 			GridPane taskLayout = new GridPane();
-//			taskLayout.setStyle("-fx-padding: 5; -fx-font-size: 18; -fx-background-color: rgb(83,210,194);");
 			taskLayout.getStyleClass().add("taskCard");
             
 			setTaskFormat(taskLayout, specificTaskList.get(i), i);
@@ -561,7 +558,6 @@ public class MainViewController extends GridPane{
 			
 			page[pageIndex].setSpacing(10);
 			page[pageIndex].getChildren().add(taskLayout);
-//			page[pageIndex].getChildren().add(taskDivision);
 			
 			if (i == taskList.indexOfFirstFloatingTask(specificTaskList)-1) {
 				GridPane floatDivision = new GridPane();
@@ -608,7 +604,6 @@ public class MainViewController extends GridPane{
 	
 	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) {
 		setDisplayIndex(taskLayout, index);
-//		setTaskType(taskLayout, task);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setTags(taskLayout, task);
@@ -616,7 +611,6 @@ public class MainViewController extends GridPane{
 	
 	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
-//		setTaskType(taskLayout, task);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
@@ -625,7 +619,6 @@ public class MainViewController extends GridPane{
 	
 	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
-//		setTaskType(taskLayout, task);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setStartTime(taskLayout, task);
@@ -635,7 +628,6 @@ public class MainViewController extends GridPane{
 	
 	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
-//		setTaskType(taskLayout, task);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
 		setDeadline(taskLayout, task);
@@ -653,14 +645,6 @@ public class MainViewController extends GridPane{
 		displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
 		GridPane.setConstraints(displayIndex, 0, 0, 1, 5);
 		taskLayout.getChildren().add(displayIndex);
-	}
-	
-	private void setTaskType(GridPane taskLayout, Task task) {
-		Label type = new Label(task.getType().toString());
-		type.setPrefSize(120, 50);
-		type.setStyle("-fx-text-fill: rgb(245,56,85); -fx-alignment: center; ");
-		GridPane.setConstraints(type, 1, 0, 1, 1);
-		taskLayout.getChildren().add(type);
 	}
 	
 	private void setSpace(GridPane taskLayout) {
