@@ -35,6 +35,7 @@ public class MainView extends Application {
 		
 		primaryStage.setMinHeight(primaryStage.getMaxHeight());
 		primaryStage.setMinWidth(primaryStage.getMaxWidth());
+		primaryStage.centerOnScreen();
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		

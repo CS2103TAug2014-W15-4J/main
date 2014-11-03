@@ -229,7 +229,7 @@ public class MainViewController extends GridPane{
 			page[i] = new VBox();
 			page[i].setPrefHeight(listDisplay.getPrefHeight()-66);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			page[i].setStyle("-fx-background-color: rgb(127,127,127); -fx-padding: 20");
+			page[i].setStyle("-fx-background-color: rgb(200,200,200); -fx-padding: 20");
 			scrollPage[i].setContent(page[i]);
 		}
 		
@@ -511,7 +511,7 @@ public class MainViewController extends GridPane{
 			
 			GridPane taskDivision = new GridPane();
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
-			setGridPaneSize(taskDivision, 900, 20);
+			setGridPaneSize(taskDivision, 850, 20);
 			
 			if (i == 0) {
 				GridPane floatDivision = new GridPane();
@@ -544,7 +544,7 @@ public class MainViewController extends GridPane{
 			
 			GridPane taskDivision = new GridPane();
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
-			setGridPaneSize(taskDivision, 900, 20);
+			setGridPaneSize(taskDivision, 850, 20);
 			
 			if (i == 0) {
 				GridPane floatDivision = new GridPane();
@@ -647,7 +647,7 @@ public class MainViewController extends GridPane{
 	private void setTaskType(GridPane taskLayout, Task task) {
 		Label type = new Label(task.getType().toString());
 		type.setPrefSize(120, 50);
-		type.setStyle("-fx-text-fill: rgb(20,68,106); -fx-alignment: center; -fx-background-color: rgb(88,239,121)");
+		type.setStyle("-fx-text-fill: rgb(245,56,85); -fx-alignment: center; -fx-background-color: rgb(88,239,121)");
 		GridPane.setConstraints(type, 1, 0, 1, 1);
 		taskLayout.getChildren().add(type);
 	}
@@ -925,8 +925,8 @@ public class MainViewController extends GridPane{
 		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
 			taskList.setShowDisplayListToFalse();
 			displayShowDoneCommand();
-		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 9).equals("show today")
-				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 9).equals("show tdy")) {
+		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 10).equals("show today")
+				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show tdy")) {
 			displayShowTodayCommand();
 		// except show, search and help
 		} else {
