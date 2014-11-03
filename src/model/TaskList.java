@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import controller.LastState;
 import controller.Storage;
@@ -82,8 +83,10 @@ public class TaskList {
 	private List<Task> tasksUntimed;
 	@XStreamAlias("TaskFinished")
 	private List<Task> tasksFinished;
-	@XStreamAlias("TaskToDisplay")
+	
+	@XStreamOmitField
 	private List<Task> tasksToDisplay;
+	
 	@XStreamAlias("TaskRepeated")
 	private List<Task> tasksRepeated;
 
@@ -95,6 +98,7 @@ public class TaskList {
 
 	@XStreamAlias("TasksCount")
 	private int totalTasks;
+	
 	@XStreamAlias("Tags")
 	private HashMap<String, List<Task>> tags;
 
@@ -121,6 +125,10 @@ public class TaskList {
 	 * If setShowDisplayListToFalse is called, display the whole list.
 	 */
 	public void setShowDisplayListToFalse() {
+		// lazy evaluation
+		if (this.tasksToDisplay == null) {
+			this.tasksToDisplay = new ArrayList<Task>();
+		}
 		this.isDisplay = false;
 		this.tasksToDisplay.clear();
 	}
@@ -679,7 +687,6 @@ public class TaskList {
 	 * @throws TaskTagDuplicateException   if the task already has the tag
 	 */
     private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
-
 	    taskToTag.addTag(tag);
 	    
 	    if (!tags.containsKey(tag.toLowerCase())) {
@@ -940,9 +947,7 @@ public class TaskList {
 	 */
 	public List<Task> prepareDisplayList(String tag)
 			throws TaskNoSuchTagException {
-
 		if (tags.containsKey(tag.toLowerCase())) {
-
 			tasksToDisplay = tags.get(tag.toLowerCase());
 			// check overdue for each task
 			checkOverdue(this.tasksToDisplay);
@@ -961,6 +966,7 @@ public class TaskList {
 	 * value isDisplayedByAddTime. 
 	 * If isDisplayedByAddTime is true, the result will be ordered by added time;
 	 * if isDisplayedByAddTime is false, the result will be ordered by deadline.
+	 * 
 	 * @param isDisplayedByAddTime
 	 * @return
 	 */

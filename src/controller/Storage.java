@@ -198,6 +198,8 @@ public class Storage {
 		this.xstream.alias(ALIAS_CLASS_DEADLINE_TASK, DeadlineTask.class);
 		this.xstream.alias(ALIAS_CLASS_REPEATED_TASK, RepeatedTask.class);
 		this.xstream.alias(ALIAS_CLASS_SORTED_LIST, SortedArrayList.class);
+		this.xstream.alias("map", java.util.Map.class);
+		this.xstream.alias("list", java.util.ArrayList.class);
 		
 		this.xstream.processAnnotations(TaskList.class);
 		this.xstream.processAnnotations(FloatingTask.class);
