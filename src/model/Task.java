@@ -47,6 +47,15 @@ public abstract class Task {
 		return tags;
 	}
 	
+	/**
+	 * @author A0119414L
+	 * 
+	 * @return	true if the task is overdue
+	 */
+	public boolean getIsOverdue() {
+		return isOverdue;
+	}
+	
 	public void addTag(String tag) throws TaskTagDuplicateException {
 	    if (tags.contains(tag.toLowerCase())) {
 	        throw new TaskTagDuplicateException();

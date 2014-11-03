@@ -112,19 +112,37 @@ public class Logic {
 
 		}
 	}
-
+	
 	public static void loadTaskList() {
 		listOfTasks = storage.load();
 	}
-
+	
+	/**
+	 * @author A0119414L
+	 * 
+	 * Get the task list for MainView Controller.
+	 * 
+	 * @return	the task list in the Storage
+	 */
 	public static TaskList getTaskList() {
 		return listOfTasks;
 	}
-
+	
+	/**
+	 * @author A0119414L
+	 * 
+	 * Call Logic to save the task list to Storage
+	 */
 	public static void saveTaskList() {
 		storage.save(listOfTasks);
 	}
 	
+	/**
+	 * @author A0119414L
+	 * 
+	 * @param userInput	Command that user enter.
+	 * @return			The date list if it is a show command.
+	 */
 	public static List<Date> getDateList(String userInput) {
 		Parser parser = new Parser();
 		UserInput userCommand = parser.parse(userInput);
@@ -137,6 +155,12 @@ public class Logic {
 		return showDate;
 	}
 	
+	/**
+	 * @author A0119414L
+	 * 
+	 * @param userInput	Command that user enter.
+	 * @return			true if it is a show date period command.
+	 */
 	public static boolean isShowDateCommand(String userInput) {
 		Parser parser = new Parser();
 		UserInput userCommand = parser.parse(userInput);

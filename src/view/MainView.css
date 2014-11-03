@@ -68,7 +68,7 @@
 }
 
 #listDisplay {
-	-fx-max-page-indicator-count: 7;
+	-fx-max-page-indicator-count: 8;
 	-fx-arrows-visible: false;
 	-fx-tooltip-visible: false;
 	-fx-page-information-visible: false;

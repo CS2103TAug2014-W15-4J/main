@@ -769,6 +769,12 @@ public class TaskList {
 		return this.tasksFinished;
 	}
 	
+	/**
+	 * @author A0119414L
+	 * 
+	 * @param tag	
+	 * @return 		true if tag is contained in the task list
+	 */
 	public boolean isTagContained(String tag) {
 		return tags.containsKey(tag.toLowerCase());
 	}
