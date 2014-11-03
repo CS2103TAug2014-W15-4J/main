@@ -28,6 +28,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -638,9 +639,13 @@ public class MainViewController extends GridPane{
 	
 	private void setDisplayIndex(GridPane taskLayout, int index) {
 		Label displayIndex = new Label(Integer.toString(index+1));
-		displayIndex.setPrefSize(50, 100);
+	
+		displayIndex.setMaxHeight(140);
+		displayIndex.setMinWidth(50);
+		displayIndex.setMaxWidth(50);
+		
 		displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
-		GridPane.setConstraints(displayIndex, 0, 0, 1, 4);
+		GridPane.setConstraints(displayIndex, 0, 0, 1, 5);
 		taskLayout.getChildren().add(displayIndex);
 	}
 	
@@ -660,8 +665,9 @@ public class MainViewController extends GridPane{
 	
 	private void setDescription(GridPane taskLayout, Task task) {
 		Label description = new Label(task.getDescription());
-		description.setPrefSize(800, 40);
-		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:26;");
+		description.setPrefSize(800, 30);
+		description.setMaxHeight(30);
+		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:24;");
 		GridPane.setConstraints(description, 1, 0, 1, 1);
 		taskLayout.getChildren().add(description);
 	}
@@ -670,8 +676,9 @@ public class MainViewController extends GridPane{
 		Label deadline = new Label();
 		
 		deadline.setText("Deadline: " + taskTimeFormat.format(task.getDeadline()));
-
-		deadline.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:14;");
+		deadline.setPrefSize(800, 30);
+		deadline.setMaxHeight(30);
+		deadline.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
 		
 		if (task.getType().equals(Type.DEADLINE) || task.getType().equals(Type.REPEATED)) {
 			GridPane.setConstraints(deadline, 1, 1, 3, 1);
@@ -685,7 +692,11 @@ public class MainViewController extends GridPane{
 	private void setStartTime(GridPane taskLayout, Task task) {
 		FixedTask fixedTask = (FixedTask)task;
 		Label startTime = new Label("Start Time: " + taskTimeFormat.format(fixedTask.getStartTime()));
-		startTime.setStyle("-fx-text-fill: rgb(20,68,106)");
+		
+		startTime.setPrefSize(800, 30);
+		startTime.setMaxHeight(30);
+		startTime.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
+		
 		GridPane.setConstraints(startTime, 1, 1, 3, 1);
 		taskLayout.getChildren().add(startTime);
 	}
@@ -701,7 +712,11 @@ public class MainViewController extends GridPane{
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
 		HBox tagBox = new HBox();
+		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-border-color:red; -fx-valignment: center;");
+		tagBox.setAlignment(Pos.CENTER_LEFT);
 		tagBox.setSpacing(20);
+		tagBox.setPrefSize(800, 30);
+		tagBox.setMaxHeight(30);
 		if (task.getTags().size() > 0) {
 			Label[] tags = new Label[task.getTags().size()];
 			
@@ -713,8 +728,8 @@ public class MainViewController extends GridPane{
 					tagColor.put(tags[j].getText(), DEFAULT_TAG_COLORS[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
 				}
-				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()) + "; -fx-text-fill: white; -fx-label-padding: 1 2 1 2; -fx-border-color: red;");
-				
+				tags[j].getStyleClass().add("tags");
+				tags[j].setStyle(CSS_BACKGROUND_COLOR + tagColor.get(tags[j].getText()));
 				tagBox.getChildren().add(tags[j]);
 			}
 			

@@ -46,10 +46,15 @@
 
 .taskCard {
 	-fx-background-color: white;
-	-fx-border-radius: 10;
+	-fx-background-radius: 2px;
 	-fx-effect: dropshadow( one-pass-box, #bdbdbd, 10, 0, 0, 2);
 }
 
+.tags {
+	-fx-text-fill: white;
+	-fx-padding: 3;
+	-fx-background-radius: 5px;
+}
 
 #inputPane {
 	-fx-background-color: #504A4B;
