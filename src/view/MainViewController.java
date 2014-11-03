@@ -625,10 +625,11 @@ public class MainViewController extends GridPane{
 		} 
 	}
 	
-	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) {
+	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
+		setStatus(taskLayout, task);
 		setTags(taskLayout, task);
 	}
 	
@@ -636,6 +637,7 @@ public class MainViewController extends GridPane{
 		setDisplayIndex(taskLayout, index);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
+		setStatus(taskLayout, task);
 		setDeadline(taskLayout, task);
 		setTags(taskLayout, task);
 	}
@@ -644,6 +646,7 @@ public class MainViewController extends GridPane{
 		setDisplayIndex(taskLayout, index);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
+		setStatus(taskLayout, task);
 		setStartTime(taskLayout, task);
 		setDeadline(taskLayout, task);
 		setTags(taskLayout, task);
@@ -653,6 +656,7 @@ public class MainViewController extends GridPane{
 		setDisplayIndex(taskLayout, index);
 		setSpace(taskLayout);
 		setDescription(taskLayout, task);
+		setStatus(taskLayout, task);
 		setDeadline(taskLayout, task);
 		setRepeatPeriod(taskLayout, task);
 		setTags(taskLayout, task);
@@ -683,6 +687,35 @@ public class MainViewController extends GridPane{
 		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:24;");
 		GridPane.setConstraints(description, 1, 0, 1, 1);
 		taskLayout.getChildren().add(description);
+	}
+	
+	private void setStatus(GridPane taskLayout, Task task) throws TaskInvalidDateException {
+		Label status = new Label();
+		if (task.getType().equals(Type.FLOAT)) {
+			if (task.getIsDone()) {
+				status.setText("DONE");
+				status.setStyle("-fx-text-fill: rgb(64,238,81);");
+			} else {
+				status.setText("ONGOING");
+				status.setStyle("-fx-text-fill: rgb(242,242,60);");
+			}
+		} else {
+			task.checkOverdue();
+			if (task.getIsOverdue()) {
+				status.setText("OVERDUE");
+				status.setStyle("-fx-text-fill: rgb(247,57,11);");
+			} else {
+				if (task.getIsDone()) {
+					status.setText("DONE");
+					status.setStyle("-fx-text-fill: rgb(64,238,81);");
+				} else {
+					status.setText("ONGOING");
+					status.setStyle("-fx-text-fill: rgb(242,242,60);");
+				}
+			}
+		}
+		GridPane.setConstraints(status, 2, 0, 1, 4);
+		taskLayout.getChildren().add(status);
 	}
 	
 	private void setDeadline(GridPane taskLayout, Task task) throws TaskInvalidDateException {
@@ -1125,11 +1158,10 @@ public class MainViewController extends GridPane{
 	@FXML
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (keyEvent.getCharacter().equals("1")) {
-			setDisplayTitleText();
-			displayTodayTasks();
+			displayShowTodayCommand();
 		}
 		if (keyEvent.getCharacter().equals("2")) {
-			displayTodayTasks();
+			displayShowPeriodCommand();
 		}
 		if (keyEvent.getCharacter().equals("3")) {
 			taskList.setShowDisplayListToFalse();
