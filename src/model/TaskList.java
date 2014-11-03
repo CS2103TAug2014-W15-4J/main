@@ -951,18 +951,19 @@ public class TaskList {
 	 */
 	public List<Task> prepareDisplayList(String tag)
 			throws TaskNoSuchTagException {
+		
+		List<Task> output;
 		if (tags.containsKey(tag.toLowerCase())) {
-			tasksToDisplay = tags.get(tag.toLowerCase());
-			// check overdue for each task
-			checkOverdue(this.tasksToDisplay);
+			checkOverdue(this.tasksTimed);
+			tasksToDisplay = new ArrayList<Task>(tags.get(tag.toLowerCase()));
 
 			isDisplay = true;
-
+			
+			
 			return tasksToDisplay;
 		} else {
 			throw new TaskNoSuchTagException();
 		}
-
 	}
 	
 	/**
