@@ -136,6 +136,13 @@ public class Logic {
 		}
 		return showDate;
 	}
+	
+	public static boolean isShowDateCommand(String userInput) {
+		Parser parser = new Parser();
+		UserInput userCommand = parser.parse(userInput);
+		
+		return (!userCommand.getDate().isEmpty());
+	}
 
 	/**
 	 * @param userInput
