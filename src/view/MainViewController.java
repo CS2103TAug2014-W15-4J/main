@@ -8,6 +8,7 @@ import model.TaskList;
 import model.Task;
 import model.Task.Type;
 import exception.TaskInvalidDateException;
+import exception.TaskNoSuchTagException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -92,15 +93,17 @@ public class MainViewController extends GridPane{
 	final static String TITLE_TODAY_TASKS = "Today Tasks";
 	final static String TITLE_ALL_TASKS = "All Tasks";
 	final static String TITLE_DONE_TASKS = "Done Tasks";
+	final static String TITLE_TASKS_WITH_TAG = "Tasks With Specific Tag";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
 	
-	final static int TOTAL_PAGE_NUM = 5;
+	final static int TOTAL_PAGE_NUM = 6;
 	final static int TODAY_TASKS_PAGE_INDEX = 0;
 	final static int UNDONE_TASKS_PAGE_INDEX = 1;
 	final static int DONE_TASKS_PAGE_INDEX = 2;
-	final static int SEARCH_RESULT_PAGE_INDEX = 3;
-	final static int HELP_DOC_PAGE_INDEX = 4;
+	final static int TASKS_WITH_TAG_INDEX = 3;
+	final static int SEARCH_RESULT_PAGE_INDEX = 4;
+	final static int HELP_DOC_PAGE_INDEX = 5;
 	
 	@FXML
 	private Label date;
@@ -140,6 +143,7 @@ public class MainViewController extends GridPane{
 	TaskList taskList;
 	
 	String searchKey;
+	String showTag;
 	
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
@@ -154,7 +158,7 @@ public class MainViewController extends GridPane{
 		}
 	}));
 
-	public MainViewController() throws IOException, TaskInvalidDateException {
+	public MainViewController() throws IOException, TaskInvalidDateException, TaskNoSuchTagException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -164,7 +168,7 @@ public class MainViewController extends GridPane{
         setMainView();
 	}
 	
-	private void setMainView() throws TaskInvalidDateException {
+	private void setMainView() throws TaskInvalidDateException, TaskNoSuchTagException {
 		setIsCommandHelp();
 		initFadeEffect();
 		setPageCount(TOTAL_PAGE_NUM);
@@ -198,6 +202,8 @@ public class MainViewController extends GridPane{
 			displayTitleText.setText(TITLE_ALL_TASKS);
 		} else if (currentPageNum == DONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_DONE_TASKS);
+		} else if (currentPageNum == TASKS_WITH_TAG_INDEX) {
+			displayTitleText.setText(TITLE_TASKS_WITH_TAG);
 		} else if (currentPageNum == SEARCH_RESULT_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_SEARCH_RESULT);
 		} else if (currentPageNum == HELP_DOC_PAGE_INDEX){
@@ -278,7 +284,7 @@ public class MainViewController extends GridPane{
 		displayTodayTasks();
 	}
 	
-	private void setHelpHomePage() throws TaskInvalidDateException {
+	private void setHelpHomePage() throws TaskInvalidDateException, TaskNoSuchTagException {
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		setRestTaskResponse();
 		
@@ -733,7 +739,7 @@ public class MainViewController extends GridPane{
 		gridPane.setMinSize(width, height);
 	}	
 	
-	private void setRestTaskResponse() throws TaskInvalidDateException {
+	private void setRestTaskResponse() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			List<Task> todayTasks = getTodayTaskList();
 			if (todayTasks.size() > 1) {
@@ -758,6 +764,19 @@ public class MainViewController extends GridPane{
 				response.setText("Good! 1 task has been finished!");
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
+			}
+		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			if (showTag == null) {
+				response.setText("No Task With This Tag!");
+			} else {
+				List<Task> tagTasks = getTagTaskList(showTag);
+				if (tagTasks.size() > 1) {
+					response.setText(String.format(MANY_TASKS_NOT_DONE, tagTasks.size()));
+				} else if (tagTasks.size() == 1) {
+					response.setText(ONE_TASK_NOT_DONE);
+				} else {
+					response.setText(ALL_TASKS_DONE);
+				}
 			}
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey == null) {
@@ -849,9 +868,15 @@ public class MainViewController extends GridPane{
 	
 	private List<Task> getTodayTaskList() throws TaskInvalidDateException {
 		List<Date> today = Logic.getDateList("show today");
-		List<Task> todayTask = taskList.getDateRangeTask(today);
+		List<Task> todayTasks = taskList.getDateRangeTask(today);
 		
-		return todayTask;
+		return todayTasks;
+	}
+	
+	private List<Task> getTagTaskList(String tag) throws TaskNoSuchTagException {
+		List<Task> tagTasks = taskList.getTasksWithTag(tag);
+		
+		return tagTasks;
 	}
 	
 	private void setTextField(String content) {
@@ -862,7 +887,7 @@ public class MainViewController extends GridPane{
 		setTextField("");
 	}
 	
-	private void displayHelpCommand() throws TaskInvalidDateException {
+	private void displayHelpCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		listDisplay.setCurrentPageIndex(HELP_DOC_PAGE_INDEX);
 		
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
@@ -874,7 +899,7 @@ public class MainViewController extends GridPane{
 		listDisplay.requestFocus();
 	}
 	
-	private void displaySearchCommand() throws TaskInvalidDateException {
+	private void displaySearchCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (searchKey != null) {
 			setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
 		} else {
@@ -884,21 +909,32 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
-	private void displayShowAllCommand() throws TaskInvalidDateException {
+	private void displayShowAllCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		listDisplay.setCurrentPageIndex(UNDONE_TASKS_PAGE_INDEX);
 		setDisplayTitleText();
 		setRestTaskResponse();
 		setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 	}
 	
-	private void displayShowDoneCommand() throws TaskInvalidDateException {		
+	private void displayShowDoneCommand() throws TaskInvalidDateException, TaskNoSuchTagException {		
 		setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
 		
 		setDisplayTitleText();
 		setRestTaskResponse();
 	}
 	
-	private void displayShowTodayCommand() throws TaskInvalidDateException {
+	private void displayShowTagCommand() throws TaskNoSuchTagException, TaskInvalidDateException {
+		if (showTag != null) {
+			List<Task> tagTasks = taskList.getTasksWithTag(showTag);
+			setOnePageView(TASKS_WITH_TAG_INDEX, tagTasks);
+		} else {
+			listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_INDEX);
+		}
+		setDisplayTitleText();
+		setRestTaskResponse();
+	}
+	
+	private void displayShowTodayCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		List<Task> todayTask = getTodayTaskList();
 		
 		setOnePageView(TODAY_TASKS_PAGE_INDEX, todayTask);
@@ -906,13 +942,15 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
-	private void displayOtherCommand() throws TaskInvalidDateException {
+	private void displayOtherCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			displayTodayTasks();
 		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
+		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getTasksWithTag(showTag));
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey != null) {
 				setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
@@ -926,11 +964,11 @@ public class MainViewController extends GridPane{
 		setDisplayTitleText();
 	}
 	
-	private void analyseCommand(String command) throws TaskInvalidDateException {
+	private void analyseCommand(String command) throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
 			displayHelpCommand();
 		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
-			searchKey = command.trim().substring(7);
+			searchKey = command.trim().toLowerCase().substring(7);
 			displaySearchCommand();
 		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
 				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
@@ -943,6 +981,9 @@ public class MainViewController extends GridPane{
 		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 10).equals("show today")
 				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show tdy")) {
 			displayShowTodayCommand();
+		} else if (command.trim().length() > 4 && command.trim().toLowerCase().substring(0, 4).equals("show")) {
+			showTag = command.trim().toLowerCase().substring(5);
+			displayShowTagCommand();
 		// except show, search and help
 		} else {
 			displayOtherCommand();
@@ -950,7 +991,7 @@ public class MainViewController extends GridPane{
 	}
 	
 	@FXML
-    private void onEnter() throws TaskInvalidDateException {
+    private void onEnter() throws TaskInvalidDateException, TaskNoSuchTagException {
 		command = getUserInput();
 		
 		if (!command.equals("")) {			
@@ -971,7 +1012,12 @@ public class MainViewController extends GridPane{
 					@Override
 					public void handle(ActionEvent event) {
 						try {
-							setRestTaskResponse();
+							try {
+								setRestTaskResponse();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						} catch (TaskInvalidDateException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -985,7 +1031,7 @@ public class MainViewController extends GridPane{
     }
 	
 	@FXML
-	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException {
+	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (keyEvent.getCharacter().equals("1")) {
 			setDisplayTitleText();
 			displayTodayTasks();
@@ -999,9 +1045,12 @@ public class MainViewController extends GridPane{
 			displayShowDoneCommand();
 		}
 		if (keyEvent.getCharacter().equals("4")) {
-			displaySearchCommand();
+			displayShowTagCommand();
 		}
 		if (keyEvent.getCharacter().equals("5")) {
+			displaySearchCommand();
+		}
+		if (keyEvent.getCharacter().equals("6")) {
 			displayHelpCommand();
 		}
 		if (keyEvent.getCharacter().equals("a")) {
@@ -1057,6 +1106,9 @@ public class MainViewController extends GridPane{
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			    				try {
@@ -1066,6 +1118,9 @@ public class MainViewController extends GridPane{
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			    				try {
@@ -1073,11 +1128,25 @@ public class MainViewController extends GridPane{
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			    				try {
+									displayShowTagCommand();
+								} catch (TaskNoSuchTagException
+										| TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			    				try {
 									displaySearchCommand();
 								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -1105,11 +1174,17 @@ public class MainViewController extends GridPane{
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 			        		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
 			    				try {
 									displayHelpCommand();
 								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -1119,11 +1194,25 @@ public class MainViewController extends GridPane{
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_INDEX) {
+			    				try {
+									displayShowTagCommand();
+								} catch (TaskNoSuchTagException
+										| TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			    				try {
 									displaySearchCommand();
 								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -1148,6 +1237,9 @@ public class MainViewController extends GridPane{
 			        			try {
 									setHelpHomePage();
 								} catch (TaskInvalidDateException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (TaskNoSuchTagException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
