@@ -52,16 +52,19 @@
 
 .tags {
 	-fx-text-fill: white;
-	-fx-padding: 3;
+	-fx-padding: 1.5px 10px 1.5px 10px;
 	-fx-background-radius: 5px;
 }
 
 #inputPane {
-	-fx-background-color: #504A4B;
+	-fx-background-color: #212121;
 }
 
 #input {
 	-fx-prompt-text-fill: rgb(179,179,179);
+	-fx-background-color:  #212121;
+	-fx-border-color: #212121 #212121 #03a9f4 #212121;
+	-fx-text-fill: white;
 }
 
 #listDisplay {
