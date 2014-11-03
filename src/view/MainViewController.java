@@ -913,7 +913,9 @@ public class MainViewController extends GridPane{
 	}
 	
 	private void displayOtherCommand() throws TaskInvalidDateException {
-		if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+			displayTodayTasks();
+		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
 			setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
@@ -1057,8 +1059,7 @@ public class MainViewController extends GridPane{
 			        		flag = false;
 			        		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			        			try {
-			        				setDisplayTitleText();
-									displayTodayTasks();
+									displayShowTodayCommand();
 								} catch (TaskInvalidDateException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
