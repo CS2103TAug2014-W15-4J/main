@@ -90,23 +90,28 @@ public class MainViewController extends GridPane{
 	final static String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
 	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
+	final static String ONE_OVERDUE_TASK = "Sign! 1 task overdue";
+	final static String MANY_OVERDUE_TASKS = "Sign! %s tasks overdue";
+	final static String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
 	
 	final static String TITLE_TODAY_TASKS = "Today Tasks";
 	final static String TITLE_PERIOD_TASKS = "Period Tasks";
 	final static String TITLE_ALL_TASKS = "All Tasks";
 	final static String TITLE_DONE_TASKS = "Done Tasks";
+	final static String TITLE_OVERDUE_TASKS = "Overdue Tasks";
 	final static String TITLE_TASKS_WITH_TAG = "Tasks With Specific Tag";
 	final static String TITLE_SEARCH_RESULT = "Search Result";
 	final static String TITLE_HELP_PAGE = "Help Document";
 	
-	final static int TOTAL_PAGE_NUM = 7;
+	final static int TOTAL_PAGE_NUM = 8;
 	final static int TODAY_TASKS_PAGE_INDEX = 0;
 	final static int PERIOD_TASKS_PAGE_INDEX = 1;
 	final static int UNDONE_TASKS_PAGE_INDEX = 2;
 	final static int DONE_TASKS_PAGE_INDEX = 3;
-	final static int TASKS_WITH_TAG_PAGE_INDEX = 4;
-	final static int SEARCH_RESULT_PAGE_INDEX = 5;
-	final static int HELP_DOC_PAGE_INDEX = 6;
+	final static int OVERDUE_TASKS_PAGE_INDEX = 4;
+	final static int TASKS_WITH_TAG_PAGE_INDEX = 5;
+	final static int SEARCH_RESULT_PAGE_INDEX = 6;
+	final static int HELP_DOC_PAGE_INDEX = 7;
 	
 	@FXML
 	private Label date;
@@ -208,6 +213,8 @@ public class MainViewController extends GridPane{
 			displayTitleText.setText(TITLE_ALL_TASKS);
 		} else if (currentPageNum == DONE_TASKS_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_DONE_TASKS);
+		} else if (currentPageNum == OVERDUE_TASKS_PAGE_INDEX) {
+			displayTitleText.setText(TITLE_OVERDUE_TASKS);
 		} else if (currentPageNum == TASKS_WITH_TAG_PAGE_INDEX) {
 			displayTitleText.setText(TITLE_TASKS_WITH_TAG);
 		} else if (currentPageNum == SEARCH_RESULT_PAGE_INDEX) {
@@ -801,6 +808,14 @@ public class MainViewController extends GridPane{
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
 			}
+		} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+			if (taskList.getOverdueTask().size() > 1) {
+				response.setText(String.format(MANY_OVERDUE_TASKS, taskList.getOverdueTask().size()));
+			} else if (taskList.getOverdueTask().size() == 1) {
+				response.setText(ONE_OVERDUE_TASK);
+			} else {
+				response.setText(NO_OVERDUE_TASK);
+			}
 		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			if (showTag == null) {
 				response.setText("No Task With This Tag!");
@@ -963,6 +978,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	private void displayShowOverdueCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
+		setOnePageView(OVERDUE_TASKS_PAGE_INDEX, taskList.getOverdueTask());
+		
+		setDisplayTitleText();
+		setRestTaskResponse();
+	}
+	
 	private void displayShowTagCommand() throws TaskNoSuchTagException, TaskInvalidDateException {
 		if (showTag != null) {
 			if (taskList.isTagContained(showTag)) {
@@ -1006,6 +1028,8 @@ public class MainViewController extends GridPane{
 			setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
+		} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+			setOnePageView(OVERDUE_TASKS_PAGE_INDEX, taskList.getOverdueTask());
 		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, taskList.getTasksWithTag(showTag));
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
@@ -1027,6 +1051,8 @@ public class MainViewController extends GridPane{
 		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
 			searchKey = command.trim().toLowerCase().substring(7);
 			displaySearchCommand();
+		} else if (command.trim().length() == 12 && command.trim().toLowerCase().substring(0, 12).equals("show overdue")) {
+			displayShowOverdueCommand();
 		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
 				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
 			taskList.setNotShowingDone();
@@ -1114,12 +1140,15 @@ public class MainViewController extends GridPane{
 			displayShowDoneCommand();
 		}
 		if (keyEvent.getCharacter().equals("5")) {
-			displayShowTagCommand();
+			displayShowOverdueCommand();
 		}
 		if (keyEvent.getCharacter().equals("6")) {
-			displaySearchCommand();
+			displayShowTagCommand();
 		}
 		if (keyEvent.getCharacter().equals("7")) {
+			displaySearchCommand();
+		}
+		if (keyEvent.getCharacter().equals("8")) {
 			displayHelpCommand();
 		}
 		if (keyEvent.getCharacter().equals("a")) {
@@ -1211,6 +1240,14 @@ public class MainViewController extends GridPane{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+			    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+			    				try {
+									displayShowOverdueCommand();
+								} catch (TaskInvalidDateException
+										| TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			    				try {
 									displayShowTagCommand();
@@ -1284,6 +1321,14 @@ public class MainViewController extends GridPane{
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} catch (TaskNoSuchTagException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+			    				try {
+									displayShowOverdueCommand();
+								} catch (TaskInvalidDateException
+										| TaskNoSuchTagException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
