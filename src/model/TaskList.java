@@ -890,6 +890,10 @@ public class TaskList {
 		Date startTime = showDate.get(0);
 		Date endTime = showDate.get(1);
 		
+		// shows overdue tasks at the top
+		List<Task> overdue = getOverdueTask();
+		output.addAllUnordered(overdue);
+
 		// find task within the date range
 		for (Task task : tasksTimed) {
 			if (task instanceof RepeatedTask) {
@@ -897,7 +901,7 @@ public class TaskList {
 		    } else if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
 					(task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 
-				output.add(task);
+				output.addUnique(task);
 			}
 		}
 		
@@ -918,7 +922,7 @@ public class TaskList {
 		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
 		           (task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 		            
-		            output.addOrder(repeatedTask);
+		            output.addUnique(repeatedTask);
 		        }
 
 		    } else if (periodString.split(" ")[0].equals("every")) {
@@ -927,7 +931,7 @@ public class TaskList {
 		            sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
 		            task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
 		            
-		            output.addOrder(repeatedTask);
+		            output.addUnique(repeatedTask);
 		        }
 
             } else if (periodString.split(" ")[0].equals("day")) {
@@ -937,7 +941,7 @@ public class TaskList {
                     sameMonthDay(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
                     task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
 
-                    output.addOrder(repeatedTask);
+                    output.addUnique(repeatedTask);
                 }
             } 
 		}
