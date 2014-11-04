@@ -61,13 +61,13 @@ public abstract class Task {
 	        throw new TaskTagDuplicateException();
 	        
 	    } else {
-	        tags.add(tag);
+	        tags.add(tag.toLowerCase());
 	    }
 	}
 	
 	public void deleteTag(String tag) throws TaskTagException {
-	    if (tags.contains(tag)) {
-	        tags.remove(tag);
+	    if (tags.contains(tag.toLowerCase())) {
+	        tags.remove(tag.toLowerCase());
 	        
 	    } else {
 	        throw new TaskTagException();
