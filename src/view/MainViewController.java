@@ -12,11 +12,13 @@ import exception.TaskNoSuchTagException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Stack;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -156,6 +158,9 @@ public class MainViewController extends GridPane{
 	String showTag;
 	String showPeriod;
 	
+	private ArrayList<String> historyCommands;
+	private int historyPointer;
+	
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
 	
@@ -190,6 +195,11 @@ public class MainViewController extends GridPane{
         initMainDisplay();
         setRestTaskResponse();
         setDisplayTitleText();
+        initHistoryPointer();
+	}
+	
+	public void initHistoryPointer() {
+		historyPointer = 0;
 	}
 	
 	public ScrollPane[] getScrollPages() {
@@ -1134,6 +1144,8 @@ public class MainViewController extends GridPane{
 	@FXML
     private void onEnter() throws TaskInvalidDateException, TaskNoSuchTagException {
 		command = getUserInput();
+		historyCommands.add(command);
+		historyPointer = historyPointer + 1;
 		
 		if (!command.equals("")) {			
 			
@@ -1236,11 +1248,31 @@ public class MainViewController extends GridPane{
 			input.selectEnd();
 		}
 	}
+	
+	private void setUpKey() {
+		input.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.UP) {
+					boolean flag = true;
+					if (flag) {
+						flag = false;
+						if (!historyCommands.isEmpty() && historyPointer != 0) {
+							
+							historyPointer = historyPointer - 1;
+							input.setText(historyCommands.get(historyPointer));
+							
+						}
+					}
+				}
+			}
+		});
+	}
 
 	private void setLeftKey() {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
-			     public void handle(KeyEvent event ) {
+			     public void handle(KeyEvent event) {
 			        if (event.getCode() == KeyCode.LEFT) {
 	//		        	event.consume();
 			        	boolean flag = true;
