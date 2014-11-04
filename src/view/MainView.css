@@ -63,6 +63,7 @@
 	-fx-background-color:  #212121;
 	-fx-border-color: #212121 #212121 #03a9f4 #212121;
 	-fx-text-fill: white;
+	-fx-padding: 0;
 }
 
 #listDisplay {

@@ -1034,7 +1034,6 @@ public class TaskList {
 	public List<Task> prepareDisplayList(String tag)
 			throws TaskNoSuchTagException {
 		
-		List<Task> output;
 		if (tags.containsKey(tag.toLowerCase())) {
 			checkOverdue(this.tasksTimed);
 			tasksToDisplay = new ArrayList<Task>(tags.get(tag.toLowerCase()));
@@ -1090,7 +1089,7 @@ public class TaskList {
 	 * 
 	 * @param listToCheck the list to be checked
 	 */
-	public void checkOverdue(List<Task> listToCheck) {
+	private void checkOverdue(List<Task> listToCheck) {
 		for (Task task : listToCheck) {
 			try {
 				task.checkOverdue();
@@ -1099,6 +1098,10 @@ public class TaskList {
 						"Invalid Deadline when checking Overdue!");
 			}
 		}
+	}
+	
+	public void checkOverdue() {
+		this.checkOverdue(tasksTimed);
 	}
 
 	public boolean isShowingDone() {
