@@ -1274,6 +1274,12 @@ public class TaskList {
                     this.deleteFromList(task);
                 }
                 
+            } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+                List<Task> tasksToDelete = lastState.getPreviousTaskStateList();
+                for (Task task : tasksToDelete) {
+                    this.deleteFromList(task);
+                }                
+                
             } else if (lastState.getLastCommand() == LastCommand.DONE) {
                 List<Task> tasksAfterUndone = lastState.getCurrentTaskStateList();
                 List<Task> repeatTaskList = lastState.getRepeatTaskList();
