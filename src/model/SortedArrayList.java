@@ -23,6 +23,16 @@ public class SortedArrayList<T> extends ArrayList<T> {
         this.comparator = c;
     }
     
+    public boolean addUnique(T task) {
+        if (this.contains(task)) {
+            return false;
+        } else {
+            this.addOrder(task);
+            return true;
+        }
+        
+    }
+    
     public boolean addOrder(T task) {
         if (this.size() == 0) {
             super.add(0, task);
