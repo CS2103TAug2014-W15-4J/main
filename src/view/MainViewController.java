@@ -51,16 +51,18 @@ import javafx.util.Duration;
 public class MainViewController extends GridPane{
 	
 	final static String[] DEFAULT_TAG_COLORS = {
-		"rgb(249, 233, 89)",
-		"rgb(239, 75, 133)",
-		"rgb(162, 100, 223)",
-		"rgb(89, 225, 113)",
-		"rgb(47, 217, 247)",
-		"rgb(234, 106, 74)",
-		"rgb(94, 236, 225)",
-		"rgb(163, 220, 191)",
-		"rgb(187, 239, 78)",
-		"rgb(156, 184, 197)"
+		"#009688",
+		"#F44336",
+		"#E91E63",
+		"#673AB7",
+		"#4CAF50",
+		"#8BC34A",
+		"#FF9800",
+		"#795548",
+		"#607D8B",
+		"#FFC107",
+		"#03A9F4",
+		"#F44336"
 	};
 	
 	final static KeyCode[] F_KEYS = {
