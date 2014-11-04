@@ -97,7 +97,7 @@ public class TaskList {
 	private boolean isShowingDone;
 
 	@XStreamAlias("TasksCount")
-	private int totalTasks;
+	private int totalTasksOngoing;
 	
 	@XStreamAlias("Tags")
 	private HashMap<String, List<Task>> tags;
@@ -115,7 +115,7 @@ public class TaskList {
 		this.tasksFinished = new SortedArrayList<Task>(new DoneDateComparator());
 		this.tasksToDisplay = new ArrayList<Task>();
 		this.tasksRepeated = new ArrayList<Task>();
-		this.totalTasks = this.tasksTimed.size() + this.tasksUntimed.size();
+		this.totalTasksOngoing = this.tasksTimed.size() + this.tasksUntimed.size();
 		this.tags = new HashMap<String, List<Task>>();
 		this.totalFinished = 0;
 		this.isDisplay = false;
@@ -141,7 +141,7 @@ public class TaskList {
 				return tasksToDisplay.get(taskIndex);
 			}
 		} else {
-			if ((taskIndex >= totalTasks) || (taskIndex < 0)) {
+			if ((taskIndex >= totalTasksOngoing) || (taskIndex < 0)) {
 				throw new TaskInvalidIdException("Error index for editing!");
 			} else {
 				// get edit id from timed/ untimed list
@@ -192,7 +192,7 @@ public class TaskList {
     			((SortedArrayList<Task>) this.tasksTimed).addOrder(task);
     			addToTaskRepeated(task);
     		}
-    		this.totalTasks++;
+    		this.totalTasksOngoing++;
 	    }
 	    
 	    
@@ -207,7 +207,7 @@ public class TaskList {
 	public void addToList(String description) {
 		Task newTask = new FloatingTask(description);
 		this.tasksUntimed.add(newTask);
-		this.totalTasks++;
+		this.totalTasksOngoing++;
 		logger.log(Level.INFO, "A floating task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
@@ -224,7 +224,7 @@ public class TaskList {
 	public void addToList(String description, Date time) {
 		Task newTask = new DeadlineTask(description, time);
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
-		this.totalTasks++;
+		this.totalTasksOngoing++;
 		logger.log(Level.INFO, "A deadline task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
@@ -244,7 +244,7 @@ public class TaskList {
 		Task newTask = new RepeatedTask(description, time, repeatDate);
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 		this.tasksRepeated.add(newTask);
-		this.totalTasks++;
+		this.totalTasksOngoing++;
 		logger.log(Level.INFO, "A repeated task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
@@ -272,7 +272,7 @@ public class TaskList {
 		} else {
 
 			((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
-			this.totalTasks++;
+			this.totalTasksOngoing++;
 			logger.log(Level.INFO, "A fixed task added");
 			
 			addToUndoList(LastCommand.ADD, newTask);
@@ -484,7 +484,7 @@ public class TaskList {
 	            } else {
 	                tasksUntimed.remove(taskI);
 	            }
-	            this.totalTasks--;
+	            this.totalTasksOngoing--;
 	        }
 	    }
 	}
@@ -509,7 +509,7 @@ public class TaskList {
 					    deleteFromTasksRepeated(taskRemoved);
 					    tasksRemoved.add(taskRemoved);
 					}
-					this.totalTasks--;
+					this.totalTasksOngoing--;
 				} else {
 					if (isInvalidIndex(indexToRemove)) {
 
@@ -541,7 +541,7 @@ public class TaskList {
 							}
 						}
 
-						this.totalTasks--;
+						this.totalTasksOngoing--;
 					}
 				}	
 			}
@@ -591,7 +591,7 @@ public class TaskList {
 		this.tasksFinished.clear();
 		this.tasksRepeated.clear();
 		this.tags.clear();
-		this.totalTasks = 0;
+		this.totalTasksOngoing = 0;
 		this.totalFinished = 0;
 
 	}
@@ -643,6 +643,7 @@ public class TaskList {
 		        } 
 		        
 		        this.totalFinished++;
+		        this.totalTasksOngoing--;
 		        if (newRepeatTask != null) {
 		            this.addToList((RepeatedTask) newRepeatTask);
 		            newRepeatTaskList.add(newRepeatTask);
@@ -1177,7 +1178,7 @@ public class TaskList {
 	            
 	            for (Task newRepeatTask : repeatTaskList) {
 	                this.tasksTimed.remove(newRepeatTask);
-	                this.totalTasks--;
+	                this.totalTasksOngoing--;
 	            }
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.TAG) {
@@ -1217,7 +1218,7 @@ public class TaskList {
 	            Task currentTaskState = lastState.getCurrentTaskState();
 	            Task prevTaskState = lastState.getPreviousTaskState();
 	            
-	            for (int i = 0; i < this.totalTasks; i++) {
+	            for (int i = 0; i < this.totalTasksOngoing; i++) {
 	                Task task = this.getTask(i);
 	                if (task.equals(currentTaskState)) {
 	                    deleteFromList(task);
@@ -1339,7 +1340,7 @@ public class TaskList {
                 Task currentTaskState = lastState.getCurrentTaskState();
                 Task prevTaskState = lastState.getPreviousTaskState();
                 
-                for (int i = 0; i < this.totalTasks; i++) {
+                for (int i = 0; i < this.totalTasksOngoing; i++) {
                     Task task = this.getTask(i);
                     if (task.equals(prevTaskState)) {
                         deleteFromList(task);
@@ -1437,7 +1438,7 @@ public class TaskList {
     }
 
 	public int count() {
-		return this.totalTasks;
+		return this.totalTasksOngoing;
 	}
 	
 	public int countUndone() {
@@ -1484,7 +1485,6 @@ public class TaskList {
 	 */
 	public boolean isEqual(TaskList t2) {
 	    boolean isEqual = true;
-	    
 	    isEqual = isEqual && 
 	              (this.countFinished() == t2.countFinished()) &&
 	              (this.countTimedTask() == t2.countTimedTask()) &&
@@ -1498,29 +1498,30 @@ public class TaskList {
 
     	    try {
     	        if (thisTask instanceof DeadlineTask) {
-    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
-    	                      (thatTask instanceof DeadlineTask) &&
-                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
-                              (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
+    	            
+    	            isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
+    	                      thatTask instanceof DeadlineTask &&
+                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
+                              thisTask.getAddedTime().equals(thatTask.getAddedTime());
     	            
     	        } else if (thisTask instanceof FixedTask) {
-                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
-                              (thatTask instanceof FixedTask) &&
-                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
-                              (((FixedTask) thisTask).getStartTime().equals(((FixedTask) thatTask).getStartTime())) &&
-                              (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
+                    isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
+                              thatTask instanceof FixedTask &&
+                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
+                              ((FixedTask) thisTask).getStartTime().equals(((FixedTask) thatTask).getStartTime()) &&
+                              thisTask.getAddedTime().equals(thatTask.getAddedTime());
 
     	        } else if (thisTask instanceof RepeatedTask) {
-                    isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
-                              (thatTask instanceof RepeatedTask) &&
-                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
-                              (thisTask.getAddedTime().equals(thatTask.getAddedTime())) &&
-                              (((RepeatedTask) thisTask).getRepeatPeriod().equals(((RepeatedTask) thatTask).getRepeatPeriod()));
+                    isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
+                              thatTask instanceof RepeatedTask &&
+                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
+                              thisTask.getAddedTime().equals(thatTask.getAddedTime()) &&
+                              ((RepeatedTask) thisTask).getRepeatPeriod().equals(((RepeatedTask) thatTask).getRepeatPeriod());
                     
     	        } else if (thisTask instanceof FloatingTask) {
-    	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
-    	                      (thatTask instanceof FloatingTask) &&
-    	                      (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
+    	            isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
+    	                      thatTask instanceof FloatingTask &&
+    	                      thisTask.getAddedTime().equals(thatTask.getAddedTime());
     	            
     	        } else {
     	            assert false;
@@ -1548,6 +1549,16 @@ public class TaskList {
 	public void clearUndoRedoStack() {
 	    undoStack.clear();
 	    redoStack.clear();
+	}
+	
+	/**
+	 * This method adds a task to the task list, given the task.
+	 * This method is used for testing purposes
+	 * 
+	 * @param task     Task to be added to the list 
+	 */
+	public void addTaskToTaskList(Task task) {
+	    addToList(task);
 	}
 }
 
