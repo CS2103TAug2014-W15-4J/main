@@ -601,7 +601,7 @@ public class TaskList {
 
 		if (taskIndexList.isEmpty()) {
 			throw new TaskInvalidIdException("Error index input.");
-
+  
 		} else {
 		    
 		    List<Task> tasksToMarkDone = new ArrayList<Task>();
@@ -627,9 +627,7 @@ public class TaskList {
 		        }
 		    }
 		    
-		    
 		    for (Task target : tasksToMarkDone) {
-		        
 		        tasksBeforeMarkingDone.add(target.clone());
 		        Task newRepeatTask = null;
 		        
@@ -642,12 +640,13 @@ public class TaskList {
 		            newRepeatTask = target.markDone();
 		            this.tasksTimed.remove(target);
 		            this.tasksFinished.add(target);
-		        }
+		        } 
 		        
 		        this.totalFinished++;
 		        if (newRepeatTask != null) {
 		            this.addToList((RepeatedTask) newRepeatTask);
 		            newRepeatTaskList.add(newRepeatTask);
+		            deleteFromTasksRepeated(target);
 		        }
 		    }
 		    
@@ -916,31 +915,28 @@ public class TaskList {
 		    String periodString = repeatedTask.getRepeatPeriod();
 		    
 		    if (periodString.equals("daily")) {
-		        if ((taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
-		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		           (task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 		            
 		            output.addOrder(repeatedTask);
 		        }
 
 		    } else if (periodString.split(" ")[0].equals("every")) {
 
-		        if ((taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) && 
-		            (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
-		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
-		            (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
+		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		            sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		            task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
 		            
 		            output.addOrder(repeatedTask);
 		        }
 
             } else if (periodString.split(" ")[0].equals("day")) {
                 
-                if ((taskTimeCal.get(Calendar.DAY_OF_MONTH) >= searchTimeStartCal.get(Calendar.DAY_OF_MONTH)) && 
-                    (taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH)) &&
-                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) >= searchTimeStartCal.get(Calendar.DAY_OF_WEEK)) &&
-                    (taskTimeCal.get(Calendar.DAY_OF_WEEK) <= searchTimeEndCal.get(Calendar.DAY_OF_WEEK)) &&
-                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY)) &&
-                    (taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY))) {
-                    
+                if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    sameMonthDay(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
+
                     output.addOrder(repeatedTask);
                 }
             } 
@@ -954,6 +950,62 @@ public class TaskList {
 	}
 
 	/**
+	 * This method checks if the time of the task is between the times of the two calendars
+	 * 
+	 * @param taskTimeCal          Calendar representing the time of the task
+	 * @param searchTimeStartCal   Calendar representing the start time being searched
+	 * @param searchTimeEndCal     Calendar representing the end time being searched
+	 * @return true if the time of the task being checked is between the other two times
+	 */
+	private boolean sameHour(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                             Calendar searchTimeEndCal) {
+	    return (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY) &&
+                taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY));
+    }
+
+	 /**
+     * This method checks if the day of the task is within the days of the two calendars
+     * 
+     * @param taskTimeCal          Calendar representing the day of the task
+     * @param searchTimeStartCal   Calendar representing the start day being searched
+     * @param searchTimeEndCal     Calendar representing the end day being searched
+     * @return true if the day of the task being checked is between the other two days
+     */
+    private boolean sameWeekday(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                                Calendar searchTimeEndCal) {
+        int startDay = searchTimeStartCal.get(Calendar.DAY_OF_WEEK);
+        int endDay = searchTimeEndCal.get(Calendar.DAY_OF_WEEK);
+        int taskDay = taskTimeCal.get(Calendar.DAY_OF_WEEK);
+        
+        if (startDay == 1) {
+            startDay = 7;
+        }
+        if (endDay == 1) {
+            endDay = 7;
+        }
+        if (taskDay == 1) {
+            taskDay = 7;
+        }
+        
+        return ((taskDay >= startDay) &&
+                (taskDay <= endDay));
+    }	
+
+    /**
+     * This method checks if the day of the task is between the days of the two calendars
+     * 
+     * @param taskTimeCal          Calendar representing the day of the task
+     * @param searchTimeStartCal   Calendar representing the start day being searched
+     * @param searchTimeEndCal     Calendar representing the end day being searched
+     * @return true if the day of the task being checked is between the other two days
+     */
+    private boolean sameMonthDay(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                                 Calendar searchTimeEndCal) {
+        return (taskTimeCal.get(Calendar.DAY_OF_MONTH) >= searchTimeStartCal.get(Calendar.DAY_OF_MONTH) &&
+                taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH));
+    }
+    
+    /**
 	 * This methods will find out the tasks that are overdue.
 	 * @return a list of overdue tasks.
 	 */
