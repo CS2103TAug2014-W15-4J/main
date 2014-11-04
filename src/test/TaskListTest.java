@@ -19,6 +19,8 @@ import exception.RedoException;
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
+import exception.TaskTagDuplicateException;
+import exception.TaskTagException;
 import exception.UndoException;
 
 public class TaskListTest {
@@ -290,6 +292,86 @@ public class TaskListTest {
 	}
 
 	@Test
+	public void testTagging() {
+	    
+	    TaskList tasks = new TaskList();
+	    tasks.addToList("floating one");
+	    tasks.addToList("floating two");
+	    tasks.addToList("floating three");
+	    
+	    /* tests for adding a tag */
+	    // test tagging an invalid tag (null input)
+	    try {
+            tasks.tagTask(1, null);
+            assert false;
+
+        } catch (TaskTagDuplicateException e) {
+            assert false;
+        } catch (NullPointerException e) {
+            assert true;
+        }
+	    
+	    /* invalid empty input not tested since there would be an assertion error */
+	    
+	    // test tagging a valid tag
+	    try {
+	        tasks.tagTask(1, "tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagDuplicateException e) {
+	        assert false;
+	    }
+	    
+	    // test invalid tagging of the same tag
+	    try {
+	        tasks.tagTask(1, "tagg");
+	        assert tasks.getTask(0).getTags().contains("tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagDuplicateException e) {
+	        assert true;
+	    }
+	    
+	    // test tagging a task >1 time
+	    try {
+	        tasks.tagTask(1, "tag again");
+	        assert tasks.getTask(0).getTags().contains("tag again");
+	        
+        } catch (TaskInvalidIdException e) {
+            assert false;
+        } catch (TaskTagDuplicateException e) {
+            assert false;
+        }
+	    
+	    
+	    /* tests for removing a tag */
+	    // test untagging of invalid input (no such tag)
+	    try {
+	        tasks.untagTask(1, "la");
+	        assert false;
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagException e) {
+	        assert true;
+	    }
+	    
+	    // test untagging of valid input 
+	    try {
+	        tasks.untagTask(1, "tagg");
+	        assert !tasks.getTask(0).getTags().contains("tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagException e) {
+	        assert false;
+	    }
+
+	}
+	
+	@Test
 	public void testPrepareDisplayList() throws TaskInvalidDateException {
 
 		TaskList tasks = new TaskList();
@@ -316,6 +398,7 @@ public class TaskListTest {
 	@Test
 	public void testUndoRedo() throws TaskInvalidIdException, TaskInvalidDateException {
 	    TaskList tasks = new TaskList();
+	    tasks.clearUndoRedoStack();
 	    
 	    // testing for invalid undo
 	    try {

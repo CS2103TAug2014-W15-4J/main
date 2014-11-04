@@ -674,6 +674,9 @@ public class TaskList {
 	    } else if (tag.equals(null)) {
 	        assert false;
 	       
+	    } else if (tag.isEmpty()) {
+	        assert false;
+	        
 	    } else {
 	        Task givenTaskToTag = getTask(taskIndexToTag - 1);
 	        Task clonedTask = givenTaskToTag.clone();
@@ -714,6 +717,9 @@ public class TaskList {
 	        throw new TaskInvalidIdException();
 	        
         } else if (tag.equals(null)) {
+            assert false;
+            
+        } else if (tag.isEmpty()) { 
             assert false;
             
         } else {
