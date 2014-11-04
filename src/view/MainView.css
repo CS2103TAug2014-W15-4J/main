@@ -4,7 +4,7 @@
 
 #title {
 	-fx-background-color: #03a9f4;
-	-fx-effect: dropshadow(three-pass-box, #192a3b, 3, 0, 0, 3);
+	-fx-effect: dropshadow( one-pass-box, #bdbdbd, 10, 0, 0, 1);
 }
 
 
@@ -33,9 +33,6 @@
 	-fx-padding: 0 0 0 50;
 }
 
-.feedbackText {
-	-fx-background-color: white;
-}
 
 #mainDisplay {
 

@@ -582,7 +582,7 @@ public class TaskList {
         tasksRemoved.addAll(tasksUntimed);
         tasksRemoved.addAll(tasksTimed);
         tasksRemoved.addAll(tasksFinished);
-        addToUndoList(LastCommand.DELETE, tasksRemoved);
+        addToUndoList(LastCommand.CLEAR, tasksRemoved);
         
 		this.isDisplay = false;
 		this.tasksUntimed.clear();
@@ -890,6 +890,10 @@ public class TaskList {
 		Date startTime = showDate.get(0);
 		Date endTime = showDate.get(1);
 		
+		// shows overdue tasks at the top
+		List<Task> overdue = getOverdueTask();
+		output.addAllUnordered(overdue);
+
 		// find task within the date range
 		for (Task task : tasksTimed) {
 			if (task instanceof RepeatedTask) {
@@ -897,7 +901,7 @@ public class TaskList {
 		    } else if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
 					(task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 
-				output.add(task);
+				output.addUnique(task);
 			}
 		}
 		
@@ -918,7 +922,7 @@ public class TaskList {
 		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
 		           (task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
 		            
-		            output.addOrder(repeatedTask);
+		            output.addUnique(repeatedTask);
 		        }
 
 		    } else if (periodString.split(" ")[0].equals("every")) {
@@ -927,7 +931,7 @@ public class TaskList {
 		            sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
 		            task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
 		            
-		            output.addOrder(repeatedTask);
+		            output.addUnique(repeatedTask);
 		        }
 
             } else if (periodString.split(" ")[0].equals("day")) {
@@ -937,7 +941,7 @@ public class TaskList {
                     sameMonthDay(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
                     task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
 
-                    output.addOrder(repeatedTask);
+                    output.addUnique(repeatedTask);
                 }
             } 
 		}
@@ -1090,7 +1094,7 @@ public class TaskList {
 	 * 
 	 * @param listToCheck the list to be checked
 	 */
-	private void checkOverdue(List<Task> listToCheck) {
+	public void checkOverdue(List<Task> listToCheck) {
 		for (Task task : listToCheck) {
 			try {
 				task.checkOverdue();
@@ -1148,6 +1152,14 @@ public class TaskList {
 	            for (Task task : tasksToReadd) {
 	                this.addToList(task);
 	            }
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
+	            for (Task task : tasksToReadd) {
+	                this.addToList(task);
+	            }
+	            
+	            updateTagsHash(tasksToReadd);
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
 	            List<Task> tasksAfterDone = lastState.getCurrentTaskStateList();
@@ -1220,6 +1232,29 @@ public class TaskList {
 	}
 	
 	/**
+	 * This method updates the <tags: tasks> pairs in the tags HashMap.
+	 * This method is only called by undo to revert the clear command.
+	 * 
+	 * @param tasksToReadd List of tasks that are readd after the clear command
+	 */
+	private void updateTagsHash(List<Task> tasksToReadd) {
+        for (Task task : tasksToReadd) {
+            List<String> taskTags = task.getTags();
+            for (String tag : taskTags) {
+                if (tags.containsKey(tag)) {
+                    tags.get(tag).add(task);
+                    
+                } else {
+                    List<Task> taskWithTag = new ArrayList<Task>();
+                    taskWithTag.add(task);
+                    tags.put(tag, taskWithTag);
+                }
+            }
+        }
+        
+    }
+
+    /**
 	 * This method reverts the undo operation done.
 	 * 
 	 * @throws RedoException   if there is no operation undid
@@ -1242,6 +1277,12 @@ public class TaskList {
                 for (Task task : tasksToDelete) {
                     this.deleteFromList(task);
                 }
+                
+            } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+                List<Task> tasksToDelete = lastState.getPreviousTaskStateList();
+                for (Task task : tasksToDelete) {
+                    this.deleteFromList(task);
+                }                
                 
             } else if (lastState.getLastCommand() == LastCommand.DONE) {
                 List<Task> tasksAfterUndone = lastState.getCurrentTaskStateList();
@@ -1328,7 +1369,6 @@ public class TaskList {
 	    if (consecutiveTask == null) {
 	        assert false;
 	    } 
-
 	    return consecutiveTask;
 	}
 
