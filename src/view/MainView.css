@@ -15,6 +15,7 @@
 }
 
 #response {
+	-fx-font-size: 20;
 	-fx-text-fill: #e51c23;
 	-fx-label-padding: 0.0 0.0 5.0 50;
 }
@@ -80,6 +81,7 @@
 
 .pagination-control {
 	-fx-background-color: white;
+	
 }
 
 .pagination .pagination-control .bullet-button {

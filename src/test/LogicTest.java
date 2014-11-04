@@ -22,7 +22,7 @@ public class LogicTest {
     final String MESSAGE_DELETE_SUCCESS = "Task(s) deleted successfully.";
     final String MESSAGE_DONE_SUCCESS = "Task(s) marked done successfully.";
     final String MESSAGE_REPEAT_TAG_SUCCESS = "Task already contains this tag.";
-    final String MESSAGE_TAG_SUCCESS = "Task tagged successfully.";
+    final String MESSAGE_TAG_SUCCESS = "Task tagged successfully.";    
     final String MESSAGE_UNTAG_SUCCESS = "Task untagged successfully.";
     final String MESSAGE_UNDO_SUCCESS = "undo successful.";
     final String MESSAGE_REDO_SUCCESS = "redo successful.";
@@ -32,6 +32,7 @@ public class LogicTest {
     final String MESSAGE_INVALID_DONE = "Error: task(s) already marked done.";
     final String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
     final String MESSAGE_INVALID_REDO = "No next operation to redo.";
+    final String MESSAGE_INVALID_UNTAG = "No such tag to remove.";
     
     final String COMMAND_SHOW = "show";
     final String COMMAND_CLEAR = "clear";
@@ -296,6 +297,15 @@ public class LogicTest {
         // testing to add an invalid repeated tag (shows non-case sensitive as well)
         feedback = Logic.readAndExecuteCommands("tag 2 THIRD EYE");
         assertEquals(feedback, MESSAGE_REPEAT_TAG_SUCCESS);
+        
+        // testing to remove a non-existent tag
+        feedback = Logic.readAndExecuteCommands("untag 2 lalala");
+        assertEquals(feedback, MESSAGE_INVALID_UNTAG);
+        
+        // testing to remove a valid tag
+        feedback = Logic.readAndExecuteCommands("untag 2 THIRD EYE");
+        assertEquals(feedback, MESSAGE_UNTAG_SUCCESS);
+        assertFalse(task.getTags().contains("third eye"));
     }
     
     @Test
