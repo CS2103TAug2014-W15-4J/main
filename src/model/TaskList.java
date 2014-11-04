@@ -475,15 +475,18 @@ public class TaskList {
 	 * @param task     The task that was added and is to be deleted 
 	 */
 	private void deleteFromList(Task task) {
-	    if (tasksTimed.contains(task)) {
-	        tasksTimed.remove(task);
-	        deleteFromTasksRepeated(task);
-	    } else {
-	        tasksUntimed.remove(task);
+	    for (int i = 0; i < this.count(); i++) {
+	        Task taskI = getTask(i);
+	        if (taskI.equals(task)) {
+	            if (i < this.tasksTimed.size()) {
+	                tasksTimed.remove(taskI);
+	                deleteFromTasksRepeated(taskI);
+	            } else {
+	                tasksUntimed.remove(taskI);
+	            }
+	            this.totalTasks--;
+	        }
 	    }
-	    
-	    this.totalTasks--;
-	    
 	}
 
 	public void deleteFromList(List<Integer> taskIndexList)
@@ -586,6 +589,7 @@ public class TaskList {
 		this.tasksTimed.clear();
 		this.tasksUntimed.clear();
 		this.tasksFinished.clear();
+		this.tasksRepeated.clear();
 		this.tags.clear();
 		this.totalTasks = 0;
 		this.totalFinished = 0;
@@ -667,6 +671,9 @@ public class TaskList {
 	    if (isInvalidIndex(taskIndexToTag)) {
 	        throw new TaskInvalidIdException();
 	        
+	    } else if (tag.equals(null)) {
+	        assert false;
+	       
 	    } else {
 	        Task givenTaskToTag = getTask(taskIndexToTag - 1);
 	        Task clonedTask = givenTaskToTag.clone();
@@ -706,7 +713,10 @@ public class TaskList {
 	    if (isInvalidIndex(taskIndexToUntag)) {
 	        throw new TaskInvalidIdException();
 	        
-	    } else {
+        } else if (tag.equals(null)) {
+            assert false;
+            
+        } else {
 	        Task givenTaskToUntag = getTask(taskIndexToUntag - 1);
 	        Task clonedTask = givenTaskToUntag.clone();
 	        untagGivenTask(givenTaskToUntag, tag);
@@ -1377,31 +1387,32 @@ public class TaskList {
     	        if (thisTask instanceof DeadlineTask) {
     	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
     	                      (thatTask instanceof DeadlineTask) &&
-    	                      (thisTask.getDeadline() == thatTask.getDeadline()) &&
-    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
+                              (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
     	            
     	        } else if (thisTask instanceof FixedTask) {
                     isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
                               (thatTask instanceof FixedTask) &&
-                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
-                              (((FixedTask) thisTask).getStartTime() == ((FixedTask) thatTask).getStartTime()) &&
-                              (thisTask.getAddedTime() == thatTask.getAddedTime());
+                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
+                              (((FixedTask) thisTask).getStartTime().equals(((FixedTask) thatTask).getStartTime())) &&
+                              (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
 
     	        } else if (thisTask instanceof RepeatedTask) {
                     isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
                               (thatTask instanceof RepeatedTask) &&
-                              (thisTask.getDeadline() == thatTask.getDeadline()) &&
-                              (thisTask.getAddedTime() == thatTask.getAddedTime()) &&
-                              (((RepeatedTask) thisTask).getRepeatPeriod() == ((RepeatedTask) thatTask).getRepeatPeriod());
+                              (thisTask.getDeadline().equals(thatTask.getDeadline())) &&
+                              (thisTask.getAddedTime().equals(thatTask.getAddedTime())) &&
+                              (((RepeatedTask) thisTask).getRepeatPeriod().equals(((RepeatedTask) thatTask).getRepeatPeriod()));
                     
     	        } else if (thisTask instanceof FloatingTask) {
     	            isEqual = (thisTask.getDescription().equals(thatTask.getDescription())) &&
     	                      (thatTask instanceof FloatingTask) &&
-    	                      (thisTask.getAddedTime() == thatTask.getAddedTime());
+    	                      (thisTask.getAddedTime().equals(thatTask.getAddedTime()));
     	            
     	        } else {
     	            assert false;
     	        }
+    	        i++;
     	    } catch (TaskInvalidDateException e) {
     	        assert false;
     	    }
@@ -1410,6 +1421,7 @@ public class TaskList {
 	    
 	    while (isEqual && (j < this.countFinished())) {
 	        isEqual = this.getFinishedTasks().get(j).getDoneDate().equals(t2.getFinishedTasks().get(j).getDoneDate());
+	        j++;
 	    }
 	    
 	    
