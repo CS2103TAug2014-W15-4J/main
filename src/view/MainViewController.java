@@ -230,7 +230,7 @@ public class MainViewController extends GridPane{
 		fadeOut.setNode(response);
 		fadeOut.setFromValue(1.0);
 		fadeOut.setToValue(0.65);
-		fadeOut.setCycleCount(10);
+		fadeOut.setCycleCount(5);
 		fadeOut.setAutoReverse(true);
 	}
 
@@ -543,7 +543,12 @@ public class MainViewController extends GridPane{
 			if (i == 0) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
-				setGridPaneSize(floatDivision, 850, 10);
+				Label caption = new Label();
+				caption.setText("Task(s) Due Soon");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 			
@@ -553,7 +558,12 @@ public class MainViewController extends GridPane{
 			if (i == taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
-				setGridPaneSize(floatDivision, 850, 10);
+				Label caption = new Label();
+				caption.setText("Task(s) Due Soon");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
@@ -576,7 +586,12 @@ public class MainViewController extends GridPane{
 			if (i == 0) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
-				setGridPaneSize(floatDivision, 850, 10);
+				Label caption = new Label();
+				caption.setText("Task(s) Due Soon");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 			
@@ -586,7 +601,12 @@ public class MainViewController extends GridPane{
 			if (i == taskList.indexOfFirstFloatingTask(specificTaskList)-1) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
-				setGridPaneSize(floatDivision, 850, 10);
+				Label caption = new Label();
+				caption.setText("Task(s) To do");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
@@ -1088,7 +1108,7 @@ public class MainViewController extends GridPane{
 		
 		response.setText(feedback);
 		
-		response.setStyle("-fx-text-fill: rgb(68,217,117)");
+		response.setStyle("-fx-text-fill: #4CAF50;");
 		
 		fadeOut.playFromStart();
 		setDisplayTitleText();
