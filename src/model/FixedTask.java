@@ -40,6 +40,7 @@ public class FixedTask extends Task {
 		this.endTime = endtime;
 	}
 	
+	//@author A0119446B
 	@Override
 	public String toString() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);

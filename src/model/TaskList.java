@@ -28,6 +28,8 @@ import exception.TaskTagException;
 import exception.UndoException;
 
 public class TaskList {
+	
+	//@author A0119446B
 	/**
 	 * This Comparator is used in outputting task list order by deadline
 	 * 
@@ -47,7 +49,8 @@ public class TaskList {
 		}
 
 	}
-
+	
+	//@author A0119446B
 	/**
 	 * This Comparator is used in outputting task list order by added time
 	 * 
@@ -197,7 +200,8 @@ public class TaskList {
 	    
 	    
 	}
-
+	
+	//@author A0119446B
 	/**
 	 * Adding a floating task
 	 * 
@@ -213,6 +217,7 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
+	//@author A0119446B
 	/**
 	 * Add a deadline task
 	 * 
@@ -230,6 +235,7 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
+	//@author A0119446B
 	/**
 	 * Add a Repeated Task
 	 * 
@@ -250,6 +256,7 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
+	//@author A0119446B
 	/**
 	 * Add a fixed(timed) task
 	 * 
@@ -788,8 +795,9 @@ public class TaskList {
 		}
 	}
 	
+	//@author A0119446B
 	public List<Task> getFinishedTasks() {
-		isShowingDone = true;
+		this.isShowingDone = true;
 		return this.tasksFinished;
 	}
 	
@@ -811,7 +819,10 @@ public class TaskList {
 			throw new TaskNoSuchTagException();
 		}
 	}
-
+	
+	
+	//@author A0119446B
+	
 	/***
 	 * This method search tasks by a given keyword
 	 * 
@@ -876,6 +887,7 @@ public class TaskList {
 		return tasksToDisplay;
 	}
 	
+	//@author A0119446B
 	/**
 	 * This method will find out the tasks which deadline is within the given
 	 * range. 
@@ -1010,6 +1022,7 @@ public class TaskList {
                 taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH));
     }
     
+  //@author A0119446B
     /**
 	 * This methods will find out the tasks that are overdue.
 	 * @return a list of overdue tasks.
@@ -1052,6 +1065,7 @@ public class TaskList {
 		}
 	}
 	
+	//@author A0119446B
 	/**
 	 * This method will prepare a list for displaying, the order is decide by the boolean 
 	 * value isDisplayedByAddTime. 
@@ -1088,6 +1102,7 @@ public class TaskList {
 		return output;
 	}
 	
+	//@author A0119446B
 	/**
 	 * This method will let tasks in listToCheck  check if 
 	 * they are overdue, and update their properties.
@@ -1105,22 +1120,27 @@ public class TaskList {
 		}
 	}
 	
+	//@author A0119446B
 	public void checkOverdue() {
 		this.checkOverdue(tasksTimed);
 	}
 
+	//@author A0119446B
 	public boolean isShowingDone() {
 		return this.isShowingDone;
 	}
+	
+	//@author A0119446B
 	public void setNotShowingDone() {
 		this.isShowingDone = false;
 	}
 	
+	//@author A0119446B
 	public void export() {
 		Storage.export(tasksTimed, tasksUntimed, tasksFinished);
 	}
 	
-	
+	//@author A0119446B
 	/**
 	 * @param taskIndex
 	 * @return
@@ -1436,27 +1456,34 @@ public class TaskList {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext, tag);
         undoStack.push(currentTaskState);        
     }
-
+    
+    //@author A0119446B
 	public int count() {
 		return this.totalTasksOngoing;
 	}
 	
+	//@author A0119446B	
 	public int countUndone() {
 		return this.countTimedTask()+this.countUntimedTask();
 	}
 
+	//@author A0119446B
 	public int countTimedTask() {
 		return this.tasksTimed.size();
 	}
 
+	//@author A0119446B
 	public int countUntimedTask() {
 		return this.tasksUntimed.size();
 	}
-
+	
+	//@author A0119446B
 	public int countFinished() {
 		return this.totalFinished;
 	}
 	
+	
+	//@author A0119446B
 	/**
 	 * This method find out the separation index between non-floating task and
 	 * floating task.

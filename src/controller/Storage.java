@@ -20,7 +20,7 @@ import model.SortedArrayList;
 import model.Task;
 import model.TaskList;
 
-
+//@author A0119446B
 /**
  * This Storage class is for saving tasks to local file, 
  * and loading tasks from local file.
@@ -31,6 +31,8 @@ import model.TaskList;
 public class Storage {
 	
 	
+	private static final String ALIAS_CLASS_LIST = "list";
+	private static final String ALIAS_CLASS_MAP = "map";
 	// XML tag for Model Class 
 	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatingTask";
 	private static final String ALIAS_CLASS_FIXED_TASK = "FixedTask";
@@ -107,6 +109,36 @@ public class Storage {
 	}
 	
 	/**
+	 * Load and build a TaskList object from the data file.
+	 * @return a TaskList object
+	 */
+	public TaskList load() {
+		logger.log(Level.INFO, "Going to load tasks from data file.");
+		String input = null;
+		StringBuilder xml = new StringBuilder(); 
+		try {
+			while ((input = reader.readLine()) != null) {
+				xml.append(input);
+			}
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "I/O error when loading tasks.");
+			throw new Error(ERROR_IO);
+		}
+		logger.log(Level.INFO, "Loading completed.");
+		return (TaskList)xstream.fromXML(xml.toString());
+	}
+	
+	public void close() {
+		try {
+			this.reader.close();
+			this.writer.close();
+		} catch (IOException e) {
+			throw new Error(ERROR_IO);
+		}
+		
+	}
+	
+	/**
 	 * Export user's list of task into txt file.
 	 * @param tasks the TaskList object which contains the list of tasks
 	 * @return a feedback message
@@ -145,44 +177,14 @@ public class Storage {
 	}
 
 	/**
-	 * Load and build a TaskList object from the data file.
-	 * @return a TaskList object
-	 */
-	public TaskList load() {
-		logger.log(Level.INFO, "Going to load tasks from data file.");
-		String input = null;
-		StringBuilder xml = new StringBuilder(); 
-		try {
-			while ((input = reader.readLine()) != null) {
-				xml.append(input);
-			}
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "I/O error when loading tasks.");
-			throw new Error(ERROR_IO);
-		}
-		logger.log(Level.INFO, "Loading completed.");
-		return (TaskList)xstream.fromXML(xml.toString());
-	}
-	
-	/**
 	 * Serialize a TaskList object into xml string
 	 * @return xml format string
 	 */
-	public String serialize(TaskList tasks) {
+	private String serialize(TaskList tasks) {
 		String xml = xstream.toXML(tasks);
 		return xml;
 	}
-	
-	public void close() {
-		try {
-			this.reader.close();
-			this.writer.close();
-		} catch (IOException e) {
-			throw new Error(ERROR_IO);
-		}
-		
-	}
-	
+
 	/**
 	 * This method initialize all the file operators
 	 * @param filename the name of the task list to be stored
@@ -198,8 +200,8 @@ public class Storage {
 		this.xstream.alias(ALIAS_CLASS_DEADLINE_TASK, DeadlineTask.class);
 		this.xstream.alias(ALIAS_CLASS_REPEATED_TASK, RepeatedTask.class);
 		this.xstream.alias(ALIAS_CLASS_SORTED_LIST, SortedArrayList.class);
-		this.xstream.alias("map", java.util.Map.class);
-		this.xstream.alias("list", java.util.ArrayList.class);
+		this.xstream.alias(ALIAS_CLASS_MAP, java.util.Map.class);
+		this.xstream.alias(ALIAS_CLASS_LIST, java.util.ArrayList.class);
 		
 		this.xstream.processAnnotations(TaskList.class);
 		this.xstream.processAnnotations(FloatingTask.class);

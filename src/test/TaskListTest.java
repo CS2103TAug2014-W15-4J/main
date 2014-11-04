@@ -30,12 +30,14 @@ public class TaskListTest {
 	static Date tomorrow;
 	static Date yesterday;
 
+	//@author A0119446B
 	@Test
 	public void testEmptyList() {
 		TaskList tasks = new TaskList();
 		assertEquals(0, tasks.count());
 	}
 
+	//@author A0119446B
 	@Test
 	public void testIsValidIndex() {
 		TaskList tasks = new TaskList();
@@ -55,6 +57,7 @@ public class TaskListTest {
 		assertTrue(tasks.isInvalidIndex(51));
 	}
 	
+	//@author A0119446B
 	@Test
 	public void testIndexOfFirstFloatingTask() {
 		TaskList tasks = new TaskList();
@@ -85,6 +88,7 @@ public class TaskListTest {
 		assertEquals(50, tasks.indexOfFirstFloatingTask(listOfTask));
 	}
 
+	//@author A0119446B
 	@Test
 	public void testAddingTask() {
 		TaskList tasks = new TaskList();
@@ -99,6 +103,7 @@ public class TaskListTest {
 		assertEquals(4, tasks.count());
 	}
 
+	//@author A0119446B
 	@Test
 	public void testDeletingTask() {
 		TaskList tasks = new TaskList();
@@ -174,6 +179,7 @@ public class TaskListTest {
 		}
 	}
 
+	//@author A0119446B
 	@Test
 	public void testEditingTask() throws TaskInvalidDateException {
 		TaskList tasks = new TaskList();
@@ -247,6 +253,7 @@ public class TaskListTest {
 
 	}
 
+	//@author A0119446B
 	@Test
 	public void testMarkingDoneTask() throws TaskInvalidIdException,
 			TaskDoneException {
@@ -371,6 +378,7 @@ public class TaskListTest {
 
 	}
 	
+	//@author A0119446B
 	@Test
 	public void testPrepareDisplayList() throws TaskInvalidDateException {
 

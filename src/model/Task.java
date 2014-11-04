@@ -118,10 +118,12 @@ public abstract class Task {
 	    throw new TaskInvalidDateException(); 
     }	
 	
+	//@author A0119446B
 	public Date getAddedTime() {
 		return this.addedTime;
     }
 
+	//@author A0119446B
 	public Date getDoneDate() {
 	    return this.doneDate;
     }
@@ -134,6 +136,7 @@ public abstract class Task {
 	    
     }
 	
+	//@author A0119446B
 	public String displayTags() {
 		StringBuilder output = new StringBuilder();
 		if (this.tags.isEmpty()) {
@@ -153,6 +156,7 @@ public abstract class Task {
 		return output.toString();
 	}
 	
+	//@author A0119446B
 	public String displayDone() {
 		if (this.isDone) {
 			return "Status: Done";
@@ -163,6 +167,7 @@ public abstract class Task {
 		}
 	}
 	
+	//@author A0119446B
 	// check if a task is overdued
 	public void checkOverdue() throws TaskInvalidDateException {
 		Date now = new Date();
