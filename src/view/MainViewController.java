@@ -158,7 +158,7 @@ public class MainViewController extends GridPane{
 	String showTag;
 	String showPeriod;
 	
-	private ArrayList<String> historyCommands;
+	private List<String> historyCommands;
 	private int historyPointer;
 	
 	private Hashtable<String, String> tagColor;
@@ -195,11 +195,18 @@ public class MainViewController extends GridPane{
         initMainDisplay();
         setRestTaskResponse();
         setDisplayTitleText();
-        initHistoryPointer();
+        initHistory();
+        initTextFieldKey();
 	}
 	
-	public void initHistoryPointer() {
+	public void initHistory() {
+		historyCommands = new ArrayList<String>();
 		historyPointer = 0;
+	}
+	
+	public void initTextFieldKey() {
+		setUpKey();
+		setDownKey();
 	}
 	
 	public ScrollPane[] getScrollPages() {
@@ -1161,11 +1168,17 @@ public class MainViewController extends GridPane{
 		return Logic.isShowDateCommand(userCommand);
 	}
 	
+	private void resetHistoryCommands(String commandToAdd) {
+		
+		historyCommands.add(commandToAdd);
+		historyPointer = historyCommands.size();
+		
+	}
+	
 	@FXML
     private void onEnter() throws TaskInvalidDateException, TaskNoSuchTagException {
 		command = getUserInput();
-		historyCommands.add(command);
-		historyPointer = historyPointer + 1;
+		resetHistoryCommands(command);
 		
 		if (!command.equals("")) {			
 			
@@ -1273,17 +1286,31 @@ public class MainViewController extends GridPane{
 		input.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.UP) {
-					boolean flag = true;
-					if (flag) {
-						flag = false;
-						if (!historyCommands.isEmpty() && historyPointer != 0) {
-							
-							historyPointer = historyPointer - 1;
-							input.setText(historyCommands.get(historyPointer));
-							
-						}
+				if ((event.getCode() == KeyCode.UP) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
+					if (!historyCommands.isEmpty() && historyPointer > 0) {
+						historyPointer = historyPointer - 1;
+						input.setText(historyCommands.get(historyPointer));
 					}
+					input.end();
+				}
+			}
+			
+		});
+	}
+	
+	private void setDownKey() {
+		input.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if ((event.getCode() == KeyCode.DOWN) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
+					if (!historyCommands.isEmpty() && historyPointer < historyCommands.size()-1) {
+						historyPointer = historyPointer + 1;
+						input.setText(historyCommands.get(historyPointer));
+					} else if (historyPointer == historyCommands.size()-1) {
+						historyPointer = historyPointer + 1;
+						input.setText("");
+					}
+					input.end();
 				}
 			}
 		});
@@ -1293,81 +1320,77 @@ public class MainViewController extends GridPane{
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
 			     public void handle(KeyEvent event) {
-			        if (event.getCode() == KeyCode.LEFT) {
+			        if ((event.getCode() == KeyCode.LEFT) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
 	//		        	event.consume();
-			        	boolean flag = true;
-			        	if (flag) {
-			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
-			        			try {
-									displayShowTodayCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			        		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
-			        			try {
-									displayShowPeriodCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
-			    				try {
-			    					taskList.setShowDisplayListToFalse();
-			    					taskList.setNotShowingDone();
-									displayShowAllCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
-			    				try {
-									displayShowDoneCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
-			    				try {
-									displayShowOverdueCommand();
-								} catch (TaskInvalidDateException
-										| TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
-			    				try {
-									displayShowTagCommand();
-								} catch (TaskNoSuchTagException
-										| TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
-			    				try {
-									displaySearchCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			}
-			        	}
+			        	if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+		        			try {
+								displayShowTodayCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		        		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+		        			try {
+								displayShowPeriodCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+		    				try {
+		    					taskList.setShowDisplayListToFalse();
+		    					taskList.setNotShowingDone();
+								displayShowAllCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
+		    				try {
+								displayShowDoneCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+		    				try {
+								displayShowOverdueCommand();
+							} catch (TaskInvalidDateException
+									| TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
+		    				try {
+								displayShowTagCommand();
+							} catch (TaskNoSuchTagException
+									| TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
+		    				try {
+								displaySearchCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			}
 			        }
 			     }
 			});
@@ -1377,81 +1400,77 @@ public class MainViewController extends GridPane{
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
 			     public void handle(KeyEvent event) {
-			        if (event.getCode() == KeyCode.RIGHT) {
+			        if ((event.getCode() == KeyCode.RIGHT) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
 	//		        	event.consume();
-			        	boolean flag = true;
-			        	if (flag) {
-			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
-			        			try {
-									displayShowPeriodCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
-			        			try {
-			        				taskList.setShowDisplayListToFalse();
-			    					taskList.setNotShowingDone();
-									displayShowAllCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			        		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
-			    				try {
-									displayHelpCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
-			    				try {
-									displayShowDoneCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
-			    				try {
-									displayShowOverdueCommand();
-								} catch (TaskInvalidDateException
-										| TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
-			    				try {
-									displayShowTagCommand();
-								} catch (TaskNoSuchTagException
-										| TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
-			    				try {
-									displaySearchCommand();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			    			}
-			        	}
+			        	if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+		        			try {
+								displayShowPeriodCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		        		} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+		        			try {
+		        				taskList.setShowDisplayListToFalse();
+		    					taskList.setNotShowingDone();
+								displayShowAllCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		        		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
+		    				try {
+								displayHelpCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
+		    				try {
+								displayShowDoneCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+		    				try {
+								displayShowOverdueCommand();
+							} catch (TaskInvalidDateException
+									| TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
+		    				try {
+								displayShowTagCommand();
+							} catch (TaskNoSuchTagException
+									| TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
+		    				try {
+								displaySearchCommand();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    			}
 			        }
 			     }
 			});
@@ -1461,25 +1480,19 @@ public class MainViewController extends GridPane{
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
 			     public void handle(KeyEvent event) {
-			        if (event.getCode() == KeyCode.ESCAPE) {
+			        if ((event.getCode() == KeyCode.ESCAPE) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
 	//		        	event.consume();
-			        	boolean flag = true;
-			        	if (flag) {
-			        		flag = false;
-			        		
-			        		if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
-			        			try {
-									setHelpHomePage();
-								} catch (TaskInvalidDateException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TaskNoSuchTagException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-			        		}
-			        		
-			        	}
+			        	if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
+		        			try {
+								setHelpHomePage();
+							} catch (TaskInvalidDateException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TaskNoSuchTagException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		        		}
 			        }
 			     }
 			});
@@ -1488,16 +1501,12 @@ public class MainViewController extends GridPane{
 	private void setFKey(final int index) {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
-			     public void handle(KeyEvent event ) {
-			        if (event.getCode() == F_KEYS[index]) {
+			     public void handle(KeyEvent event) {
+			        if ((event.getCode() == F_KEYS[index]) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
 	//		        	event.consume();
-			        	boolean flag = true;
-			        	if (flag) {
-			        		flag = false;
-			        		if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
-			    				setHelpPage(index);
-			    			}
-			        	}
+			        	if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX) {
+		    				setHelpPage(index);
+		    			}
 			        }
 			     }
 			});
