@@ -622,6 +622,14 @@ public class TaskList {
 		    }
 		    
 		    for (Task target : tasksToMarkDone) {
+		        if (target.getIsDone()) {
+		            throw new TaskDoneException();
+		        }
+		    }
+		    
+		    
+		    for (Task target : tasksToMarkDone) {
+		        
 		        tasksBeforeMarkingDone.add(target.clone());
 		        Task newRepeatTask = null;
 		        
@@ -1058,7 +1066,11 @@ public class TaskList {
 	 * @return
 	 */
 	public boolean isInvalidIndex(int taskIndex) {
-		return (taskIndex > this.countUndone()) || (taskIndex <= 0);
+	    if (isDisplay) {
+	        return (taskIndex > this.tasksToDisplay.size()) || (taskIndex <= 0);
+	    } else {
+	        return (taskIndex > this.countUndone()) || (taskIndex <= 0);
+	    }
 	}
 
 	/**
