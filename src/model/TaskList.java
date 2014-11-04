@@ -582,7 +582,7 @@ public class TaskList {
         tasksRemoved.addAll(tasksUntimed);
         tasksRemoved.addAll(tasksTimed);
         tasksRemoved.addAll(tasksFinished);
-        addToUndoList(LastCommand.DELETE, tasksRemoved);
+        addToUndoList(LastCommand.CLEAR, tasksRemoved);
         
 		this.isDisplay = false;
 		this.tasksUntimed.clear();
@@ -1149,6 +1149,14 @@ public class TaskList {
 	                this.addToList(task);
 	            }
 	            
+	        } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
+	            for (Task task : tasksToReadd) {
+	                this.addToList(task);
+	            }
+	            
+	            updateTagsHash(tasksToReadd);
+	            
 	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
 	            List<Task> tasksAfterDone = lastState.getCurrentTaskStateList();
 	            List<Task> repeatTaskList = lastState.getRepeatTaskList();
@@ -1220,6 +1228,29 @@ public class TaskList {
 	}
 	
 	/**
+	 * This method updates the <tags: tasks> pairs in the tags HashMap.
+	 * This method is only called by undo to revert the clear command.
+	 * 
+	 * @param tasksToReadd List of tasks that are readd after the clear command
+	 */
+	private void updateTagsHash(List<Task> tasksToReadd) {
+        for (Task task : tasksToReadd) {
+            List<String> taskTags = task.getTags();
+            for (String tag : taskTags) {
+                if (tags.containsKey(tag)) {
+                    tags.get(tag).add(task);
+                    
+                } else {
+                    List<Task> taskWithTag = new ArrayList<Task>();
+                    taskWithTag.add(task);
+                    tags.put(tag, taskWithTag);
+                }
+            }
+        }
+        
+    }
+
+    /**
 	 * This method reverts the undo operation done.
 	 * 
 	 * @throws RedoException   if there is no operation undid

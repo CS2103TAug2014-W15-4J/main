@@ -6,7 +6,7 @@ import model.Task;
 
 public class LastState {
     public enum LastCommand {
-        ADD, DELETE, EDIT, DONE, TAG, UNTAG
+        ADD, DELETE, EDIT, DONE, TAG, UNTAG, CLEAR
     }
     
     LastCommand lastCommand; 
