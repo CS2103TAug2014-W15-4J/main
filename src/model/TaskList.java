@@ -1030,7 +1030,7 @@ public class TaskList {
 	 * 
 	 * @param listToCheck the list to be checked
 	 */
-	private void checkOverdue(List<Task> listToCheck) {
+	public void checkOverdue(List<Task> listToCheck) {
 		for (Task task : listToCheck) {
 			try {
 				task.checkOverdue();
@@ -1264,7 +1264,6 @@ public class TaskList {
 	    if (consecutiveTask == null) {
 	        assert false;
 	    } 
-
 	    return consecutiveTask;
 	}
 

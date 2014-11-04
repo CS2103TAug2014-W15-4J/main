@@ -12,7 +12,8 @@
 			<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
 		</columnConstraints>
 		<rowConstraints>
-			<RowConstraints maxHeight="144.0" minHeight="10.0" prefHeight="144.0" vgrow="SOMETIMES" />
+			<RowConstraints maxHeight="94.0" minHeight="10.0" prefHeight="94.0" vgrow="SOMETIMES" />
+			<RowConstraints maxHeight="54.0" minHeight="0.0" prefHeight="54.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="404.0" minHeight="10.0" prefHeight="451.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="2.0" minHeight="0.0" prefHeight="2.0" vgrow="SOMETIMES" />
 			<RowConstraints maxHeight="151.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
@@ -25,22 +26,21 @@
 				</columnConstraints>
 				<rowConstraints>
 					<RowConstraints maxHeight="94.0" minHeight="10.0" prefHeight="94.0" vgrow="SOMETIMES" />
-					<RowConstraints maxHeight="54.0" minHeight="0.0" prefHeight="54.0" vgrow="SOMETIMES" />
+					
 				</rowConstraints>
 				<children>
 					<Label fx:id="date" id="date" styleClass="titleText" prefHeight="94.0" prefWidth="550.0" text="Date" GridPane.columnIndex="1" />
 					<Label fx:id="displayTitleText" id="displayTitleText" styleClass="titleText" prefHeight="94.0" prefWidth="350.0" text="uClear" />
-				<Pane styleClass="feedbackText" GridPane.columnSpan="2" GridPane.rowIndex="1" prefHeight="54.0" prefWidth="900.0">
-					<Label fx:id="response" id="response" styleClass="titleText" prefHeight="54.0" prefWidth="900.0" text="Good! All tasks are done!" />
-				</Pane>
-					
 				</children>
 			</GridPane>
-			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="404.0" prefWidth="900.0" GridPane.rowIndex="1">
+			<Pane styleClass="feedbackText" GridPane.rowIndex="1" prefHeight="54.0" prefWidth="900.0">
+				<Label fx:id="response" id="response" styleClass="titleText" prefHeight="54.0" prefWidth="900.0" text="Good! All tasks are done!" />
+			</Pane>
+			<Pane fx:id="mainDisplay" id="mainDisplay" prefHeight="404.0" prefWidth="900.0" GridPane.rowIndex="2">
 				<Pagination fx:id="listDisplay" id="listDisplay" prefHeight="404.0" prefWidth="900.0" onKeyTyped="#onKeyTyped" />	
 			</Pane>
-			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="900" GridPane.rowIndex="2"/>
-			<Pane id="inputPane" prefHeight="70.0" prefWidth="900.0" GridPane.rowIndex="3">
+			<Pane styleClass="titleDivision" prefHeight="2.0" prefWidth="900" GridPane.rowIndex="3"/>
+			<Pane id="inputPane" prefHeight="70.0" prefWidth="900.0" GridPane.rowIndex="4">
 				<children>
 					<TextField fx:id="input" id="input" promptText="Enter command here." layoutX="24.0" layoutY="11.0" prefHeight="47.0" prefWidth="850.0" onAction="#onEnter" />
 				</children>

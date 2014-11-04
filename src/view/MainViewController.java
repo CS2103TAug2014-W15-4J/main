@@ -239,6 +239,7 @@ public class MainViewController extends GridPane{
 	}
 
 	private void setPages() {
+		
 		scrollPage = new ScrollPane[pageCount];
 		page = new VBox[pageCount];
 		for (int i=0; i<pageCount; i++) {
@@ -567,6 +568,7 @@ public class MainViewController extends GridPane{
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
+		page[pageIndex].getChildren().add(new Pane());
 	}
 	
 	private void setOnePageView(int pageIndex, List<Task> specificTaskList) throws TaskInvalidDateException {
@@ -610,6 +612,7 @@ public class MainViewController extends GridPane{
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
+		page[pageIndex].getChildren().add(new Pane());
 	}
 	
 	private void setTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
@@ -630,7 +633,6 @@ public class MainViewController extends GridPane{
 	
 	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
 		Task task = taskList.getTask(index);
-		
 		if (task.getType().equals(Type.FLOAT)) {
 			setGridPaneSize(taskLayout, 850, 60);
 			setFloatTaskFormat(taskLayout, task, index);
@@ -690,12 +692,12 @@ public class MainViewController extends GridPane{
 		displayIndex.setMaxHeight(140);
 		displayIndex.setMinWidth(50);
 		displayIndex.setMaxWidth(50);
-		if (isOverdue) {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#F44336;");
-		} else if (isDone) {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#4CAF50;");
+		 if (isDone) {
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#4CAF50;-fx-background-radius: 2px 0 0 2px;");
+		} else if (isOverdue) {
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#F44336;-fx-background-radius: 2px 0 0 2px;");
 		} else {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;");
+			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;-fx-background-radius: 2px 0 0 2px;");
 		}
 		
 		GridPane.setConstraints(displayIndex, 0, 0, 1, 5);
@@ -729,23 +731,23 @@ public class MainViewController extends GridPane{
 		if (task.getType().equals(Type.FLOAT)) {
 			if (task.getIsDone()) {
 				status.setText("DONE");
-				status.setStyle("-fx-background-color: #4CAF50;");
+				status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
 			} else {
 				status.setText("ONGOING");
-				status.setStyle("-fx-background-color: #29b6f6;");
+				status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
 			}
 		} else {
 			task.checkOverdue();
 			if (task.getIsOverdue()) {
 				status.setText("OVERDUE");
-				status.setStyle("-fx-background-color: #F44336;");
+				status.setStyle("-fx-background-color: #F44336;-fx-background-radius: 0 2px 2px 0;");
 			} else {
 				if (task.getIsDone()) {
 					status.setText("DONE");
-					status.setStyle("-fx-background-color: #4CAF50;");
+					status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
 				} else {
 					status.setText("ONGOING");
-					status.setStyle("-fx-background-color: #29b6f6;");
+					status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
 				}
 			}
 		}
@@ -795,10 +797,11 @@ public class MainViewController extends GridPane{
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
 		HBox tagBox = new HBox();
-		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-valignment: center;");
+		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-valignment: center;-fx-border-width: 1 0 0 0;-fx-border-color: #E0E0E0");
 		tagBox.setAlignment(Pos.CENTER_LEFT);
 		tagBox.setSpacing(20);
 		tagBox.setPrefSize(650, 30);
+		tagBox.setMaxWidth(650);
 		tagBox.setMaxHeight(30);
 		if (task.getTags().size() > 0) {
 			Label[] tags = new Label[task.getTags().size()];
