@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Stack;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -147,8 +146,6 @@ public class MainViewController extends GridPane{
 	private Label[] fKeys;
 	private Label[] fKeysInfo;
 	
-	private boolean[] isCommandHelp;
-	
 	String command;
 	String feedback;
 	int pageCount;
@@ -173,7 +170,15 @@ public class MainViewController extends GridPane{
 			date.setText(dateFormat.format(cal.getTime()));
 		}
 	}));
-
+	
+	//@author A0119414L
+	/**
+	 * Constructor of MainViewController.
+	 * 
+	 * @throws IOException
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	public MainViewController() throws IOException, TaskInvalidDateException, TaskNoSuchTagException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FXML_FILE_NAME));
         fxmlLoader.setRoot(this);
@@ -184,8 +189,14 @@ public class MainViewController extends GridPane{
         setMainView();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Initialize the view.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void setMainView() throws TaskInvalidDateException, TaskNoSuchTagException {
-		setIsCommandHelp();
 		initFadeEffect();
 		setPageCount(TOTAL_PAGE_NUM);
 		setPages();
@@ -199,28 +210,33 @@ public class MainViewController extends GridPane{
         initTextFieldKey();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Initialize the history command and history command pointer.
+	 * 
+	 */
 	public void initHistory() {
 		historyCommands = new ArrayList<String>();
 		historyPointer = 0;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Initialize the function up and down keys 
+	 * 
+	 */
 	public void initTextFieldKey() {
 		setUpKey();
 		setDownKey();
 	}
 	
-	public ScrollPane[] getScrollPages() {
-		return scrollPage;
-	}
-	
-	private void setIsCommandHelp() {
-		isCommandHelp = new boolean[8];
-		
-		for (int i=0; i<8; i++) {
-			isCommandHelp[i] = false;
-		}
-	}
-	
+	//@author A0119414L
+	/**
+	 * Set the title of current page.
+	 * Pages includes today tasks, period tasks, undone tasks, done tasks,
+	 * overdue tasks, tasks with tag, search result, and help document.
+	 * 
+	 */
 	private void setDisplayTitleText() {
 		int currentPageNum = listDisplay.getCurrentPageIndex();
 		
@@ -243,6 +259,11 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Initialize the fade out effect.
+	 * 
+	 */
 	private void initFadeEffect() {
 		fadeOut.setNode(response);
 		fadeOut.setFromValue(1.0);
@@ -250,11 +271,22 @@ public class MainViewController extends GridPane{
 		fadeOut.setCycleCount(4);
 		fadeOut.setAutoReverse(true);
 	}
-
+	
+	//@author A0119414L
+	/**
+	 * Set the total number of pages.
+	 * 
+	 * @param count
+	 */
 	private void setPageCount(int count) {
 		pageCount = count;
 	}
-
+	
+	//@author A0119414L
+	/**
+	 * Initialize each page.
+	 * 
+	 */
 	private void setPages() {
 		
 		scrollPage = new ScrollPane[pageCount];
@@ -278,6 +310,12 @@ public class MainViewController extends GridPane{
 		
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the size and style of each page.
+	 * 
+	 * @param index		Page index.
+	 */
 	private void setScrollPage(int index) {
 		scrollPage[index].setStyle(CSS_BACKGROUND_COLOR + String.format(FX_COLOR_RGB, 255, 255, 255));
 		scrollPage[index].setPrefSize(listDisplay.getPrefWidth(), listDisplay.getPrefHeight());
@@ -287,24 +325,44 @@ public class MainViewController extends GridPane{
 		scrollPage[index].getStyleClass().add("taskListPane");
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set font size of some components.
+	 * 
+	 */
 	private void setFont() {
-//	    wholePane.setStyle("-fx-font-family: Montserrat-Regular");
 	    date.setStyle("-fx-font-size: 18");
 	    response.setStyle("-fx-font-size: 20");
 	    input.setStyle("-fx-font-size: 20");
 	    displayTitleText.setStyle("-fx-font-size: 34");
 	}
-
+	
+	//@author A0119414L
+	/**
+	 * Initialize tag color and tag color pointer.
+	 * 
+	 */
 	private void initTagColor() {
 		tagColor = new Hashtable<String, String>();
 		colorPointer = 0;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display the date to the view.
+	 * 
+	 */
 	private void setDate() {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Implement the page content to each page.
+	 * 
+	 * @throws TaskInvalidDateException
+	 */
 	private void initMainDisplay() throws TaskInvalidDateException {
 		listDisplay.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
 		listDisplay.setPageCount(pageCount);
@@ -319,6 +377,13 @@ public class MainViewController extends GridPane{
 		displayTodayTasks();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the home page of the help document page.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void setHelpHomePage() throws TaskInvalidDateException, TaskNoSuchTagException {
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		setRestTaskResponse();
@@ -369,12 +434,29 @@ public class MainViewController extends GridPane{
 		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 16));
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the size of each help box (each column) in the view.
+	 * 
+	 * @param index		Column index.
+	 * @param width		Width to set.
+	 * @param height	Height to set.
+	 */
 	private void setHelpHBoxSize(int index, double width, double height) {
 		commandInfo[index].setPrefSize(width, height);
 		commandInfo[index].setMaxSize(width, height);
 		commandInfo[index].setMinSize(width, height);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the size and style of each command in help page.
+	 * 
+	 * @param command				Command.
+	 * @param descriptionString		Description of a command.
+	 * @param structureString		Structure of a command.
+	 * @param exampleString			Example of a command.
+	 */
 	private void setHelpForCommand(GridPane command, String descriptionString, String structureString, String exampleString) {
 		Label description = new Label("Description");
 		description.setStyle("-fx-text-fill:  #03a9f4");
@@ -401,6 +483,12 @@ public class MainViewController extends GridPane{
 		command.getChildren().addAll(description, descriptionContent, structure, structureContent, example, exampleContent);
 	}
 
+	//@author A0119414L
+	/**
+	 * Put all the help information for all commands into the help page.
+	 * 
+	 * @param index		The page index of each type of command to display.
+	 */
 	private void setHelpPage(int index) {
 		response.setText("Press \"Esc\" to return");
 		page[HELP_DOC_PAGE_INDEX].setSpacing(20);
@@ -525,14 +613,34 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display today tasks.
+	 * 
+	 * @throws TaskInvalidDateException
+	 */
 	private void displayTodayTasks() throws TaskInvalidDateException {
 		setOnePageView(TODAY_TASKS_PAGE_INDEX, getTodayTaskList());
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display tasks during a period of time.
+	 * 
+	 * @throws TaskInvalidDateException
+	 */
 	private void displayPeriodTasks() throws TaskInvalidDateException {
 		setOnePageView(PERIOD_TASKS_PAGE_INDEX, getPeriodTaskList(showPeriod));
 	}
 	
+	//@author A0119414L
+	/**
+	 * Get the list of tasks that are within a period of time.
+	 * 
+	 * @param userCommand		Input command from user.
+	 * @return		List of tasks that within the time period specified in user command.
+	 * @throws TaskInvalidDateException
+	 */
 	private List<Task> getPeriodTaskList(String userCommand) throws TaskInvalidDateException {
 		List<Date> periodDate = Logic.getDateList(userCommand);
 		List<Task> periodTasks = taskList.getDateRangeTask(periodDate);
@@ -540,12 +648,25 @@ public class MainViewController extends GridPane{
 		return periodTasks;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Get the taskList from Logic and check overdue for each task.
+	 * 
+	 * @throws TaskInvalidDateException
+	 */
 	private void loadTaskListToController() throws TaskInvalidDateException {
 		loadTaskList();
 		taskList = getTaskList();
 		taskList.checkOverdue();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set view of one page (this method is only for the page that is to show all ongoing tasks).
+	 * 
+	 * @param pageIndex		Page index.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
 		page[pageIndex].getChildren().clear();
 		
@@ -589,6 +710,14 @@ public class MainViewController extends GridPane{
 		page[pageIndex].getChildren().add(new Pane());
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set view of one page (except help document page and all ongoing tasks page).
+	 * 
+	 * @param pageIndex		Page index.
+	 * @param specificTaskList		Specified task list to display in the page.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setOnePageView(int pageIndex, List<Task> specificTaskList) throws TaskInvalidDateException {
 		listDisplay.setCurrentPageIndex(pageIndex);
 		page[pageIndex].getChildren().clear();
@@ -633,6 +762,16 @@ public class MainViewController extends GridPane{
 		page[pageIndex].getChildren().add(new Pane());
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set size and style for each task (each column in the view).
+	 * Different task may be displayed in different size and style.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param task			Task to display, including all the task information. 
+	 * @param index			Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		if (task.getType().equals(Type.FLOAT)) {
 			setGridPaneSize(taskLayout, 850, 60);
@@ -649,6 +788,15 @@ public class MainViewController extends GridPane{
 		} 
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set size and style for each task (each column in the view).
+	 * Different task may be displayed in different size and style. 
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param index				Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
 		Task task = taskList.getTask(index);
 		if (task.getType().equals(Type.FLOAT)) {
@@ -666,7 +814,15 @@ public class MainViewController extends GridPane{
 		} 
 	}
 	
-
+	//@author A0119414L
+	/**
+	 * Set the task view if it is a floating task.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param task			Task to display, including all the task information. 
+	 * @param index			Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setFloatTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index, false, task.getIsDone());
 		setSpace(taskLayout);
@@ -675,6 +831,15 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the task view if it is a deadline task.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param task			Task to display, including all the task information. 
+	 * @param index			Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setDeadlineTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
@@ -684,6 +849,15 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the task view if it is a fixed task.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param task			Task to display, including all the task information. 
+	 * @param index			Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setFixedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
@@ -694,6 +868,15 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the task view if it is a repeated task.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param task			Task to display, including all the task information. 
+	 * @param index			Index of the task in the task list.
+	 * @throws TaskInvalidDateException
+	 */
 	private void setRepeatedTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		setDisplayIndex(taskLayout, index, task.getIsOverdue(), task.getIsDone());
 		setSpace(taskLayout);
@@ -704,6 +887,15 @@ public class MainViewController extends GridPane{
 		setTags(taskLayout, task);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of task index.
+	 * 
+	 * @param taskLayout	GridPane to hold the content of each task.
+	 * @param index			Index of the task in the task list.
+	 * @param isOverdue		It is true if the task is overdue.
+	 * @param isDone		It is true if the task is done.
+	 */
 	private void setDisplayIndex(GridPane taskLayout, int index, boolean isOverdue, boolean isDone) {
 		Label displayIndex = new Label(Integer.toString(index+1));
 	
@@ -722,12 +914,25 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(displayIndex);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the white space in task layout.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 */
 	private void setSpace(GridPane taskLayout) {
 		Label space = new Label("  ");
 		GridPane.setConstraints(space, 2, 0, 1, 1);
 		taskLayout.getChildren().add(space);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of task description.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information. 
+	 */
 	private void setDescription(GridPane taskLayout, Task task) {
 		Label description = new Label(task.getDescription());
 		description.setPrefSize(650, 40);
@@ -737,6 +942,14 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(description);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of the status.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information. 
+	 * @throws TaskInvalidDateException
+	 */
 	private void setStatus(GridPane taskLayout, Task task) throws TaskInvalidDateException {
 		Label status = new Label();
 		status.setPrefWidth(150);
@@ -773,6 +986,14 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(status);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of deadline if it is not floating task.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information. 
+	 * @throws TaskInvalidDateException
+	 */
 	private void setDeadline(GridPane taskLayout, Task task) throws TaskInvalidDateException {
 		Label deadline = new Label();
 		
@@ -790,6 +1011,14 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(deadline);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of start time if it is fixed task.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information. 
+	 * @throws TaskInvalidDateException
+	 */
 	private void setStartTime(GridPane taskLayout, Task task) {
 		FixedTask fixedTask = (FixedTask)task;
 		Label startTime = new Label("Start Time: " + taskTimeFormat.format(fixedTask.getStartTime()));
@@ -802,6 +1031,13 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(startTime);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of repeated period if it is repeated task.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information. 
+	 */
 	private void setRepeatPeriod(GridPane taskLayout, Task task) {
 		RepeatedTask repeatedTask = (RepeatedTask)task;
 		Label repeatPeriod = new Label("Repeat Period: " + repeatedTask.getRepeatPeriod());
@@ -812,6 +1048,13 @@ public class MainViewController extends GridPane{
 		taskLayout.getChildren().add(repeatPeriod);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the style of tags if the task has any tags.
+	 * 
+	 * @param taskLayout		GridPane to hold the content of each task.
+	 * @param task				Task to display, including all the task information.
+	 */
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
 		HBox tagBox = new HBox();
@@ -852,12 +1095,27 @@ public class MainViewController extends GridPane{
 		
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set size of a GridPane.
+	 * 
+	 * @param gridPane		GridPane to set size.
+	 * @param width			Width to set.
+	 * @param height		Height to set.
+	 */
 	private void setGridPaneSize(GridPane gridPane, double width, double height) {
 		gridPane.setPrefSize(width, height);
 		gridPane.setMaxSize(width, height);
 		gridPane.setMinSize(width, height);
 	}	
 	
+	//@author A0119414L
+	/**
+	 * Set the dynamic response due to the task list and different page.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void setRestTaskResponse() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			List<Task> todayTasks = getTodayTaskList();
@@ -941,15 +1199,36 @@ public class MainViewController extends GridPane{
 			
 		}
 	}
-
+	
+	//@author A0119414L
+	/**
+	 * Get the user input command from the view.
+	 * 
+	 * @return		return the command.
+	 */
 	private String getUserInput() {
 		return input.getText();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Call Logic to execute the user command.
+	 * 
+	 * @param command	Command to execute.
+	 * @return			return the feedback of executing the command.
+	 */
 	private String executeCommand(String command) {
 		return Logic.readAndExecuteCommands(command);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Check if the command is some special command.
+	 * Special commands are the commands different from executive commands.
+	 * 
+	 * @return		return true if it is a special command.
+	 * @throws TaskInvalidDateException
+	 */
 	private boolean isSpecialCommand() throws TaskInvalidDateException {		
 		if (command.trim().toLowerCase().equals("exit")) {
 			saveTaskList();
@@ -998,18 +1277,41 @@ public class MainViewController extends GridPane{
 		return false;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Call Logic to save the task list to the Storage.
+	 * 
+	 */
 	private void saveTaskList() {
 		Logic.saveTaskList();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Call Logic to load the task list from the Storage to Logic.
+	 * 
+	 */
 	private void loadTaskList() {
 		Logic.loadTaskList();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Get the task list from Logic.
+	 * 
+	 * @return		return the task list from Logic.
+	 */
 	private TaskList getTaskList() {
 		return Logic.getTaskList();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Get the list of tasks which deadline is today from Logic.
+	 * 
+	 * @return		return the list of tasks due today.
+	 * @throws TaskInvalidDateException
+	 */
 	private List<Task> getTodayTaskList() throws TaskInvalidDateException {
 		List<Date> today = Logic.getDateList("show today");
 		List<Task> todayTasks = taskList.getDateRangeTask(today);
@@ -1017,20 +1319,46 @@ public class MainViewController extends GridPane{
 		return todayTasks;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Get the list of tasks which are with the specified tag.
+	 * 
+	 * @param tag		Tag that tasks have.
+	 * @return			return the list of tasks with such tag.
+	 * @throws TaskNoSuchTagException
+	 */
 	private List<Task> getTagTaskList(String tag) throws TaskNoSuchTagException {
 		List<Task> tagTasks = taskList.getTasksWithTag(tag);
 		
 		return tagTasks;
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the text of input field in the view.
+	 * 
+	 * @param content		Text to set.
+	 */
 	private void setTextField(String content) {
 		input.setText(content);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the input field to be empty.
+	 * 
+	 */
 	private void setTextFieldEmpty() {
 		setTextField("");
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is a help command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayHelpCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		listDisplay.setCurrentPageIndex(HELP_DOC_PAGE_INDEX);
 		
@@ -1043,6 +1371,13 @@ public class MainViewController extends GridPane{
 		listDisplay.requestFocus();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is search command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displaySearchCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (searchKey != null) {
 			setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
@@ -1053,13 +1388,26 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show all command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayShowAllCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		listDisplay.setCurrentPageIndex(UNDONE_TASKS_PAGE_INDEX);
 		setDisplayTitleText();
 		setRestTaskResponse();
 		setOnePageView(UNDONE_TASKS_PAGE_INDEX);
 	}
-	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show done command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayShowDoneCommand() throws TaskInvalidDateException, TaskNoSuchTagException {		
 		setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
 		
@@ -1067,6 +1415,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show overdue command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayShowOverdueCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		setOnePageView(OVERDUE_TASKS_PAGE_INDEX, taskList.getOverdueTask());
 		
@@ -1074,6 +1429,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show tag command.
+	 * 
+	 * @throws TaskNoSuchTagException
+	 * @throws TaskInvalidDateException
+	 */
 	private void displayShowTagCommand() throws TaskNoSuchTagException, TaskInvalidDateException {
 		if (showTag != null) {
 			if (taskList.isTagContained(showTag)) {
@@ -1089,6 +1451,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show period command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayShowPeriodCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (showPeriod != null) {
 			displayPeriodTasks();
@@ -1100,6 +1469,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is show today command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayShowTodayCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		List<Task> todayTasks = getTodayTaskList();
 		
@@ -1108,6 +1484,13 @@ public class MainViewController extends GridPane{
 		setRestTaskResponse();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Display to the view if it is not show, search or help command.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void displayOtherCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 			displayTodayTasks();
@@ -1135,6 +1518,14 @@ public class MainViewController extends GridPane{
 		setDisplayTitleText();
 	}
 	
+	//@author A0119414L
+	/**
+	 * Check the type of command. 
+	 * 
+	 * @param command		User input command.
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void analyseCommand(String command) throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
 			displayHelpCommand();
@@ -1168,10 +1559,23 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Call Logic to check if it is a show date command.
+	 * 
+	 * @param userCommand		User input command.
+	 * @return
+	 */
 	private boolean isShowDateCommand(String userCommand) {
 		return Logic.isShowDateCommand(userCommand);
 	}
 	
+	//@author A0119414L
+	/**
+	 * Add the command to the history commands after executing it.
+	 * 
+	 * @param commandToAdd		Command to be added.
+	 */
 	private void resetHistoryCommands(String commandToAdd) {
 		
 		historyCommands.add(commandToAdd);
@@ -1179,7 +1583,14 @@ public class MainViewController extends GridPane{
 		
 	}
 	
+	//@author A0119414L
 	@FXML
+	/**
+	 * Set the event if the enter key is typed.
+	 * 
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
     private void onEnter() throws TaskInvalidDateException, TaskNoSuchTagException {
 		command = getUserInput();
 		resetHistoryCommands(command);
@@ -1220,7 +1631,15 @@ public class MainViewController extends GridPane{
 		}
     }
 	
+	//@author A0119414L
 	@FXML
+	/**
+	 * Set the event is going to happen when some keys are typed.
+	 * 
+	 * @param keyEvent		Event happened.
+	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException
+	 */
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException, TaskNoSuchTagException {
 		if (keyEvent.getCharacter().equals("1")) {
 			displayShowTodayCommand();
@@ -1286,6 +1705,11 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the event when up key is typed.
+	 * 
+	 */
 	private void setUpKey() {
 		input.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
@@ -1302,6 +1726,11 @@ public class MainViewController extends GridPane{
 		});
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set the event when down key is typed.
+	 * 
+	 */
 	private void setDownKey() {
 		input.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
@@ -1320,12 +1749,16 @@ public class MainViewController extends GridPane{
 		});
 	}
 
+	//@author A0119414L
+	/**
+	 * Set the event of the left key is typed.
+	 * 
+	 */
 	private void setLeftKey() {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
 			     public void handle(KeyEvent event) {
 			        if ((event.getCode() == KeyCode.LEFT) && (event.getEventType().equals(KeyEvent.KEY_RELEASED))) {
-	//		        	event.consume();
 			        	if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 		        			try {
 								displayShowTodayCommand();
@@ -1399,7 +1832,12 @@ public class MainViewController extends GridPane{
 			     }
 			});
 		}
-
+	
+	//@author A0119414L
+	/**
+	 * Set the event if right key is typed.
+	 * 
+	 */
 	private void setRightKey() {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
@@ -1480,6 +1918,11 @@ public class MainViewController extends GridPane{
 			});
 		}
 
+	//@author A0119414L
+	/**
+	 * Set the event when Esc key is typed.
+	 * 
+	 */
 	private void setEscKey() {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 
@@ -1501,7 +1944,13 @@ public class MainViewController extends GridPane{
 			     }
 			});
 		}
-
+	
+	//@author A0119414L
+	/**
+	 * Set the event if one of F1 to F8 keys is typed.
+	 * 
+	 * @param index
+	 */
 	private void setFKey(final int index) {
 			listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			     @Override 

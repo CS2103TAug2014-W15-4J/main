@@ -801,8 +801,9 @@ public class TaskList {
 		return this.tasksFinished;
 	}
 	
+	//@author A0119414L
 	/**
-	 * @author A0119414L
+	 * Check if the tag is contained in the task list.
 	 * 
 	 * @param tag	
 	 * @return 		true if tag is contained in the task list

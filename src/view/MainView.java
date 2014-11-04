@@ -12,7 +12,12 @@ import javafx.scene.text.*;
 
 
 public class MainView extends Application {
+	
+	//@author A0119414L
 	@Override
+	/**
+	 * Set the window.
+	 */
 	public void start(Stage primaryStage) throws IOException, TaskInvalidDateException, TaskNoSuchTagException {
 		MainViewController mvc = new MainViewController();
 		
@@ -39,10 +44,20 @@ public class MainView extends Application {
 		primaryStage.show();
 	}
 	
+	//@author A0119414L
+	/**
+	 * 
+	 * @return	Return the name of OS.
+	 */
 	private String getOS() {
 		return System.getProperty("os.name");
 	}
 	
+	//@author A0119414L
+	/**
+	 * 
+	 * @param args	Arguments for execution
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}

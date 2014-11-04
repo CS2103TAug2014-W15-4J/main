@@ -113,6 +113,7 @@ public class Logic {
 		}
 	}
 	
+	//@author A0119414L
 	/**
 	 * Loads the task list from the storage.
 	 */
@@ -130,12 +131,15 @@ public class Logic {
 		return listOfTasks;
 	}
 	
+	//@author A0119414L
 	/**
 	 * Call Logic to save the task list to Storage.
 	 */
 	public static void saveTaskList() {
 		storage.save(listOfTasks);
 	}
+	
+	//@author A0119414L
 	/**
 	 * Returns the date list, if user input is show command.
 	 * 
@@ -154,6 +158,7 @@ public class Logic {
         return showDate;
     }
 	
+	//@author A0119414L
 	/**
 	 * Returns true if the current command a show date period command.  
 	 * 
