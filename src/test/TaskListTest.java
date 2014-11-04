@@ -417,10 +417,14 @@ public class TaskListTest {
         }
 	    
 	    try {
-	        TaskList controlList = addTasks();
+	        // test undo/redo for adding 
+	        TaskList controlList = new TaskList();
 	        
-	        // test undo/redo for adding
 	        tasks = addTasks();
+	        for (int i = 0; i < tasks.count(); i++) {
+	            Task task = tasks.getTask(i);
+	            controlList.addTaskToTaskList(task.clone());
+	        }
 	        assert (tasks.count() == 4);
 	        
 	        tasks.undo();
