@@ -420,7 +420,7 @@ public class Logic {
 	}
 
     /**
-     * This method adds a repeated task to the file, with the specified description and time
+     * This method adds a repeated task to the file, with the specified description and time.
      * along with the repeat period.
      * 
      * @param description   Description of task to be added.
@@ -557,7 +557,7 @@ public class Logic {
 
 	//@author A0119446B
 	/**
-	 * Searching a task
+	 * This method searches for a task.
 	 * 
 	 * @param keyword  The keyword to search.
 	 * @return         The search result.
@@ -594,7 +594,7 @@ public class Logic {
 	}
 
 	/**
-	 * This method clears the task list of all tasks 
+	 * This method clears the task list of all tasks.
 	 * 
 	 * @return     The feedback string regarding the success of the command.
 	 */
@@ -608,7 +608,7 @@ public class Logic {
 	 * 
 	 * @param userCommand  The specific type of show command.
 	 * @param showDate     The given date period for displaying.
-	 * @return             User's task information
+	 * @return             User's task information.
 	 */
 	private static String display(String userCommand, List<Date> showDate) {
 
@@ -648,7 +648,7 @@ public class Logic {
 	}
 
 	/**
-	 * This method marks done the specified tasks from the file
+	 * This method marks done the specified tasks from the file.
 	 * 
 	 * @param taskIndexList    The list of task indices of tasks to be marked done.
 	 * @return                 The feedback string regarding the success of the command.
@@ -667,10 +667,10 @@ public class Logic {
 	}
 
 	/**
-	 * This method assigns the tag (non case-sensitive) to a specified task
+	 * This method assigns the tag (non case-sensitive) to a specified task.
 	 * 
 	 * @param taskIndexToTag   The task index of the task to be tagged.
-	 * @param tag              The tag to be assigned
+	 * @param tag              The tag to be assigned.
 	 * @return                 The feedback string regarding the success of the command.
 	 */
 	private static String tagTask(int taskIndexToTag, String tag) {

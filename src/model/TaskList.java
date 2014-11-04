@@ -32,9 +32,6 @@ public class TaskList {
 	//@author A0119446B
 	/**
 	 * This Comparator is used in outputting task list order by deadline
-	 * 
-	 * @author Jiang Sheng
-	 *
 	 */
 	static class DeadlineComparator implements Comparator<Task> {
 
@@ -47,15 +44,11 @@ public class TaskList {
 			}
 			return 0;
 		}
-
 	}
 	
 	//@author A0119446B
 	/**
 	 * This Comparator is used in outputting task list order by added time
-	 * 
-	 * @author Jiang Sheng
-	 *
 	 */
 	static class AddedDateComparator implements Comparator<Task> {
 
@@ -63,9 +56,12 @@ public class TaskList {
 		public int compare(Task o1, Task o2) {
 			return o1.getAddedTime().compareTo(o2.getAddedTime());
 		}
-
 	}
 	
+	//@author A0115384H
+	/**
+	 * This Comparator is used in outputting task list order by done time
+	 */
 	static class DoneDateComparator implements Comparator<Task> {
 	    
 	    @Override
@@ -109,6 +105,9 @@ public class TaskList {
 	@XStreamAlias("TotalTaskFinished")
 	private int totalFinished;
 
+	/**
+	 * This constructor creates a new TaskList object, and initialises all values. 
+	 */
 	public TaskList() {
 		// let the logger only display warning log message.
 		logger.setLevel(Level.WARNING);
@@ -125,7 +124,8 @@ public class TaskList {
 	}
 
 	/**
-	 * If setShowDisplayListToFalse is called, display the whole list.
+	 * This method sets the isDisplay attribute to false when called.
+	 * When isDisplay is set to false, the whole list is displayed.
 	 */
 	public void setShowDisplayListToFalse() {
 		// lazy evaluation
@@ -136,6 +136,12 @@ public class TaskList {
 		this.tasksToDisplay.clear();
 	}
 
+	/**
+	 * This method returns the Task with the specified task index.
+	 * 
+	 * @param taskIndex    The task index of the task to get.
+	 * @return             The Task with the specified task index.
+	 */
 	public Task getTask(int taskIndex) {
 		if (isDisplay) {
 			if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
@@ -158,9 +164,10 @@ public class TaskList {
 	}
 
 	/**
+	 * This method returns task index of the specified Task.
 	 * 
-	 * @param task
-	 * @return taskid of given task 
+	 * @param task     The specified Task to get the task index of.
+	 * @return         The task index of the task. 
 	 */
 	public int getTaskIndex(Task task) {
 	    if (tasksTimed.contains(task)) {
@@ -176,11 +183,11 @@ public class TaskList {
 	    
 	}
 	/**
-	 * This method adds a task to the corresponding lists in its position
+	 * This method adds a task to the corresponding lists in its position.
 	 * This method is called by markTaskDone, if task is a repeat task;
 	 * This method is called by undo, to revert the deleting of tasks.
 	 * 
-     * @param task      The task to be added
+     * @param task      The task to be added.
      */
 	private void addToList(Task task) {
 	    
@@ -203,10 +210,9 @@ public class TaskList {
 	
 	//@author A0119446B
 	/**
-	 * Adding a floating task
+	 * This method adds a floating task.
 	 * 
-	 * @param description
-	 *            the description of the task
+	 * @param description  the description of the task.
 	 */
 	public void addToList(String description) {
 		Task newTask = new FloatingTask(description);
@@ -217,14 +223,11 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
-	//@author A0119446B
 	/**
-	 * Add a deadline task
+	 * This method adds a deadline task.
 	 * 
-	 * @param description
-	 *            the description of the task
-	 * @param time
-	 *            the deadline of the task
+	 * @param description  the description of the task.
+	 * @param time         the deadline of the task.
 	 */
 	public void addToList(String description, Date time) {
 		Task newTask = new DeadlineTask(description, time);
@@ -235,16 +238,12 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
-	//@author A0119446B
 	/**
-	 * Add a Repeated Task
+	 * This method adds a Repeated Task.
 	 * 
-	 * @param description
-	 *            the description of the task
-	 * @param time
-	 *            the deadline of the task
-	 * @param repeatDate
-	 *            the repeat frequency
+	 * @param description  the description of the task.
+	 * @param time         the deadline of the task.
+	 * @param repeatDate   the repeat frequency.
 	 */
 	public void addToList(String description, Date time, RepeatDate repeatDate) {
 		Task newTask = new RepeatedTask(description, time, repeatDate);
@@ -256,17 +255,13 @@ public class TaskList {
 		addToUndoList(LastCommand.ADD, newTask);
 	}
 
-	//@author A0119446B
 	/**
-	 * Add a fixed(timed) task
+	 * This method adds a fixed (timed) task.
 	 * 
-	 * @param description
-	 *            the description of the task
-	 * @param startTime
-	 *            the start time of the task
-	 * @param endTime
-	 *            the deadline of the task
-	 * @throws TaskInvalidDateException
+	 * @param description  the description of the task.
+	 * @param startTime    the start time of the task.
+	 * @param endTime      the deadline of the task.
+	 * @throws TaskInvalidDateException    if the start time is after the end time.
 	 */
 	public void addToList(String description, Date startTime, Date endTime)
 			throws TaskInvalidDateException {
@@ -286,6 +281,13 @@ public class TaskList {
 		}
 	}
 	
+	//@author A0115384H
+    /**
+     * This method edits the description of a task in the file.
+     *  
+     * @param taskIndex    The task index of the task to be edited.
+     * @param description  The new description to be entered.
+	 */
 	public void editTaskDescriptionOnly(int taskIndex, String description) {
 
         if (isInvalidIndex(taskIndex)) {
@@ -299,6 +301,14 @@ public class TaskList {
         }
 	}
 	
+	/**
+     * This method edits the time of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param time         The new time to be entered.
+	 * @throws TaskInvalidIdException      if the task index entered is invalid.
+	 * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
     public void editTaskDeadlineOnly(int taskIndex, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
         if (isInvalidIndex(taskIndex)) {
             throw new TaskInvalidIdException();
@@ -311,6 +321,15 @@ public class TaskList {
         }
 	}
 	
+    /**
+     * This method edits both the time and description of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param desc         The new description to be entered.
+     * @param time         The new time to be entered.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+     */
 	public void editTaskDescriptionDeadline(int taskIndex, String desc, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
         if (isInvalidIndex(taskIndex)) {
             throw new TaskInvalidIdException();
@@ -324,6 +343,15 @@ public class TaskList {
         }
 	}
 	
+	/**
+     * This method edits the times of a fixed task.
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param startDate    The new start time of the task.
+     * @param endDate      The new end time of the task.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
 	public void editTaskTimes(int taskIndex, Date startDate, Date endDate) throws TaskInvalidIdException, TaskInvalidDateException {
         if (isInvalidIndex(taskIndex)) {
             throw new TaskInvalidIdException();
@@ -337,6 +365,16 @@ public class TaskList {
         }
 	}
 	
+	/**
+     * This method edits both the description and times of a fixed task.
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param desc         The new description to be entered.
+     * @param startDate    The new start time of the task.
+     * @param endDate      The new end time of the task.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
 	public void editTaskDescriptionTimes(int taskIndex, String desc, Date startDate, Date endDate) throws TaskInvalidIdException, TaskInvalidDateException {
         if (isInvalidIndex(taskIndex)) {
             throw new TaskInvalidIdException();
@@ -351,11 +389,17 @@ public class TaskList {
         }
 	}
 	
-
-	public void editTaskDescription(Task taskToRemove, String description)
+	/**
+     * This method edits the description of a task in the file.
+     *  
+	 * @param taskToEdit   The task object to be edited.
+     * @param description  The new description to be entered.
+	 * @throws TaskInvalidIdException  if the task index entered is invalid.
+	 */
+	public void editTaskDescription(Task taskToEdit, String description)
 			throws TaskInvalidIdException {
 
-	    int indexToEdit = getTaskIndex(taskToRemove);
+	    int indexToEdit = getTaskIndex(taskToEdit);
 	    
 	    // if the index comes from a list used for displaying, 
 	    // use time to find
@@ -363,7 +407,7 @@ public class TaskList {
 	        boolean isFound = false;
 	        // trace the task by added time.
 	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
 	                task.setDescription(description);
 	                isFound = true;
 	                break;
@@ -371,7 +415,7 @@ public class TaskList {
 	        }
 	        if (!isFound) {
 	            for (Task task : this.tasksUntimed) {
-	                if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+	                if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
 	                    task.setDescription(description);
 	                    break;
 	                }
@@ -380,8 +424,7 @@ public class TaskList {
 	        
 	    } else {
 	        if (indexToEdit < tasksTimed.size()) {
-	            this.tasksTimed.get(indexToEdit)
-	            .setDescription(description);
+	            this.tasksTimed.get(indexToEdit).setDescription(description);
 	            
 	        } else {
 	            // update the index to the proper value in tasksUntimed.
@@ -391,11 +434,18 @@ public class TaskList {
 	    }
 	}
 
-
-	public void editTaskDeadline(Task taskToRemove, Date time)
+	/**
+     * This method edits the time of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskToEdit    The task object to be edited.
+     * @param time          The new time to be entered.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
+	public void editTaskDeadline(Task taskToEdit, Date time)
 			throws TaskInvalidIdException, TaskInvalidDateException {
 
-	    int indexToEdit = getTaskIndex(taskToRemove);
+	    int indexToEdit = getTaskIndex(taskToEdit);
 	    
 	    // if the index comes from a list used for displaying, use time to
 	    // find
@@ -403,7 +453,7 @@ public class TaskList {
 	        boolean isFound = false;
 	        // trace the task by added time.
 	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
 	                task.setDeadline(time);
 	                isFound = true;
 	                break;
@@ -412,7 +462,7 @@ public class TaskList {
 	        if (!isFound) {
 	            for (Task task : this.tasksUntimed) {
 	                if (task.getAddedTime().equals(
-	                                               taskToRemove.getAddedTime())) {
+	                                               taskToEdit.getAddedTime())) {
 	                    task.setDeadline(time);
 	                    break;
 	                }
@@ -431,10 +481,17 @@ public class TaskList {
 	    ((SortedArrayList<Task>) this.tasksTimed).updateListOrder(indexToEdit);
 	}
 
-	public void editTaskStartDate(Task taskToRemove, Date startDate)
+	/**
+	 * This method edits the start time of a task in the file.
+	 * 
+	 * @param taskToEdit   The task object to be edited.
+	 * @param startDate    The new start date to be entered.
+	 * @throws TaskInvalidIdException  if the task index entered is invalid.
+	 */
+	public void editTaskStartDate(Task taskToEdit, Date startDate)
 			throws TaskInvalidIdException {
 
-	    int indexToEdit = getTaskIndex(taskToRemove);
+	    int indexToEdit = getTaskIndex(taskToEdit);
 	    
 	    // if the index comes from a list used for displaying, use time to
 	    // find
@@ -442,7 +499,7 @@ public class TaskList {
 	        boolean isFound = false;
 	        // trace the task by added time.
 	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
 	                task.setStartTime(startDate);
 	                isFound = true;
 	                break;
@@ -450,7 +507,7 @@ public class TaskList {
 	        }
 	        if (!isFound) {
 	            for (Task task : this.tasksUntimed) {
-	                if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+	                if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
 	                    task.setStartTime(startDate);
 	                    break;
 	                }
@@ -467,19 +524,11 @@ public class TaskList {
 	        }
 	    }
 	}
-
-	/*
-	 * public void editTaskRepeatPeriod(int taskIndex, String repeatPeriod) { if
-	 * ((taskIndex > totalTasks) || (taskIndex <= 0)) { // error here } else {
-	 * this.tasks.get(taskIndex-1).setRepeatPeriod(repeatPeriod); }
-	 * 
-	 * }
-	 */
 	
 	/**
-	 * This method is called by undo, to revert the adding of tasks
+	 * This method is called by undo, to revert the adding of tasks.
 	 * 
-	 * @param task     The task that was added and is to be deleted 
+	 * @param task     The task that was added and is to be deleted. 
 	 */
 	private void deleteFromList(Task task) {
 	    for (int i = 0; i < this.count(); i++) {
@@ -496,6 +545,12 @@ public class TaskList {
 	    }
 	}
 
+	/**
+	 * This method deletes the specified tasks from the file.
+	 * 
+	 * @param taskIndexList    The list of task indices of tasks to be deleted.
+	 * @throws TaskInvalidIdException  if the task index entered is invalid. 
+	 */
 	public void deleteFromList(List<Integer> taskIndexList)
 			throws TaskInvalidIdException {
 		if (taskIndexList.isEmpty()) {
@@ -558,9 +613,9 @@ public class TaskList {
 	
 	/**
 	 * This method deletes the specified task from tasksRepeat list,
-	 * if the list contains the task and the task is a RepeatedTask
+	 * if the list contains the task and the task is a RepeatedTask.
 	 *  
-	 * @param taskToRemove The task to be removed from tasksRepeat
+	 * @param taskToRemove The task to be removed from tasksRepeat.
 	 */
 	private void deleteFromTasksRepeated(Task taskToRemove) {
 	    if (taskToRemove instanceof RepeatedTask) {
@@ -572,9 +627,9 @@ public class TaskList {
 	
 	/**
 	 * This method adds the specified task to tasksRepeat list,
-	 * if the list does not contain the task and the task is a RepeatedTask
+	 * if the list does not contain the task and the task is a RepeatedTask.
 	 * 
-	 * @param taskToAdd    The task to be added to tasksRepeat
+	 * @param taskToAdd    The task to be added to tasksRepeat.
 	 */
 	private void addToTaskRepeated(Task taskToAdd) {
 	    if (taskToAdd instanceof RepeatedTask) {
@@ -584,6 +639,9 @@ public class TaskList {
 	    }
 	}
 
+	/**
+	 * This method clears the TaskList, and all its tasks.
+	 */
     public void clearList() {
         ArrayList<Task> tasksRemoved = new ArrayList<Task>();
         tasksRemoved.addAll(tasksUntimed);
@@ -600,9 +658,15 @@ public class TaskList {
 		this.tags.clear();
 		this.totalTasksOngoing = 0;
 		this.totalFinished = 0;
-
 	}
 
+    /**
+     * This method marks done the specified tasks from the file.
+     * 
+     * @param taskIndexList     The list of task indices of tasks to be marked done.
+     * @throws TaskDoneException        if the task is already done.
+     * @throws TaskInvalidIdException   if the task index given is invalid.
+     */
 	public void markTaskDone(List<Integer> taskIndexList)
 			throws TaskDoneException, TaskInvalidIdException {
 
@@ -663,23 +727,31 @@ public class TaskList {
 	}
 	
 	/**
-	 * This method is called by redo, to revert the undo on marking tasks done
+	 * This method is called by redo, to revert the undo on marking tasks done.
 	 * 
-	 * @param task     The task that is to be re-marked done 
+	 * @param task     The task that is to be re-marked done .
 	 */
 	private void markTaskRedone(Task task) {
 	    task.markRedone();
 	}
 	
 	/**
-	 * This method is called by undo, to revert the marking done of tasks
+	 * This method is called by undo, to revert the marking done of tasks.
 	 * 
-	 * @param task     The task that is to be marked un-done
+	 * @param task     The task that is to be marked un-done.
 	 */
 	private void markTaskUndone(Task task) {
 	    task.markUndone();
 	}
 
+	/**
+	 * This method assigns the tag (non case-sensitive) to a specified task.
+	 * 
+	 * @param taskIndexToTag   The task index of the task to be tagged.
+     * @param tag              The tag to be assigned.
+     * @throws TaskInvalidIdException      if the task index given is invalid.
+	 * @throws TaskTagDuplicateException   if the task already contains the specified tag.
+	 */
 	public void tagTask(int taskIndexToTag, String tag)
 			throws TaskInvalidIdException, TaskTagDuplicateException {
 	    
@@ -705,11 +777,11 @@ public class TaskList {
 	 * This method attaches a tag to the task.
 	 * This method is called by tagTask, when tagging a task;
 	 * This method is called by undo, when reverting the untag operation;
-	 * and is called by redo, when reverting the undo of the tag operation
+	 * and is called by redo, when reverting the undo of the tag operation.
 	 * 
-	 * @param taskToTag    The task that is to be tagged
-	 * @param tag          The tag to be attached to the task
-	 * @throws TaskTagDuplicateException   if the task already has the tag
+	 * @param taskToTag    The task that is to be tagged.
+	 * @param tag          The tag to be attached to the task.
+	 * @throws TaskTagDuplicateException   if the task already has the tag.
 	 */
     private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
 	    taskToTag.addTag(tag);
@@ -726,6 +798,14 @@ public class TaskList {
 	    }
 	}
 
+    /**
+     * This method removes a tag from the task.
+     * 
+     * @param taskIndexToTag   The task index of the task to be tagged.
+     * @param tag              The tag to be assigned.
+     * @throws TaskInvalidIdException   if the task index given is invalid. 
+     * @throws TaskTagException         if the task does not have the tag to remove.
+     */
 	public void untagTask(int taskIndexToUntag, String tag)
 			throws TaskInvalidIdException, TaskTagException {
 	    if (isInvalidIndex(taskIndexToUntag)) {
@@ -746,12 +826,12 @@ public class TaskList {
 	}
 	
 	/**
-	 * This method removes a tag to the task. 
+	 * This method removes a tag from the task. 
 	 * If no tag is given, all tags from the given task are removed.
 	 *  
-	 * @param taskToUntag  The task that is to be untagged
-	 * @param tag          The tag to be removed from the task
-	 * @throws TaskTagException    if the task does not have the tag to remove
+	 * @param taskToUntag  The task that is to be untagged.
+	 * @param tag          The tag to be removed from the task.
+	 * @throws TaskTagException    if the task does not have the tag to remove.
 	 */
     private void untagGivenTask(Task taskToUntag, String tag) throws TaskTagException {
 	    if (tag.isEmpty()) {
@@ -775,8 +855,8 @@ public class TaskList {
      * This method removes all tags from the task.
      * This method is called by untagGivenTask.
      * 
-     * @param taskToUntag   The task that is to be untagged
-     * @throws TaskTagException     if the task does not have any tags to remove
+     * @param taskToUntag   The task that is to be untagged.
+     * @throws TaskTagException     if the task does not have any tags to remove.
      */
 	private void untagTaskAll(Task taskToUntag) throws TaskTagException {
 		List<String> taskTags = taskToUntag.getTags();
@@ -803,15 +883,23 @@ public class TaskList {
 	
 	//@author A0119414L
 	/**
-	 * Check if the tag is contained in the task list.
+	 * This method checks if the tag is contained in the task list.
 	 * 
-	 * @param tag	
-	 * @return 		true if tag is contained in the task list
+	 * @param tag  The specified tag to check.	
+	 * @return     true if tag is contained, false otherwise.
 	 */
 	public boolean isTagContained(String tag) {
 		return tags.containsKey(tag.toLowerCase());
 	}
 	
+	//@author A0115384H
+	/**
+	 * This method returns a list of tasks that contain the specified tag.
+	 * 
+	 * @param tag  The specified tag.
+	 * @return     The list of tasks with the tag.
+	 * @throws TaskNoSuchTagException  if the TaskList does not contain this tag.
+	 */
 	public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
 		if (tags.containsKey(tag.toLowerCase())) {
 			List<Task> taskListOfTag = tags.get(tag.toLowerCase());
@@ -823,16 +911,12 @@ public class TaskList {
 	
 	
 	//@author A0119446B
-	
-	/***
-	 * This method search tasks by a given keyword
+	/**
+	 * This method searches for tasks by a given keyword.
+	 * This method will find the keyword in a task's description as well as tags.
 	 * 
-	 * @param keyword
-	 *            the keyword for searching
-	 * @return a list of result
-	 * 
-	 *         Noticed: this method will find keyword in a task's description as
-	 *         well as tags
+	 * @param keyword  The keyword for searching.
+	 * @return         A list of results.
 	 */
 	public List<Task> searchTaskByKeyword(String keyword) {
 		keyword = keyword.toLowerCase();
@@ -888,14 +972,13 @@ public class TaskList {
 		return tasksToDisplay;
 	}
 	
-	//@author A0119446B
 	/**
-	 * This method will find out the tasks which deadline is within the given
-	 * range. 
-	 * Notice: For displaying purpose, all the floating tasks will be added as well.
-	 * @param showDate     the input time range
-	 * @return A list of tasks that satisfies the range
-	 * @throws TaskInvalidDateException
+	 * This method will return the tasks if the deadline is within the given range. 
+	 * For displaying purpose, all the floating tasks will be added as well.
+	 * 
+	 * @param showDate The input time range.
+	 * @return         A list of tasks that satisfies the range.
+	 * @throws TaskInvalidDateException    if the dates are invalid.
 	 */
 	public List<Task> getDateRangeTask(List<Date> showDate) throws TaskInvalidDateException {
 		assert(showDate.size() == 2);
@@ -967,6 +1050,7 @@ public class TaskList {
 		return output;
 	}
 
+	//@author A0115384H
 	/**
 	 * This method checks if the time of the task is between the times of the two calendars
 	 * 
@@ -1023,10 +1107,11 @@ public class TaskList {
                 taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH));
     }
     
-  //@author A0119446B
+    //@author A0119446B
     /**
 	 * This methods will find out the tasks that are overdue.
-	 * @return a list of overdue tasks.
+	 * 
+	 * @return A list of overdue tasks.
 	 */
 	public List<Task> getOverdueTask() {
 		List<Task> output = new ArrayList<Task>();
@@ -1045,10 +1130,11 @@ public class TaskList {
 	}
 	
 	/**
+	 * This method returns a list of tasks containing the given tag.
 	 * 
-	 * @param tag
-	 * @return
-	 * @throws TaskNoSuchTagException
+	 * @param tag  The given tag to check.
+	 * @return     A list of tasks with that tag.
+	 * @throws TaskNoSuchTagException  if the given tag is not found.
 	 */
 	public List<Task> prepareDisplayList(String tag)
 			throws TaskNoSuchTagException {
@@ -1059,22 +1145,20 @@ public class TaskList {
 
 			isDisplay = true;
 			
-			
 			return tasksToDisplay;
 		} else {
 			throw new TaskNoSuchTagException();
 		}
 	}
 	
-	//@author A0119446B
 	/**
 	 * This method will prepare a list for displaying, the order is decide by the boolean 
 	 * value isDisplayedByAddTime. 
 	 * If isDisplayedByAddTime is true, the result will be ordered by added time;
 	 * if isDisplayedByAddTime is false, the result will be ordered by deadline.
 	 * 
-	 * @param isDisplayedByAddTime
-	 * @return
+	 * @param isDisplayedByAddTime Boolean to decide ordering (by added time or otherwise).
+	 * @return                     The list of ordered tasks.
 	 */
 	public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
 		List<Task> output;
@@ -1103,9 +1187,8 @@ public class TaskList {
 		return output;
 	}
 	
-	//@author A0119446B
 	/**
-	 * This method will let tasks in listToCheck  check if 
+	 * This method will let tasks in listToCheck check if 
 	 * they are overdue, and update their properties.
 	 * 
 	 * @param listToCheck the list to be checked
@@ -1121,30 +1204,27 @@ public class TaskList {
 		}
 	}
 	
-	//@author A0119446B
 	public void checkOverdue() {
 		this.checkOverdue(tasksTimed);
 	}
 
-	//@author A0119446B
 	public boolean isShowingDone() {
 		return this.isShowingDone;
 	}
-	
-	//@author A0119446B
+
 	public void setNotShowingDone() {
 		this.isShowingDone = false;
 	}
 	
-	//@author A0119446B
 	public void export() {
 		Storage.export(tasksTimed, tasksUntimed, tasksFinished);
 	}
 	
-	//@author A0119446B
 	/**
-	 * @param taskIndex
-	 * @return
+	 * This method checks if the given task index is valid.
+	 * 
+	 * @param taskIndex    The task index to check.
+	 * @return             true if task index is valid, false otherwise.
 	 */
 	public boolean isInvalidIndex(int taskIndex) {
 	    if (isDisplay) {
@@ -1154,6 +1234,7 @@ public class TaskList {
 	    }
 	}
 
+	//@author A0115384H
 	/**
 	 * This method reverts the last operation that changed the TaskList.
 	 * 
@@ -1260,7 +1341,7 @@ public class TaskList {
 	 * This method updates the <tags: tasks> pairs in the tags HashMap.
 	 * This method is only called by undo to revert the clear command.
 	 * 
-	 * @param tasksToReadd List of tasks that are readd after the clear command
+	 * @param tasksToReadd List of tasks that are re-added after the clear command
 	 */
 	private void updateTagsHash(List<Task> tasksToReadd) {
         for (Task task : tasksToReadd) {
@@ -1380,6 +1461,14 @@ public class TaskList {
         
     }
 	
+    /**
+     * This method returns the first consecutive repeated task found, given one repeated task.
+     * Due to the ordering of tasks, the first consecutive repeated task found will always 
+     * come after a second consecutive repeated task (if any). 
+     * 
+     * @param repeatedTask  The repeated task given, to search for consecutive repeated tasks.
+     * @return              The consecutive repeated task if found, null otherwise.
+     */
 	public RepeatedTask getLatestConsecutiveRepeatedTask(RepeatedTask repeatedTask) {
 	    RepeatedTask consecutiveTask = null;
 	    for (int j = this.tasksTimed.size() - 1; j >= 0; j--) {
@@ -1398,10 +1487,10 @@ public class TaskList {
 	}
 
 	/**
-	 * This method creates a LastState object to undo for add command
+	 * This method creates a LastState object to undo for add command.
 	 * 
-	 * @param cmd
-	 * @param task
+	 * @param cmd  The command type.
+	 * @param task The task state to store.
 	 */
 	private void addToUndoList(LastCommand cmd, Task task) {
 	    LastState currentTaskState = new LastState(cmd, task);
@@ -1409,11 +1498,11 @@ public class TaskList {
 	}
 
 	/**
-	 * This method creates a LastState object to undo for edit command
+	 * This method creates a LastState object to undo for edit command.
 	 * 
-	 * @param cmd
-	 * @param taskPrev
-	 * @param taskNext
+	 * @param cmd      The command type.
+	 * @param taskPrev The previous task state to store.
+	 * @param taskNext The current task state to store.
 	 */
     private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext) {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext);
@@ -1421,10 +1510,10 @@ public class TaskList {
     }
 
     /**
-     * This method creates a LastState object to undo for delete command
+     * This method creates a LastState object to undo for delete command.
      * 
-     * @param cmd
-     * @param taskListPrev
+     * @param cmd           The command type.
+     * @param taskListPrev  The previous task list state to store.
      */
     private void addToUndoList(LastCommand cmd, List<Task> taskListPrev) {
         LastState currentTaskState = new LastState(cmd, taskListPrev);
@@ -1432,12 +1521,12 @@ public class TaskList {
     }
 
     /**
-     * This method creates a LastState object to undo for mark done command
+     * This method creates a LastState object to undo for mark done command.
      * 
-     * @param cmd
-     * @param taskListPrev
-     * @param taskListNext
-     * @param repeatTaskList
+     * @param cmd               The command type.
+     * @param taskListPrev      The previous task list state to store.
+     * @param taskListNext      The current task list state to store.
+     * @param repeatTaskList    The repeatedTaskList to store, if any.
      */
     private void addToUndoList(LastCommand cmd, List<Task> taskListPrev, 
                                List<Task> taskListNext, List<Task> repeatTaskList) {
@@ -1446,12 +1535,12 @@ public class TaskList {
     }
 
     /**
-     * This method creates a LastState object to undo for tagging commands
+     * This method creates a LastState object to undo for tagging commands.
      * 
-     * @param cmd
-     * @param taskPrev
-     * @param taskNext
-     * @param tag
+     * @param cmd       The command type.
+     * @param taskPrev  The previous task state to store.
+     * @param taskNext  The current task state to store.
+     * @param tag       The specified tag to (un)tag.
      */
     private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext, String tag) {
         LastState currentTaskState = new LastState(cmd, taskPrev, taskNext, tag);
@@ -1459,39 +1548,58 @@ public class TaskList {
     }
     
     //@author A0119446B
+    /**
+     * This method returns the number of ongoing tasks.
+     * 
+     * @return  the number of ongoing tasks.
+     */
 	public int count() {
 		return this.totalTasksOngoing;
 	}
 	
-	//@author A0119446B	
+	/**
+	 * This method returns the number of undone tasks.
+	 * 
+	 * @return the number of undone tasks.
+	 */
 	public int countUndone() {
 		return this.countTimedTask()+this.countUntimedTask();
 	}
 
-	//@author A0119446B
+    /**
+     * This method returns the number of ongoing timed tasks.
+     * 
+     * @return the number of ongoing timed tasks.
+     */
 	public int countTimedTask() {
 		return this.tasksTimed.size();
 	}
 
-	//@author A0119446B
+    /**
+     * This method returns the number of ongoing untimed tasks.
+     * 
+     * @return the number of ongoing untimed tasks.
+     */
 	public int countUntimedTask() {
 		return this.tasksUntimed.size();
 	}
 	
-	//@author A0119446B
+    /**
+     * This method returns the number of finished tasks.
+     * 
+     * @return the number of finished tasks.
+     */
 	public int countFinished() {
 		return this.totalFinished;
 	}
 	
-	
-	//@author A0119446B
 	/**
-	 * This method find out the separation index between non-floating task and
+	 * This method finds out the separation index between non-floating task and
 	 * floating task.
 	 * If not found, return -1;
 	 * 
-	 * @param taskList
-	 * @return
+	 * @param taskList The task list to find the separation index of.
+	 * @return         The separation index found, or -1 otherwise.
 	 */
 	public int indexOfFirstFloatingTask(List<Task> taskList) {
 		for (int i = 0; i < taskList.size(); i++) {
@@ -1503,13 +1611,14 @@ public class TaskList {
 		return -1;
 	}
 
+	//@author A0115384H
 	/**
 	 * This method compares two TaskLists, 
-	 * and returns true if all tasks in both task lists are equal
-	 * This method is used for testing purposes
+	 * and returns true if all tasks in both task lists are equal.
+	 * This method is used for testing purposes.
 	 *  
-	 * @param t2   The TaskList to compare with
-	 * @return     true if the tasklists are equal, false otherwise
+	 * @param t2   The TaskList to compare with.
+	 * @return     true if the tasklists are equal, false otherwise.
 	 */
 	public boolean isEqual(TaskList t2) {
 	    boolean isEqual = true;
