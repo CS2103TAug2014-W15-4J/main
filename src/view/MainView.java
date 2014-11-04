@@ -10,7 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.*;
 
-
+//@author A0119414L
+/**
+ * This class is to display the view.
+ * It is the interface between uClear and user.
+ * 
+ * @author Wang Zhipeng
+ *
+ */
 public class MainView extends Application {
 	
 	//@author A0119414L

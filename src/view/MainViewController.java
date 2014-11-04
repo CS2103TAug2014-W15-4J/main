@@ -49,6 +49,13 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+//@author A0119414L
+/**
+ * This class is a controller which is to control the view displayed in MainView.
+ * 
+ * @author Wang Zhipeng
+ *
+ */
 public class MainViewController extends GridPane{
 	
 	final static String[] DEFAULT_TAG_COLORS = {
