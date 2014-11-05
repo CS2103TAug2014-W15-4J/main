@@ -981,7 +981,7 @@ public class MainViewController extends GridPane{
 	 * @param task				Task to display, including all the task information. 
 	 * @throws TaskInvalidDateException
 	 */
-	private void setStatus(GridPane taskLayout, Task task) throws TaskInvalidDateException {
+	private void setStatus(GridPane taskLayout, Task task) {
 		Label status = new Label();
 		status.setPrefWidth(150);
 		status.setMaxHeight(140);
@@ -990,6 +990,21 @@ public class MainViewController extends GridPane{
 		status.setAlignment(Pos.CENTER);
 		status.getStyleClass().add("status-card");
 		
+		determineStatusText(status, task);
+		
+		GridPane.setConstraints(status, 2, 0, 1, 5);
+		taskLayout.getChildren().add(status);
+	}
+	
+	//@author A0119446B
+	/**
+	 * Set the proper text to display for Status label
+	 * 
+	 * @param status		The label for displaying
+	 * @param task			Task to display, including all the task information. 
+	 * @throws TaskInvalidDateException
+	 */
+	private void determineStatusText(Label status, Task task) {
 		if (task.getType().equals(Type.FLOAT)) {
 			if (task.getIsDone()) {
 				status.setText("DONE");
@@ -999,7 +1014,12 @@ public class MainViewController extends GridPane{
 				status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
 			}
 		} else {
-			task.checkOverdue();
+			try {
+				task.checkOverdue();
+			} catch (TaskInvalidDateException e) {
+				
+			}
+			int remainDays = task.getReminingDays();
 			if (task.getIsDone()) {
 				status.setText("DONE");
 				status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
@@ -1008,15 +1028,19 @@ public class MainViewController extends GridPane{
 					status.setText("OVERDUE");
 					status.setStyle("-fx-background-color: #F44336;-fx-background-radius: 0 2px 2px 0;");
 				} else {
-					status.setText("ONGOING");
+					if (remainDays == 0) {
+						status.setText("Due Today");
+					} else if (remainDays == 1) {
+						status.setText("1 Day Left");
+					} else {
+						status.setText(remainDays + " Days Left");
+					}
 					status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
 				}
 			}
 		}
-		GridPane.setConstraints(status, 2, 0, 1, 5);
-		taskLayout.getChildren().add(status);
 	}
-	
+
 	//@author A0119414L
 	/**
 	 * Set the style of deadline if it is not floating task.
