@@ -302,7 +302,7 @@ public class MainViewController extends GridPane{
 			scrollPage[i] = new ScrollPane();
 			setScrollPage(i);
 			page[i] = new VBox();
-			page[i].setPrefHeight(listDisplay.getPrefHeight() - 50);
+			page[i].setPrefHeight(listDisplay.getPrefHeight() - 66);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
 			page[i].setStyle("-fx-background-color: white; -fx-padding: 0 0 0 20;");
 			scrollPage[i].setContent(page[i]);
@@ -685,10 +685,6 @@ public class MainViewController extends GridPane{
       
 			setTaskFormat(taskLayout, i);
 			
-			GridPane taskDivision = new GridPane();
-			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
-			setGridPaneSize(taskDivision, 850, 20);
-			
 			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
 					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0)) && (i==0)) {
 				GridPane floatDivision = new GridPane();
@@ -748,12 +744,8 @@ public class MainViewController extends GridPane{
             
 			setTaskFormat(taskLayout, specificTaskList.get(i), i);
 			
-			GridPane taskDivision = new GridPane();
-			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
-			setGridPaneSize(taskDivision, 850, 20);
-			
-			if (((taskList.indexOfFirstFloatingTask(specificTaskList) == -1) 
-					|| (taskList.indexOfFirstFloatingTask(specificTaskList) > 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if ((((taskList.indexOfFirstFloatingTask(specificTaskList) == -1) 
+					|| (taskList.indexOfFirstFloatingTask(specificTaskList) > 0)) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
@@ -831,16 +823,16 @@ public class MainViewController extends GridPane{
 	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
 		Task task = taskList.getTask(index);
 		if (task.getType().equals(Type.FLOAT)) {
-			setGridPaneSize(taskLayout, 850, 70);
+			setGridPaneSize(taskLayout, 850, 60);
 			setFloatTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.DEADLINE)) {
-			setGridPaneSize(taskLayout, 850, 100);
+			setGridPaneSize(taskLayout, 850, 90);
 			setDeadlineTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.FIXED)) {
-			setGridPaneSize(taskLayout, 850, 130);
+			setGridPaneSize(taskLayout, 850, 120);
 			setFixedTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.REPEATED)) {
-			setGridPaneSize(taskLayout, 850, 130);
+			setGridPaneSize(taskLayout, 850, 120);
 			setRepeatedTaskFormat(taskLayout, task, index);
 		} 
 	}
@@ -1283,11 +1275,38 @@ public class MainViewController extends GridPane{
 	 * 
 	 * @return		return true if it is a special command.
 	 * @throws TaskInvalidDateException
+	 * @throws TaskNoSuchTagException 
 	 */
-	private boolean isSpecialCommand() throws TaskInvalidDateException {		
+	private boolean isSpecialCommand() throws TaskInvalidDateException, TaskNoSuchTagException {		
 		if (command.trim().toLowerCase().equals("exit")) {
 			saveTaskList();
 			Platform.exit();
+		}
+		
+		if (command.trim().toLowerCase().substring(0, 4).equals("find") 
+				|| command.trim().toLowerCase().substring(0, 4).equals("goto")) {
+			String stringIndex = command.trim().toLowerCase().substring(5);
+			int indexOfTask = Integer.parseInt(stringIndex);
+			
+			if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(getTodayTaskList(), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(getPeriodTaskList(showPeriod), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(taskList.prepareDisplayList(false), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(taskList.getFinishedTasks(), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(taskList.getOverdueTask(), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
+				moveToSpecificPosition(findIndexPosition(taskList.getTasksWithTag(showTag), indexOfTask));
+			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
+				if (searchKey != null) {
+					moveToSpecificPosition(findIndexPosition(taskList.searchTaskByKeyword(searchKey), indexOfTask));
+				}
+			}
+			setTextFieldEmpty();
+			return true;
 		}
 		
 		if (command.trim().toLowerCase().equals("option") || command.trim().toLowerCase().equals("settings")) {
@@ -1302,7 +1321,7 @@ public class MainViewController extends GridPane{
 			option.getIcons().add(new Image("/view/Settings-icon.png"));
 			option.setScene(optionScene);
 			option.show();
-			input.setText("");
+			setTextFieldEmpty();
 			return true;
 		}
 		
@@ -1317,7 +1336,7 @@ public class MainViewController extends GridPane{
 			option.setTitle("Fun");
 			option.setScene(optionScene);
 			option.show();
-			input.setText("");
+			setTextFieldEmpty();
 			PauseTransition pause = new PauseTransition(Duration.seconds(3));
 			pause.setOnFinished(new EventHandler<ActionEvent>() {
 			    @Override
@@ -1640,6 +1659,115 @@ public class MainViewController extends GridPane{
 	}
 	
 	//@author A0119414L
+	/**
+	 * Find the position of the task with given index in current page.
+	 * 
+	 * @param specificTaskList		Task list displayed in current page.
+	 * @param indexOfTask			Index of the task.
+	 * @return						Return the position height of that task.
+	 */
+	private double findIndexPosition(List<Task> specificTaskList, int indexOfTask) {
+		int firstFloatIndex = taskList.indexOfFirstFloatingTask(specificTaskList);
+		double position;
+		
+		if (listDisplay.getCurrentPageIndex()!=SEARCH_RESULT_PAGE_INDEX && listDisplay.getCurrentPageIndex()!=DONE_TASKS_PAGE_INDEX) {
+			if (firstFloatIndex == 0) {
+				position = 30 + 70*(indexOfTask-1);
+				return position;
+			} else {
+				if (firstFloatIndex == -1) {
+					position = 30;
+					for (int i=0; i<indexOfTask-1; i++) {
+						if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+							position = position + 100;
+						} else {
+							position = position + 130;
+						}
+					}
+					return position;
+				} else {
+					if (indexOfTask < firstFloatIndex+1) {
+						position = 30;
+						for (int i=0; i<indexOfTask-1; i++) {
+							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+								position = position + 100;
+							} else {
+								position = position + 130;
+							}
+						}
+						return position;
+					} else {
+						position = 60;
+						for (int i=0; i<firstFloatIndex; i++) {
+							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+								position = position + 100;
+							} else {
+								position = position + 130;
+							}
+						}
+						position = position + 70*(indexOfTask-firstFloatIndex-1);
+						return position;
+					}
+				}
+			}
+		// Done page and Search page
+		} else {
+			if (firstFloatIndex == 0) {
+				position = 0 + 70*(indexOfTask-1);
+				return position;
+			} else {
+				if (firstFloatIndex == -1) {
+					position = 0;
+					for (int i=0; i<indexOfTask-1; i++) {
+						if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+							position = position + 100;
+						} else {
+							position = position + 130;
+						}
+					}
+					return position;
+				} else {
+					if (indexOfTask < firstFloatIndex+1) {
+						position = 0;
+						for (int i=0; i<indexOfTask-1; i++) {
+							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+								position = position + 100;
+							} else {
+								position = position + 130;
+							}
+						}
+						return position;
+					} else {
+						position = 0;
+						for (int i=0; i<firstFloatIndex; i++) {
+							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
+								position = position + 100;
+							} else {
+								position = position + 130;
+							}
+						}
+						position = position + 70*(indexOfTask-firstFloatIndex-1);
+						return position;
+					}
+				}
+			}
+		}
+	}
+	
+	//@author A0119414L
+	/**
+	 * Move the view to display specified position.
+	 * 
+	 * @param positionMoveTo	Height of position.
+	 */
+	private void moveToSpecificPosition(double positionMoveTo) {
+		int currentPageIndex = listDisplay.getCurrentPageIndex();
+		double totalHeight = page[currentPageIndex].getHeight();
+		
+		scrollPage[currentPageIndex].setVvalue((positionMoveTo)/(totalHeight-338));
+	}
+	
+	//@author A0119414L
 	@FXML
 	/**
 	 * Set the event if the enter key is typed.
@@ -1687,8 +1815,6 @@ public class MainViewController extends GridPane{
 			}
 		}
 		
-//		int idx = listDisplay.getCurrentPageIndex();
-//		scrollPage[idx].setVvalue(1.0);
     }
 	
 	//@author A0119414L
@@ -1765,6 +1891,11 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set comma key to control page up.
+	 * 
+	 */
 	private void setPageUpKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
@@ -1778,6 +1909,11 @@ public class MainViewController extends GridPane{
 		});
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set period key to control page down.
+	 * 
+	 */
 	private void setPageDownKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
