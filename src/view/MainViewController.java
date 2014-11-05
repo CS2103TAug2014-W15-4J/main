@@ -104,14 +104,14 @@ public class MainViewController extends GridPane{
 	final static String MANY_OVERDUE_TASKS = "Sign! %s tasks overdue";
 	final static String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
 	
-	final static String TITLE_TODAY_TASKS = "Today Tasks";
-	final static String TITLE_PERIOD_TASKS = "Period Tasks";
-	final static String TITLE_ALL_TASKS = "All Tasks";
-	final static String TITLE_DONE_TASKS = "Done Tasks";
-	final static String TITLE_OVERDUE_TASKS = "Overdue Tasks";
-	final static String TITLE_TASKS_WITH_TAG = "Tags";
-	final static String TITLE_SEARCH_RESULT = "Search Result";
-	final static String TITLE_HELP_PAGE = "Help Document";
+	final static String TITLE_TODAY_TASKS = "Today";
+	final static String TITLE_PERIOD_TASKS = "Sometime";
+	final static String TITLE_ALL_TASKS = "All Task";
+	final static String TITLE_DONE_TASKS = "Done";
+	final static String TITLE_OVERDUE_TASKS = "Overdue";
+	final static String TITLE_TASKS_WITH_TAG = "Tag";
+	final static String TITLE_SEARCH_RESULT = "Search";
+	final static String TITLE_HELP_PAGE = "Help";
 	
 	final static int TOTAL_PAGE_NUM = 8;
 	final static int TODAY_TASKS_PAGE_INDEX = 0;
