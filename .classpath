@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="libs/ical4j-1.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="libs/natty-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/joda-time-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
