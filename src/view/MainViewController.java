@@ -1607,6 +1607,7 @@ public class MainViewController extends GridPane{
 			if (!isSpecialCommand()) {
 				feedback = executeCommand(command);
 				taskList = getTaskList();
+				taskList.checkOverdue();
 				if (listDisplay.getCurrentPageIndex() != DONE_TASKS_PAGE_INDEX) {
 					taskList.setNotShowingDone();
 				}
