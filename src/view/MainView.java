@@ -6,7 +6,6 @@ import exception.TaskInvalidDateException;
 import exception.TaskNoSuchTagException;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.*;
@@ -44,7 +43,7 @@ public class MainView extends Application {
 			primaryStage.setMaxHeight(658);
 			primaryStage.setMaxWidth(916);
 		}
-		primaryStage.initStyle(StageStyle.UNDECORATED);
+		
 		primaryStage.setMinHeight(primaryStage.getMaxHeight());
 		primaryStage.setMinWidth(primaryStage.getMaxWidth());
 		primaryStage.centerOnScreen();
