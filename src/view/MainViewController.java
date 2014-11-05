@@ -756,13 +756,13 @@ public class MainViewController extends GridPane{
 			}
 		} else {
 			task.checkOverdue();
-			if (task.getIsOverdue()) {
-				status.setText("OVERDUE");
-				status.setStyle("-fx-background-color: #F44336;-fx-background-radius: 0 2px 2px 0;");
+			if (task.getIsDone()) {
+				status.setText("DONE");
+				status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
 			} else {
-				if (task.getIsDone()) {
-					status.setText("DONE");
-					status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
+				if (task.getIsOverdue()) {
+					status.setText("OVERDUE");
+					status.setStyle("-fx-background-color: #F44336;-fx-background-radius: 0 2px 2px 0;");
 				} else {
 					status.setText("ONGOING");
 					status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");

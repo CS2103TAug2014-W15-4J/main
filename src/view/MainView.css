@@ -1,5 +1,6 @@
 #wholePane {
 	-fx-font-family: roboto;
+	-fx-background-color: white;
 }
 
 #title {
