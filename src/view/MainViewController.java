@@ -1113,7 +1113,7 @@ public class MainViewController extends GridPane{
 	private void setTags(GridPane taskLayout, Task task) {
 		Type taskType = task.getType();
 		HBox tagBox = new HBox();
-		tagBox.setStyle("-fx-padding: 0 0 0 16px; -fx-valignment: center;-fx-border-width: 1 0 0 0;-fx-border-color: #E0E0E0");
+		tagBox.setStyle("-fx-padding: 0 16px 0 16px; -fx-valignment: center;-fx-border-width: 1 0 0 0;-fx-border-color: #E0E0E0");
 		tagBox.setAlignment(Pos.CENTER_LEFT);
 		tagBox.setSpacing(20);
 		tagBox.setPrefSize(650, 30);
