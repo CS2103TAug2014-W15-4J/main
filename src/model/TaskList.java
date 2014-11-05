@@ -196,6 +196,7 @@ public class TaskList {
 	    
 	    if (task.getIsDone()) {
 	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
+	        this.totalFinished++;
 	        
 	    } else {
     		if (task instanceof FloatingTask) {
@@ -207,8 +208,6 @@ public class TaskList {
     		}
     		this.totalTasksOngoing++;
 	    }
-	    
-	    
 	}
 	
 	//@author A0119446B
