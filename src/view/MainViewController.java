@@ -1449,7 +1449,8 @@ public class MainViewController extends GridPane{
 				List<Task> tagTasks = taskList.getTasksWithTag(showTag);
 				setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, tagTasks);
 			} else {
-				listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_PAGE_INDEX);
+				List<Task> tagTasks = new ArrayList<Task>();
+				setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, tagTasks);
 			}
 		} else {
 			listDisplay.setCurrentPageIndex(TASKS_WITH_TAG_PAGE_INDEX);
