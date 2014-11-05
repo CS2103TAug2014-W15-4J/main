@@ -314,6 +314,8 @@ public class MainViewController extends GridPane{
 		for (int i=0; i<8; i++) {
 			setFKey(i);
 		}
+		setPageUpKey();
+		setPageDownKey();
 		
 	}
 	
@@ -1662,7 +1664,7 @@ public class MainViewController extends GridPane{
 		}
 		
 //		int idx = listDisplay.getCurrentPageIndex();
-//		scrollPage[idx].setVvalue(2.0);
+//		scrollPage[idx].setVvalue(1.0);
     }
 	
 	//@author A0119414L
@@ -1737,6 +1739,32 @@ public class MainViewController extends GridPane{
 			input.requestFocus();
 			input.selectEnd();
 		}
+	}
+	
+	private void setPageUpKey() {
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if (((event.getCode() == KeyCode.COMMA) && (event.getEventType().equals(KeyEvent.KEY_RELEASED)))) {
+					int currentPageIndex = listDisplay.getCurrentPageIndex();
+					double currentVvalue = scrollPage[currentPageIndex].getVvalue();
+					scrollPage[currentPageIndex].setVvalue(currentVvalue - 0.05);
+				}
+			}
+		});
+	}
+	
+	private void setPageDownKey() {
+		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if (((event.getCode() == KeyCode.PERIOD) && (event.getEventType().equals(KeyEvent.KEY_RELEASED)))) {
+					int currentPageIndex = listDisplay.getCurrentPageIndex();
+					double currentVvalue = scrollPage[currentPageIndex].getVvalue();
+					scrollPage[currentPageIndex].setVvalue(currentVvalue + 0.05);
+				}
+			}
+		});
 	}
 	
 	//@author A0119414L
