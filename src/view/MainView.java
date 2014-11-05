@@ -44,7 +44,7 @@ public class MainView extends Application {
 			primaryStage.setMaxHeight(658);
 			primaryStage.setMaxWidth(916);
 		}
-		primaryStage.initStyle(StageStyle.UNDECORATED);
+		
 		primaryStage.setMinHeight(primaryStage.getMaxHeight());
 		primaryStage.setMinWidth(primaryStage.getMaxWidth());
 		primaryStage.centerOnScreen();
