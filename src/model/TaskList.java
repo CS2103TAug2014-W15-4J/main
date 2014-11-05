@@ -70,12 +70,14 @@ public class TaskList {
 	    }
 	}
 
+	//@author A0119446B
 	private static Logger logger = Logger.getLogger("TaskList");
 
-	
+	//@author A0115384H
 	static Stack<LastState> undoStack = new Stack<LastState>();
 	static Stack<LastState> redoStack = new Stack<LastState>();
 	
+	//@author A0119446B
 	@XStreamAlias("TaskListTimed")
 	private List<Task> tasksTimed;
 	@XStreamAlias("TaskListUntimed")
@@ -136,6 +138,7 @@ public class TaskList {
 		this.tasksToDisplay.clear();
 	}
 
+	//@author A0115384H
 	/**
 	 * This method returns the Task with the specified task index.
 	 * 
