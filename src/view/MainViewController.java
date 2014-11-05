@@ -1769,10 +1769,10 @@ public class MainViewController extends GridPane{
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if (((event.getCode() == KeyCode.COMMA) && (event.getEventType().equals(KeyEvent.KEY_RELEASED)))) {
+				if (((event.getCode() == KeyCode.COMMA) && (event.getEventType().equals(KeyEvent.KEY_PRESSED)))) {
 					int currentPageIndex = listDisplay.getCurrentPageIndex();
 					double currentVvalue = scrollPage[currentPageIndex].getVvalue();
-					scrollPage[currentPageIndex].setVvalue(currentVvalue - 0.05);
+					scrollPage[currentPageIndex].setVvalue(currentVvalue - 0.2);
 				}
 			}
 		});
@@ -1782,10 +1782,10 @@ public class MainViewController extends GridPane{
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if (((event.getCode() == KeyCode.PERIOD) && (event.getEventType().equals(KeyEvent.KEY_RELEASED)))) {
+				if (((event.getCode() == KeyCode.PERIOD) && (event.getEventType().equals(KeyEvent.KEY_PRESSED)))) {
 					int currentPageIndex = listDisplay.getCurrentPageIndex();
 					double currentVvalue = scrollPage[currentPageIndex].getVvalue();
-					scrollPage[currentPageIndex].setVvalue(currentVvalue + 0.05);
+					scrollPage[currentPageIndex].setVvalue(currentVvalue + 0.2);
 				}
 			}
 		});
