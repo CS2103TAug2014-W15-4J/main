@@ -25,6 +25,7 @@ public class Parser {
 	private static final String CMD_SEARCH = "search";
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_DONE = "done";
+	private static final String SHOW_NEXT_WEEK = "next week";
 	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_FINISH = "finish";
 	private static final String CMD_SHOW = "show";
@@ -42,7 +43,6 @@ public class Parser {
 	private static final String END_OF_DAY_TIME = "235959999";
 	private static final String BEGIN_OF_DAY_TIME = "000000000";
 	private static final String SHOW_THIS_WEEK = "this week";
-	private static final String SHOW_NEXT_WEEK = "next week";
 	private static Logger log = Logger.getLogger("controller.Parser");
 	
 	//@author A0119387U
@@ -233,19 +233,17 @@ public class Parser {
 		if (content == null || content.equals("")) {
 			return errorCommand();
 		}
-		ParseTime times = new ParseTime();
-		times.parseTime(content);
 		UserInput input = new UserInput();
 		input.addCommand(CMD.ADD);
-		switch (taskType(content, times)) {
+		switch (taskType(content)) {
 		case DEADLINE:
-			return parseDeadline(input, content, times);
+			return parseDeadline(input, content);
 		case REPEAT:
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
 		default:
-			return parseFixed(input, content, times);
+			return parseFixed(input, content);
 		}
 	}
 	//@author A0119387U
@@ -290,21 +288,13 @@ public class Parser {
 		default:
 			return parseFloat(input, content);
 		}
-		times.parseTime(tempContent);
-		try {
-			description = times.getText().replaceAll(" (?i)every", "").trim();
-		} catch (NullPointerException e2) {
-			return parseFloat(input, content);
-		}
-		if (input.getCommand() == CMD.ADD) {
-			if (description.equals("")) {
+		String[] contents = tempContent.split(" (?i)every ",2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
+		if (description.equals("")) {
 				return parseFloat(input, content);
-			}
 		}
 		List<Date> dates = times.getDates();
-		if (!times.isRepeated()) {
-			return parseFloat(input, content);
-		}
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
@@ -326,15 +316,13 @@ public class Parser {
 	 * @throws ParseException
 	 */
 
-	private UserInput parseDeadline(UserInput input, String content,
-			ParseTime times) {
+	private UserInput parseDeadline(UserInput input, String content) {
 		log.info("dealine task found");
 		String description = null;
-		try {
-			description = times.getText().replaceAll(" (?i)by", "").trim();
-		} catch (NullPointerException e) {
-			return parseFloat(input, content);
-		}
+		ParseTime times = new ParseTime();
+		String[] contents = content.split(" (?i)by ",2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);
@@ -380,18 +368,13 @@ public class Parser {
 	 *         this is for fixed tasks for parseAdd and parseEdit
 	 */
 
-	private UserInput parseFixed(UserInput input, String content,
-			ParseTime times) {
+	private UserInput parseFixed(UserInput input, String content) {
 		log.info("fixed task found");
 		String description = null;
-		if (times.getDates().size() == 1) {
-			return parseDeadline(input, description, times);
-		}
-		try {
-			description = times.getText();
-		} catch (NullPointerException e) {
-			return parseFloat(input, content);
-		}
+		ParseTime times = new ParseTime();
+		String[] contents = content.split(" (?i)from ",2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);
@@ -432,11 +415,16 @@ public class Parser {
 	 *         this is for check what kind of command by keywords
 	 */
 
-	private TaskType taskType(String content, ParseTime times) {
+	private TaskType taskType(String content) {
 		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
 		Matcher matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.DEADLINE;
+		}
+		pattern = Pattern.compile(".+ (?i)from(?-i) .+");
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.FIX;
 		}
 		pattern = Pattern.compile(".+ (?i)every .+ daily(?-i)");
 		matcher = pattern.matcher(content);
@@ -453,11 +441,7 @@ public class Parser {
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
 		}
-		if (times.getDates().size() == 0) {
-			return TaskType.FLOAT;
-		} else {
-			return TaskType.FIX;
-		}
+		return TaskType.FLOAT;
 	}
 	//@author A0119387U
 	/**
@@ -553,17 +537,15 @@ public class Parser {
 		if (content == null || content.equals("")) {
 			return input;
 		}
-		ParseTime times = new ParseTime();
-		times.parseTime(content);
-		switch (taskType(content, times)) {
+		switch (taskType(content)) {
 		case DEADLINE:
-			return parseDeadline(input, content, times);
+			return parseDeadline(input, content);
 		case REPEAT:
 			return parseRepeated(input, content);
 		case FLOAT:
 			return parseFloat(input, content);
 		default:
-			return parseFixed(input, content, times);
+			return parseFixed(input, content);
 		}
 	}
 	//@author A0119387U
