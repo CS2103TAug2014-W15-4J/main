@@ -9,9 +9,9 @@ import com.joestelmach.natty.Parser;
 /**
  * parse the times in the command
  * 
- * @author Lu Yuehan
  *
  */
+//@author A0119387U
 public class ParseTime {
 	private List<Date> dateList = new ArrayList<Date>();
     private	boolean isRecurreing = false;

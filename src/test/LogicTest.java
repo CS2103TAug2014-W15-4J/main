@@ -16,6 +16,10 @@ import controller.Logic;
 import exception.TaskInvalidDateException;
 import exception.TaskInvalidIdException;
 
+//@author A0115384H
+/**
+ * This class is for testing the functionalities of the Logic class.
+ */
 public class LogicTest {
     final String MESSAGE_ADD_SUCCESS = "Task added successfully.";
     final String MESSAGE_EDIT_SUCCESS = "Task edited successfully.";

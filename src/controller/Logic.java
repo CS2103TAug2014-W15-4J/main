@@ -18,9 +18,9 @@ import exception.UndoException;
 import model.TaskList;
 import model.Task;
 
-
+//@author A0115384H
 /**
- * main class that manages the TaskList
+ * The class that manages the TaskList, corresponding to the controls input by the user.
  */
 
 public class Logic {
@@ -63,26 +63,26 @@ public class Logic {
 	final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
 
 	final static String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
-	final static String MESSAGE_HELP = "Current list of available commands: \n"
-			+ "- add a floating task     : add <description>\n"
-			+ "- add a deadline task     : add <description> by <time/date>\n"
-			+ "- add a fixed time        : add <description> <time/date1> to <time/date2>\n"
-			+ "- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n"
-			+ "- edit a task description : edit <taskID> <description>\n"
-			+ "- edit a task time/date   : edit <taskID> <time/date>\n"
-			+ "- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n"
-			+ "- clear all tasks         : clear\n"
-			+ "- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n"
-			+ "- tag a task              : tag <taskID> <tag>\n"
-			+ "- untag a task            : untag <taskID> <tag>\n"
-			+ "- untag all tags from task: untag <taskID>\n"
-			+ "- show all tasks          : show / show all\n"
-			+ "- show tasks (add order)  : show added\n"
-			+ "- show tasks with tag     : show <tag>\n"
-			+ "- show tasks that are done: show done\n"
-			+ "(You can only delete or search tasks when displying tasks that are done)\n"
-			+ "- search tasks            : search <keyword>\n"
-			+ "- exit the program        : exit";
+	final static String MESSAGE_HELP = "Current list of available commands: \n" +
+			"- add a floating task     : add <description>\n" +
+			"- add a deadline task     : add <description> by <time/date>\n" +
+			"- add a fixed time        : add <description> <time/date1> to <time/date2>\n" +
+			"- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n" +
+			"- edit a task description : edit <taskID> <description>\n" +
+			"- edit a task time/date   : edit <taskID> <time/date>\n" +
+			"- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n" +
+			"- clear all tasks         : clear\n" +
+			"- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n" +
+			"- tag a task              : tag <taskID> <tag>\n" +
+			"- untag a task            : untag <taskID> <tag>\n" +
+			"- untag all tags from task: untag <taskID>\n" +
+			"- show all tasks          : show / show all\n" +
+			"- show tasks (add order)  : show added\n" +
+			"- show tasks with tag     : show <tag>\n" +
+			"- show tasks that are done: show done\n" +
+			"(You can only delete or search tasks when displying tasks that are done)\n" +
+			"- search tasks            : search <keyword>\n" +
+			"- exit the program        : exit";
 
 	static Storage storage = new Storage();
 
@@ -113,50 +113,54 @@ public class Logic {
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Loads the task list from the storage.
+	 */
 	public static void loadTaskList() {
 		listOfTasks = storage.load();
 	}
 	
+	//@author A0119414L
 	/**
-	 * @author A0119414L
-	 * 
 	 * Get the task list for MainView Controller.
 	 * 
-	 * @return	the task list in the Storage
+	 * @return	the task list in the Storage.
 	 */
 	public static TaskList getTaskList() {
 		return listOfTasks;
 	}
 	
+	//@author A0119414L
 	/**
-	 * @author A0119414L
-	 * 
-	 * Call Logic to save the task list to Storage
+	 * Call Logic to save the task list to Storage.
 	 */
 	public static void saveTaskList() {
 		storage.save(listOfTasks);
 	}
 	
+	//@author A0119414L
 	/**
-	 * @author A0119414L
+	 * Returns the date list, if user input is show command.
 	 * 
-	 * @param userInput	Command that user enter.
-	 * @return			The date list if it is a show command.
-	 */
-	public static List<Date> getDateList(String userInput) {
-		Parser parser = new Parser();
-		UserInput userCommand = parser.parse(userInput);
-		List<Date> showDate = null;
-		if (userCommand.getCommand() == UserInput.CMD.SHOW) {
-			showDate = userCommand.getDate();
-		} else {
-			
-		}
-		return showDate;
-	}
+     * @param userInput Command that user enter.
+     * @return          The date list if it is a show command.
+     */
+    public static List<Date> getDateList(String userInput) {
+        Parser parser = new Parser();
+        UserInput userCommand = parser.parse(userInput);
+        List<Date> showDate = null;
+        if (userCommand.getCommand() == UserInput.CMD.SHOW) {
+            showDate = userCommand.getDate();
+        } else {
+            
+        }
+        return showDate;
+    }
 	
+	//@author A0119414L
 	/**
-	 * @author A0119414L
+	 * Returns true if the current command a show date period command.  
 	 * 
 	 * @param userInput	Command that user enter.
 	 * @return			true if it is a show date period command.
@@ -168,13 +172,13 @@ public class Logic {
 		return (!userCommand.getDate().isEmpty());
 	}
 
+	//@author A0115384H
 	/**
-	 * @param userInput
-	 * @return feedback string
+	 * This method gets the userInput from the UI, calls the parser for processing, 
+	 * and executes the command given, returning the feedback string at the end.
 	 * 
-	 *         this method gets the userInput from the UI, calls the parser for
-	 *         processing, and executes the command given, returning the
-	 *         feedback string at the end.
+	 * @param userInput        The input from the user.
+	 * @return                 The feedback string regard the success of the command.
 	 */
 	public static String readAndExecuteCommands(String userInput) {
 
@@ -189,12 +193,11 @@ public class Logic {
 	}
 
 	/**
-	 * @param userCommand
-	 * @return feedback string
+	 * This method reads the UserInput object and executes the command given;
+	 * the commands include to add/ edit/ delete a task, to undo/ redo an operation.
 	 * 
-	 *         this method reads the UserInput object and executes the command
-	 *         given the commands will include to add/ edit/ delete a task, to
-	 *         undo/ redo an operation, and more.
+	 * @param userCommand      the UserInput object from parsing the user input.
+	 * @return                 the feedback string regarding the success of the command.
 	 */
 	private static String executeCommand(UserInput userCommand) {
 
@@ -394,31 +397,51 @@ public class Logic {
 	}
 
 	/**
-	 * @param description
-	 * @param time
-	 * @param period
-	 * @return feedback string
+	 * This method adds a floating task to the file, with the specified description.
 	 * 
-	 *         the following methods will add a task to the file, with the
-	 *         specified parameters (floating, deadline, repeated, fixed tasks
-	 *         respectively)
+	 * @param description  Description of task to be added.
+	 * @return             the feedback string regarding the success of the command.
 	 */
 	private static String addTask(String description) {
 		listOfTasks.addToList(description);
 		return MESSAGE_TASK_ADDED;
 	}
 
+	/**
+     * This method adds a deadline task to the file, with the specified description and time.
+     * 
+     * @param description   Description of task to be added.
+     * @param time          Time for task to be done by. 
+     * @return              The feedback string regarding the success of the command.
+     */
 	private static String addTask(String description, Date time) {
 		listOfTasks.addToList(description, time);
 		return MESSAGE_TASK_ADDED;
 	}
 
+    /**
+     * This method adds a repeated task to the file, with the specified description and time.
+     * along with the repeat period.
+     * 
+     * @param description   Description of task to be added.
+     * @param time          Time for task to be done by.
+     * @param repeatDate    The RepeatDate object representing the period to repeat.     
+     * @return              The feedback string regarding the success of the command.
+     */
 	private static String addTask(String description, Date time,
-			RepeatDate repeatDate) {
+	                              RepeatDate repeatDate) {
 		listOfTasks.addToList(description, time, repeatDate);
 		return MESSAGE_TASK_ADDED;
 	}
 
+	/**
+	 * This method adds a fixed task to the file, with the specified description and times.
+	 * 
+	 * @param description  Description of task to be added.
+	 * @param startTime    Time for the task to start.
+	 * @param endTime      Time for the task to end.
+	 * @return             The feedback string regarding the success of the command.
+	 */
 	private static String addTask(String description, Date startTime,
 			Date endTime) {
 		try {
@@ -427,18 +450,14 @@ public class Logic {
 		} catch (TaskInvalidDateException e) {
 			return e.getMessage();
 		}
-
 	}
 
 	/**
-	 * @param taskIndex
-	 * @param description
-	 * @param time
-	 *            (for deadline/timed tasks)
-	 * @return feedback string
-	 * 
-	 *         the following methods will edit a task in the file, with the
-	 *         specified parameters
+	 * This method edits the description of a task in the file.
+	 *  
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param description  The new description to be entered.
+	 * @return             The feedback string regarding the success of the command.
 	 */
 	private static String editTask(int taskIndex, String description) {
 		try {
@@ -450,6 +469,13 @@ public class Logic {
 		}
 	}
 
+	/**
+	 * This method edits the time of a task in the file (non-fixed/floating tasks).
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param time         The new time to be entered.
+	 * @return             The feedback string regarding the success of the command.
+	 */
 	private static String editTask(int taskIndex, Date time) {
 		try {
 			listOfTasks.editTaskDeadlineOnly(taskIndex, time);
@@ -461,9 +487,16 @@ public class Logic {
 		} catch (TaskInvalidDateException e) {
 			return MESSAGE_INVALID_DATE;
 		}
-
 	}
 
+	/**
+	 * This method edits both the time and description of a task in the file (non-fixed/floating tasks).
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param desc         The new description to be entered.
+	 * @param time         The new time to be entered.
+	 * @return             The feedback string regarding the success of the command.
+	 */
 	private static String editTask(int taskIndex, String desc, Date time) {
 		try {
 		    listOfTasks.editTaskDescriptionDeadline(taskIndex, desc, time);
@@ -475,9 +508,16 @@ public class Logic {
 		} catch (TaskInvalidDateException e) {
 			return MESSAGE_INVALID_DATE;
 		}
-
 	}
 
+	/**
+	 * This method edits the times of a fixed task.
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param startDate    The new start time of the task.
+	 * @param endDate      The new end time of the task.
+	 * @return             The feedback string regarding the success of the command.
+	 */
 	private static String editTask(int taskIndex, Date startDate, Date endDate) {
 
 		try {
@@ -492,8 +532,17 @@ public class Logic {
 		}
 	}
 
-	private static String editTask(int taskIndex, String desc, Date startDate,
-			Date endDate) {
+	/**
+	 * This method edits both the description and times of a fixed task.
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param desc         The new description to be entered.
+	 * @param startDate    The new start time of the task.
+	 * @param endDate      The new end time of the task.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, String desc, 
+	                               Date startDate,Date endDate) {
 		try {
 		    listOfTasks.editTaskDescriptionTimes(taskIndex, desc, startDate, endDate);
 			return MESSAGE_TASK_EDITED;
@@ -506,22 +555,12 @@ public class Logic {
 		}
 	}
 
-	/*
-	 * private static String editTask(int taskIndex, String desc, Date time,
-	 * String repeatPeriod) { listOfTasks.editTaskDescription(taskIndex,desc);
-	 * listOfTasks.editTaskDeadline(taskIndex, time);
-	 * listOfTasks.editTaskRepeatPeriod(taskIndex, repeatPeriod); return
-	 * MESSAGE_TASK_EDITED;
-	 * 
-	 * }
-	 */
-
+	//@author A0119446B
 	/**
-	 * Searching a task
+	 * This method searches for a task.
 	 * 
-	 * @param keyword
-	 *            the keyword to search
-	 * @return the search result
+	 * @param keyword  The keyword to search.
+	 * @return         The search result.
 	 * 
 	 */
 	private static String searchTask(String keyword) {
@@ -535,11 +574,12 @@ public class Logic {
 		return displayTasks(result);
 	}
 
+	//@author A0115384H
 	/**
-	 * @param taskIndexList
-	 * @return feedback string whether tasks are deleted successfully
+	 * This method deletes the specified tasks from the file.
 	 * 
-	 *         this method will delete the specified task(s) from the file
+	 * @param taskIndexList    The list of task indices of tasks to be deleted.
+	 * @return                 The feedback string regarding the success of the command.
 	 */
 	private static String deleteTask(List<Integer> taskIndexList) {
 		// listOfTasks.setShowDisplayListToFalse();
@@ -554,9 +594,9 @@ public class Logic {
 	}
 
 	/**
-	 * @return feedback that task list is cleared
+	 * This method clears the task list of all tasks.
 	 * 
-	 *         this method clears the task list of all tasks
+	 * @return     The feedback string regarding the success of the command.
 	 */
 	private static String clearTaskList() {
 		listOfTasks.clearList();
@@ -564,13 +604,11 @@ public class Logic {
 	}
 
 	/**
+	 * This method displays the user's tasks information, specified by the user command.
 	 * 
-	 * @param userCommand
-	 * @param showDate the given date period for displaying
-	 * @return user's task information
-	 * 
-	 *         This method displays the user's tasks information, specified by
-	 *         userCommand
+	 * @param userCommand  The specific type of show command.
+	 * @param showDate     The given date period for displaying.
+	 * @return             User's task information.
 	 */
 	private static String display(String userCommand, List<Date> showDate) {
 
@@ -601,21 +639,19 @@ public class Logic {
 			listOfTasks.setNotShowingDone();
 			try {
 				return String.format(MESSAGE_TASKTAG_RETURNED, userCommand,
-						displayTasks(listOfTasks
-								.prepareDisplayList(userCommand)));
+				                     displayTasks(listOfTasks.prepareDisplayList(userCommand)));
 
 			} catch (TaskNoSuchTagException e) {
 				return MESSAGE_INVALID_TAG_NONEXISTENT;
 			}
-
 		}
 	}
 
 	/**
-	 * @param taskIndexList
-	 * @return feedback string whether tasks are marked done successfully
+	 * This method marks done the specified tasks from the file.
 	 * 
-	 *         this method marks that specified task(s) has been done
+	 * @param taskIndexList    The list of task indices of tasks to be marked done.
+	 * @return                 The feedback string regarding the success of the command.
 	 */
 	private static String markDone(List<Integer> taskIndexList) {
 		try {
@@ -631,13 +667,11 @@ public class Logic {
 	}
 
 	/**
+	 * This method assigns the tag (non case-sensitive) to a specified task.
 	 * 
-	 * @param taskIndexToTag
-	 * @param tag
-	 * @return feedback string on tagging of tasks.
-	 * 
-	 *         this method assigns the tag (non case-sensitive) to a specified
-	 *         task
+	 * @param taskIndexToTag   The task index of the task to be tagged.
+	 * @param tag              The tag to be assigned.
+	 * @return                 The feedback string regarding the success of the command.
 	 */
 	private static String tagTask(int taskIndexToTag, String tag) {
 		try {
@@ -652,6 +686,13 @@ public class Logic {
 		}
 	}
 
+    /**
+     * This method removes the tag (non case-sensitive) from a specified task.
+     * 
+     * @param taskIndexToTag   The task index of the task to be untagged.
+     * @param tag              The tag to be removed.
+     * @return                 The feedback string regarding the success of the command.
+     */
 	private static String untagTask(int taskIndexToUntag, String tag) {
 		try {
 			listOfTasks.untagTask(taskIndexToUntag, tag);
@@ -665,28 +706,23 @@ public class Logic {
 		}
 	}
 
+	//@author A0119446B
+	/**
+	 * This method extracts the tasks information and exports them into a txt file.
+	 * 
+	 * @return The feedback string regarding the success of the command.
+	 */
 	private static String exportTasks() {
 		listOfTasks.export();
 	    return MESSAGE_TASK_EXPORT;
 	}
 
-	private static String displayTasksWithTag(String tag) {
-		try {
-			return String.format(MESSAGE_TASKTAG_RETURNED, tag,
-					displayTasks(getTasksWithTag(tag)));
-
-		} catch (TaskNoSuchTagException e) {
-			return MESSAGE_INVALID_TAG_NONEXISTENT;
-		}
-	}
-
-	private static List<Task> getTasksWithTag(String tag)
-			throws TaskNoSuchTagException {
-
-		List<Task> tasks = listOfTasks.getTasksWithTag(tag);
-		return tasks;
-	}
-
+	/**
+	 * This method extracts tasks information into a string and returns it.
+	 * 
+	 * @param taskList List of tasks to be displayed.
+	 * @return         The tasks information.
+	 */
 	private static String displayTasks(List<Task> taskList) {
 
 		int taskListSize = taskList.size();
@@ -706,21 +742,19 @@ public class Logic {
 			if (j != taskListSize - 1) {
 				taskDisplay.append("\n\n");
 
-			} else {
-
 			}
-
 		}
 
 		return taskDisplay.toString();
 
 	}
 
+	//@author A0115384H
 	/**
-	 * @return feedback string
-	 * 
-	 *         this method calls the last operation and reverts any changes.
-	 *         this change can be re-obtained by using the redo method.
+	 * This method reverts any changes done by the last operation.
+	 * This change can be re-obtained by using the redo method.
+	 *  
+	 * @return The feedback string regarding the success of the command.
 	 */
 	private static String undo() {
 	    try {
@@ -733,9 +767,9 @@ public class Logic {
 	}
 
 	/**
-	 * @return feedback string
+	 * This method re-does the last operation undo-ed.
 	 * 
-	 *         this method re-does the last operation undo-ed.
+	 * @return The feedback string regarding the success of the command.
 	 */
 	private static String redo() {
 	    try {
@@ -749,8 +783,7 @@ public class Logic {
 	
 
 	/**
-	 * this method reads the user input from the command line and returns it as
-	 * a string.
+	 * This method reads the user input from the command line and returns it as a string.
 	 */
 	public static String getUserInput() {
 		System.out.print("Enter command: ");
@@ -759,31 +792,27 @@ public class Logic {
 	}
 
 	/**
-	 * this method creates an empty task list for operations to be done on.
-	 * 
-	 * this method is for testing purposes only
+	 * This method creates an empty task list for operations to be done on.
+	 * This method is for testing purposes only.
 	 */
 	public static void setEmptyTaskList() {
 		listOfTasks = new TaskList();
 	}
 
 	/**
+	 * This method returns the Task of the given task id.
+	 * This method is for testing purposes only.
 	 * 
-	 * @param taskId
-	 * @return Task of id taskId
-	 * 
-	 *         this method returns the Task of the given taskId.
-	 * 
-	 *         this method is for testing purposes only
+	 * @param taskId   The taskId of the task to be found.
+	 * @return         The task with the specified taskId.
 	 */
 	public static Task getTask(int taskId) {
 		return listOfTasks.getTask(taskId);
 	}
 	
 	/**
-	 * this method empties the undoStack and redoStack
-	 * 
-	 * this method is for testing purposes only
+	 * This method empties the undoStack and redoStack. 
+	 * This method is for testing purposes only.
 	 */
 	public static void emptyUndoRedoStack() {
 	    listOfTasks.clearUndoRedoStack();

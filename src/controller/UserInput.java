@@ -27,9 +27,9 @@ import java.util.List;
  *          addTagID(string)/getTagID();getDescription();
  * 
  * 
- * @author Lu Yuehan
  *
  */
+//@author A0119387U
 public class UserInput {
 	public enum CMD {
 		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG,UNDO,REDO, UNTAG, EXPORT

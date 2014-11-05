@@ -37,11 +37,21 @@ public class SystemTest {
     
     String feedback;
 	
+	//@author A0119414L
+    /**
+     * Set the task list in the Logic to be empty before testing.
+     * 
+     */
 	@BeforeClass
     public static void reset() {
         Logic.setEmptyTaskList();
     }
 	
+	//@author A0119414L
+	/**
+	 * Test the whole system with a series of commands.
+	 * 
+	 */
 	@Test
 	public void testSystem() {
 		// clear

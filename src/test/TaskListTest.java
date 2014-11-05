@@ -23,6 +23,9 @@ import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 import exception.UndoException;
 
+/**
+ * This class tests the functionalities provided by TaskList class.
+ */
 public class TaskListTest {
 
 	static Calendar cal = Calendar.getInstance();
@@ -298,6 +301,7 @@ public class TaskListTest {
 
 	}
 
+	//@author A0115384H
 	@Test
 	public void testTagging() {
 	    
@@ -403,6 +407,7 @@ public class TaskListTest {
 		assertEquals("Late", result.get(2).getDescription());
 	}
 
+	//@author A0115384H
 	@Test
 	public void testUndoRedo() throws TaskInvalidIdException, TaskInvalidDateException {
 	    TaskList tasks = new TaskList();
@@ -521,6 +526,7 @@ public class TaskListTest {
         }
 	}
 	
+	//@author A0119446B
 	void pause(int ms) {
 		try {
 			Thread.sleep(ms);
@@ -529,10 +535,12 @@ public class TaskListTest {
 		}
 	}
 
+	//@author A0115384H
 	/**
-	 * 
-	 * @return tasklist for the four tasks, in the order: 1.Repeated Tasks
-	 *         2.Deadline Tasks 3.Fixed Task 4.Floating Tasks
+	 * This method adds four tasks into the task list, 
+	 * with the final order: Repeated Task, Deadline Task, Fixed Task, Floating Task.
+	 *  
+	 * @return Tasklist with four tasks in the above specified order.
 	 */
 	private TaskList addTasks() {
 		TaskList tasks = new TaskList();

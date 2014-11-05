@@ -44,7 +44,8 @@ public class Parser {
 	private static final String SHOW_THIS_WEEK = "this week";
 	private static final String SHOW_NEXT_WEEK = "next week";
 	private static Logger log = Logger.getLogger("controller.Parser");
-
+	
+	//@author A0119387U
 	/**
 	 * @param input
 	 * @return UserInput after parsing
@@ -100,7 +101,12 @@ public class Parser {
 			return errorCommand();
 		}
 	}
-
+	//@author A0119387U
+	/**
+	 * give flexiable commands
+	 * @param command
+	 * @return parsed command
+	 */
 	private String parseCommand(String command) {
 		if (command.equals(CMD_EXIT) || command.equals("e"))
 			return CMD_EXIT;
@@ -135,7 +141,7 @@ public class Parser {
 			return CMD_EXPORT;
 		return command;
 	}
-
+	//@author A0119387U
 	/**
 	 * redo command parsing
 	 * 
@@ -154,7 +160,7 @@ public class Parser {
 		log.info("exit redo command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * undo command parsing
 	 * 
@@ -173,7 +179,7 @@ public class Parser {
 		log.info("exit undo command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -192,7 +198,7 @@ public class Parser {
 		log.info("exit exit command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param content
@@ -214,7 +220,7 @@ public class Parser {
 		log.info("exit help command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -242,7 +248,7 @@ public class Parser {
 			return parseFixed(input, content, times);
 		}
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param input
@@ -308,7 +314,7 @@ public class Parser {
 			return input;
 		}
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param input
@@ -362,7 +368,7 @@ public class Parser {
 			return input;
 		}
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param input
@@ -399,7 +405,7 @@ public class Parser {
 		input.addDate(dates);
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param input
@@ -417,7 +423,7 @@ public class Parser {
 		input.beFloat();
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @param content
@@ -453,7 +459,7 @@ public class Parser {
 			return TaskType.FIX;
 		}
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -482,7 +488,7 @@ public class Parser {
 		log.info("exit delete command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -502,7 +508,7 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -536,7 +542,13 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
+	/**
+	 * this is work for parsing edit
+	 * @param input
+	 * @param content
+	 * @return parsed userinput
+	 */
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
 		if (content == null || content.equals("")) {
 			return input;
@@ -554,7 +566,13 @@ public class Parser {
 			return parseFixed(input, content, times);
 		}
 	}
-
+	//@author A0119387U
+	/**
+	 * for parsing special commands in edit command
+	 * @param input
+	 * @param content
+	 * @return parsed userinput
+	 */
 	private UserInput parseEditCommand(UserInput input, String content) {
 		input.add(content);
 		if (content.toLowerCase().contains(EDIT_NOTIME)) {
@@ -568,7 +586,7 @@ public class Parser {
 		}
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -705,7 +723,7 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -724,7 +742,7 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return UserInput
@@ -753,7 +771,12 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
+	/**
+	 * tag command parsing
+	 * @param content
+	 * @return userinput
+	 */
 	private UserInput parseTag(String content) {
 		log.info("entering tag command");
 		if (content == null || content.equals("")) {
@@ -777,12 +800,12 @@ public class Parser {
 		log.info("exit command");
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * Untag command parsing
 	 * 
 	 * @param content
-	 * @return
+	 * @return userInput
 	 */
 
 	private UserInput parseUntag(String content) {
@@ -815,7 +838,7 @@ public class Parser {
 		input.addCommand(CMD.EXPORT);
 		return input;
 	}
-
+	//@author A0119387U
 	/**
 	 * @param content
 	 * @return whether the content contents numbers only
@@ -835,7 +858,7 @@ public class Parser {
 		}
 		return true;
 	}
-
+	//@author A0119387U
 	/**
 	 *
 	 * @return UserInput
