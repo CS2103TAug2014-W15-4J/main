@@ -687,11 +687,22 @@ public class MainViewController extends GridPane{
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
 			setGridPaneSize(taskDivision, 850, 20);
 			
-			if (i == 0) {
+			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
+					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0)) && (i==0)) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
 				caption.setText("Task(s) Due Soon");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
+				page[pageIndex].getChildren().add(floatDivision);
+			} else if ((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == 0) && (i==0)) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				Label caption = new Label();
+				caption.setText("Task(s) To Do");
 				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
@@ -702,11 +713,11 @@ public class MainViewController extends GridPane{
 			page[pageIndex].setSpacing(10);
 			page[pageIndex].getChildren().add(taskLayout);
 			
-			if (i == taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1) {
+			if ((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1 == i)) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
-				caption.setText("Task(s) Due Soon");
+				caption.setText("Task(s) To Do");
 				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
@@ -739,11 +750,22 @@ public class MainViewController extends GridPane{
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
 			setGridPaneSize(taskDivision, 850, 20);
 			
-			if (i == 0 && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
+					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
 				caption.setText("Task(s) Due Soon");
+				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				GridPane.setConstraints(caption, 0, 0);
+				floatDivision.getChildren().add(caption);
+				setGridPaneSize(floatDivision, 850, 20);
+				page[pageIndex].getChildren().add(floatDivision);
+			} else if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+				GridPane floatDivision = new GridPane();
+				floatDivision.setStyle("-fx-background-color: white");
+				Label caption = new Label();
+				caption.setText("Task(s) To Do");
 				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
@@ -754,11 +776,11 @@ public class MainViewController extends GridPane{
 			page[pageIndex].setSpacing(10);
 			page[pageIndex].getChildren().add(taskLayout);
 			
-			if (i == taskList.indexOfFirstFloatingTask(specificTaskList)-1  && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1 == i)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
-				caption.setText("Task(s) To do");
+				caption.setText("Task(s) To Do");
 				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
@@ -1638,6 +1660,9 @@ public class MainViewController extends GridPane{
 				});
 			}
 		}
+		
+//		int idx = listDisplay.getCurrentPageIndex();
+//		scrollPage[idx].setVvalue(2.0);
     }
 	
 	//@author A0119414L
