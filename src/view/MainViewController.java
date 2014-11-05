@@ -752,8 +752,8 @@ public class MainViewController extends GridPane{
 			taskDivision.setStyle("-fx-background-color: rgb(127,127,127)");
 			setGridPaneSize(taskDivision, 850, 20);
 			
-			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
-					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if (((taskList.indexOfFirstFloatingTask(specificTaskList) == -1) 
+					|| (taskList.indexOfFirstFloatingTask(specificTaskList) > 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
@@ -763,7 +763,7 @@ public class MainViewController extends GridPane{
 				floatDivision.getChildren().add(caption);
 				setGridPaneSize(floatDivision, 850, 20);
 				page[pageIndex].getChildren().add(floatDivision);
-			} else if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			} else if (((taskList.indexOfFirstFloatingTask(specificTaskList) == 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
@@ -778,7 +778,7 @@ public class MainViewController extends GridPane{
 			page[pageIndex].setSpacing(10);
 			page[pageIndex].getChildren().add(taskLayout);
 			
-			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1 == i)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if (((taskList.indexOfFirstFloatingTask(specificTaskList)-1 == i)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
 				floatDivision.setStyle("-fx-background-color: white");
 				Label caption = new Label();
