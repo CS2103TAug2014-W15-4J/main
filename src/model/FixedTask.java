@@ -103,4 +103,9 @@ public class FixedTask extends Task {
         
         return newTask;
     }   
+	
+	@Override
+	public int getReminingDays() {
+		return getDateDiff(new Date(), endTime);
+	}
 }

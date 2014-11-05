@@ -77,4 +77,9 @@ public class DeadlineTask extends Task {
 	    
 	    return newTask;
 	}	
+	
+	@Override
+	public int getReminingDays() {
+		return getDateDiff(new Date(), deadline);
+	}
 }

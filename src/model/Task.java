@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
 import exception.TaskDoneException;
 import exception.TaskInvalidDateException;
 import exception.TaskTagDuplicateException;
@@ -223,6 +226,29 @@ public abstract class Task {
     }
 	
 	//@author A0119446B
+	/**
+     * This method return the days remain to the due date.
+     * 
+     * To be override by subclass.
+     * 
+     * @return 	an integer represent how many days left for doing task
+     */
+	public int getReminingDays() {
+		return 0;
+    }
+	
+	//@author A0119446B
+	/**
+	 * This method calculates two days' difference (Unit: day)
+	 * 
+	 * @param date1 the old date
+	 * @param date2 the new date
+	 * @return the difference value, in days
+	 */
+	public int getDateDiff(Date date1, Date date2) {
+		return Days.daysBetween(new DateTime(date1).toLocalDate(), new DateTime(date2).toLocalDate()).getDays();
+	}
+	
 	/**
 	 * This method represents the tags of the task in a string, and returns it.
 	 * 

@@ -186,6 +186,11 @@ public class RepeatedTask extends Task {
 
         
     }
+    
+    @Override
+    public int getReminingDays() {
+    	return this.getDateDiff(new Date(), deadline);
+    }
 
 
 }
