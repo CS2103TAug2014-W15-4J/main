@@ -1658,6 +1658,14 @@ public class MainViewController extends GridPane{
 		
 	}
 	
+	//@author A0119414L
+	/**
+	 * Find the position of the task with given index in current page.
+	 * 
+	 * @param specificTaskList		Task list displayed in current page.
+	 * @param indexOfTask			Index of the task.
+	 * @return						Return the position height of that task.
+	 */
 	private double findIndexPosition(List<Task> specificTaskList, int indexOfTask) {
 		int firstFloatIndex = taskList.indexOfFirstFloatingTask(specificTaskList);
 		double position;
@@ -1746,6 +1754,12 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Move the view to display specified position.
+	 * 
+	 * @param positionMoveTo	Height of position.
+	 */
 	private void moveToSpecificPosition(double positionMoveTo) {
 		int currentPageIndex = listDisplay.getCurrentPageIndex();
 		double totalHeight = page[currentPageIndex].getHeight();
@@ -1801,11 +1815,6 @@ public class MainViewController extends GridPane{
 			}
 		}
 		
-//		int idx = listDisplay.getCurrentPageIndex();
-//		scrollPage[idx].setVvalue(1.0);
-//		int currentPageIndex = listDisplay.getCurrentPageIndex();
-//		System.out.println(page[currentPageIndex].getHeight());
-//		moveToSpecificPosition(380);
     }
 	
 	//@author A0119414L
@@ -1882,6 +1891,11 @@ public class MainViewController extends GridPane{
 		}
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set comma key to control page up.
+	 * 
+	 */
 	private void setPageUpKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
@@ -1895,6 +1909,11 @@ public class MainViewController extends GridPane{
 		});
 	}
 	
+	//@author A0119414L
+	/**
+	 * Set period key to control page down.
+	 * 
+	 */
 	private void setPageDownKey() {
 		listDisplay.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
 			@Override
