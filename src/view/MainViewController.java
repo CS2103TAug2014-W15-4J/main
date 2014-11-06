@@ -100,8 +100,8 @@ public class MainViewController extends GridPane{
 	final static String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
 	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
 	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
-	final static String ONE_OVERDUE_TASK = "Sign! 1 task overdue";
-	final static String MANY_OVERDUE_TASKS = "Sign! %s tasks overdue";
+	final static String ONE_OVERDUE_TASK = "Sigh! 1 task overdue";
+	final static String MANY_OVERDUE_TASKS = "Sigh! %s tasks overdue";
 	final static String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
 	
 	final static String TITLE_TODAY_TASKS = "Today";
