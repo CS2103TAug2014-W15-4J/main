@@ -1309,6 +1309,49 @@ public class MainViewController extends GridPane{
 			return true;
 		}
 		
+		if (command.trim().toLowerCase().substring(0, 4).equals("demo")) {
+			Logic.readAndExecuteCommands("clear");
+			Logic.readAndExecuteCommands("add project meeting by 7pm");
+			Logic.readAndExecuteCommands("add family dinner by sat 6.30pm");
+			Logic.readAndExecuteCommands("add Telepaste IPO by tomorrow");
+			Logic.readAndExecuteCommands("add visit the zoo by nov 27");
+			Logic.readAndExecuteCommands("add reading Harry Potter");
+			Logic.readAndExecuteCommands("add find a girl/boy friend");
+			Logic.readAndExecuteCommands("tag 1 !!!");
+			Logic.readAndExecuteCommands("tag 2 family");
+			Logic.readAndExecuteCommands("tag 3 !!");
+			Logic.readAndExecuteCommands("tag 5 book");
+			Logic.readAndExecuteCommands("tag 6 won't do");
+			Logic.readAndExecuteCommands("add meeting by yesterday");
+			Logic.readAndExecuteCommands("add OP2");
+			Logic.readAndExecuteCommands("done 8");
+			
+			taskList = getTaskList();
+			taskList.checkOverdue();
+			if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
+				displayTodayTasks();
+			} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
+				displayPeriodTasks();
+			} else if (listDisplay.getCurrentPageIndex() == UNDONE_TASKS_PAGE_INDEX) {
+				setOnePageView(UNDONE_TASKS_PAGE_INDEX);
+			} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
+				setOnePageView(DONE_TASKS_PAGE_INDEX, taskList.getFinishedTasks());
+			} else if (listDisplay.getCurrentPageIndex() == OVERDUE_TASKS_PAGE_INDEX) {
+				setOnePageView(OVERDUE_TASKS_PAGE_INDEX, taskList.getOverdueTask());
+			} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
+				setOnePageView(TASKS_WITH_TAG_PAGE_INDEX, taskList.getTasksWithTag(showTag));
+			} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
+				if (searchKey != null) {
+					setOnePageView(SEARCH_RESULT_PAGE_INDEX, taskList.searchTaskByKeyword(searchKey));
+				}
+			}
+			setDisplayTitleText();
+			setRestTaskResponse();
+			setTextFieldEmpty();
+			
+			return true;
+		}
+		
 		if (command.trim().toLowerCase().equals("option") || command.trim().toLowerCase().equals("settings")) {
 			Stage option = new Stage();
 			Pane testWindow = new Pane();
