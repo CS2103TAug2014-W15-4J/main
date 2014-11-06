@@ -1321,8 +1321,8 @@ public class MainViewController extends GridPane{
 			Logic.readAndExecuteCommands("tag 2 family");
 			Logic.readAndExecuteCommands("tag 3 !!");
 			Logic.readAndExecuteCommands("tag 5 book");
-			Logic.readAndExecuteCommands("tag 6 won't do");
-			Logic.readAndExecuteCommands("add meeting by yesterday");
+			Logic.readAndExecuteCommands("tag 6 ><");
+			Logic.readAndExecuteCommands("add Broing meeting by yesterday");
 			Logic.readAndExecuteCommands("add OP2");
 			Logic.readAndExecuteCommands("done 8");
 			
