@@ -1,0 +1,38 @@
+Thank you for using uClear
+Here are your current tasks.
+
+Tasks that due soon:
+project meeting
+Due: 星期五 19:00 07/十一月/2014
+Tags: !!!, ><
+Status: Ongoing
+
+family dinner
+Due: 星期六 18:30 08/十一月/2014
+Tags: family
+Status: Ongoing
+
+visit the zoo
+Due: 星期四 23:59 27/十一月/2014
+Tags: None
+Status: Ongoing
+
+Tasks to do:
+reading Harry Potter
+Tags: book
+Status: Ongoing
+
+find a girl/boy friend
+Tags: ><
+Status: Ongoing
+
+Tasks finished:
+OP2
+Tags: None
+Status: Done
+
+Broing meeting
+Due: 星期四 23:59 06/十一月/2014
+Tags: None
+Status: Done
+
