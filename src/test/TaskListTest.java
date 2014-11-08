@@ -32,6 +32,7 @@ public class TaskListTest {
 	static Date today;
 	static Date tomorrow;
 	static Date yesterday;
+	static TaskList controlTaskList = new TaskList();
 
 	//@author A0119446B
 	@Test
@@ -102,7 +103,7 @@ public class TaskListTest {
 		assertEquals(50, tasks.count());
 
 		// test the adding of different types of tasks
-		tasks = addTasks();
+		tasks = getTasks(controlTaskList);
 		assertEquals(4, tasks.count());
 	}
 
@@ -173,7 +174,7 @@ public class TaskListTest {
 		assertEquals(0, tasks.count());
 
 		// test the deleting of different types of tasks
-		tasks = addTasks();
+		tasks = getTasks(controlTaskList);
 		toDelete.clear();
 		toDelete.add(1);
 		for (int i = 3; i >= 0; i--) {
@@ -209,7 +210,7 @@ public class TaskListTest {
 
 		// add tasks to edit
 		tasks.clearList();
-		tasks = addTasks();
+		tasks = getTasks(controlTaskList);
 
 		// edit task descriptions
 		assertEquals(tasks.getTask(0).getDescription(), "repeated task one");
@@ -430,41 +431,45 @@ public class TaskListTest {
         }
 	    
 	    try {
-	        // test undo/redo for adding 
-	        TaskList controlList = new TaskList();
+	        // test undo/redo for adding
+	        TaskList taskListAdd = new TaskList();
+	        TaskList controlListAdd = new TaskList();
+	        setTaskList(taskListAdd);
 	        
-	        tasks = addTasks();
-	        for (int i = 0; i < tasks.count(); i++) {
-	            Task task = tasks.getTask(i);
-	            controlList.addTaskToTaskList(task.clone());
+	        for (int i = 0; i < taskListAdd.count(); i++) {
+	            Task task = taskListAdd.getTask(i);
+	            controlListAdd.addTaskToTaskList(task.clone());
 	        }
-	        assert (tasks.count() == 4);
+	        assert (taskListAdd.isEqual(controlListAdd));
+	        assert (taskListAdd.count() == 4);
 	        
-	        tasks.undo();
-	        tasks.undo();
-	        tasks.undo();
-	        tasks.undo();
-	        assert (tasks.count() == 0);
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        assert (taskListAdd.count() == 0);
 
-	        tasks.redo();
-	        tasks.redo();
-	        tasks.redo();
-	        tasks.redo();
-	        assert (tasks.count() == 4);
-	        
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        assert (taskListAdd.count() == 4);
+            assert (taskListAdd.isEqual(controlListAdd));	        
 	        
 	        // test undo/redo for editing
+            tasks = getTasks(controlTaskList);
+            tasks.clearUndoRedoStack();
 	        tasks.editTaskDescriptionOnly(4, "task one");
 	        tasks.editTaskDeadlineOnly(2, tomorrow);
 	        tasks.editTaskDescriptionDeadline(1, "task two", today);
 	        tasks.editTaskDescriptionTimes(3, "task three", yesterday, today);
-            assert (!tasks.isEqual(controlList));
+            assert (!tasks.isEqual(controlTaskList));
             
             tasks.undo();
             tasks.undo();
             tasks.undo();
             tasks.undo();
-            assert (tasks.isEqual(controlList));
+            assert (tasks.isEqual(controlTaskList));
 
             tasks.redo();
             tasks.redo();
@@ -475,10 +480,12 @@ public class TaskListTest {
             assertEquals(((FixedTask) tasks.getTask(0)).getStartTime(), yesterday);
             assertEquals(tasks.getTask(1).getDeadline(), today);
             assertEquals(tasks.getTask(2).getDeadline(), tomorrow);
+            assert (!tasks.isEqual(controlTaskList));
             
             
             // test undo/redo for deleting tasks
-            tasks = addTasks();
+            tasks = getTasks(controlTaskList);
+            assert (tasks.isEqual(controlTaskList));
             List<Integer> taskIndexList = new ArrayList<Integer>();
             taskIndexList.add(2);
             taskIndexList.add(4);
@@ -486,7 +493,9 @@ public class TaskListTest {
             assert (tasks.count() == 2);
             
             tasks.undo();
+            assert (tasks.isEqual(controlTaskList));
             assert (tasks.count() == 4);
+            
             
             tasks.redo();
             assert (tasks.count() == 2);
@@ -502,7 +511,8 @@ public class TaskListTest {
 
             
             // test undo/redo for marking tasks done
-            tasks = addTasks();
+            tasks = getTasks(controlTaskList);
+            assert (tasks.isEqual(controlTaskList));
             taskIndexList.add(1);
             taskIndexList.add(3);
             tasks.markTaskDone(taskIndexList);
@@ -512,6 +522,7 @@ public class TaskListTest {
             tasks.undo();
             assert (tasks.countFinished() == 0);
             assert (tasks.count() == 4);
+            assert (tasks.isEqual(controlTaskList));
             
             tasks.redo();
             assert (tasks.countFinished() == 4);
@@ -542,31 +553,19 @@ public class TaskListTest {
 	 *  
 	 * @return Tasklist with four tasks in the above specified order.
 	 */
-	private TaskList addTasks() {
-		TaskList tasks = new TaskList();
-
-		// add a floating task
-		tasks.addToList("floating task one");
-
-		// add a deadline task
-		tasks.addToList("deadline task one", today);
-
-		// add a fixed task
-		try {
-			tasks.addToList("fixed task one", today, tomorrow);
-		} catch (TaskInvalidDateException e) {
-			assert false;
-		}
-
-		// add a repeated task
-		tasks.addToList("repeated task one", yesterday,
-				UserInput.RepeatDate.WEEKLY);
-
-		assertEquals(tasks.count(), 4);
-		return tasks;
+	private TaskList getTasks(TaskList taskList) {
+	    
+        TaskList tasks = new TaskList();	    
+	    for (int i = 0; i < 4; i++) {
+	        Task task = taskList.getTask(i);
+	        Task taskClone = task.clone();
+	        
+	        tasks.addTaskToTaskList(taskClone);
+	    }
+	    
+	    return tasks;
 	}
-
-	@BeforeClass
+	
 	public static void setDates() {
 		today = new Date();
 
@@ -576,5 +575,32 @@ public class TaskListTest {
 		cal.add(Calendar.DAY_OF_MONTH, -2);
 		yesterday = cal.getTime();
 	}
+	
+	public static void setTaskList(TaskList taskList) {
+	    
+        // add a floating task
+	    taskList.addToList("floating task one");
+
+        // add a deadline task
+	    taskList.addToList("deadline task one", today);
+
+        // add a fixed task
+        try {
+            taskList.addToList("fixed task one", today, tomorrow);
+        } catch (TaskInvalidDateException e) {
+            assert false;
+        }
+
+        // add a repeated task
+        taskList.addToList("repeated task one", yesterday,
+                                  UserInput.RepeatDate.WEEKLY);
+	}
+	
+    @BeforeClass
+    public static void initialise() {
+        setDates();
+        setTaskList(controlTaskList);
+    }
+
 
 }
