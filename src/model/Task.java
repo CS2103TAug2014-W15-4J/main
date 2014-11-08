@@ -323,13 +323,18 @@ public abstract class Task {
 	
 	/**
 	 * This method checks if two tasks are equal.
-	 * Two tasks are equal if they have the same added time.
+	 * Two tasks are equal if they have the same value for different properties:
+	 * Added time, Description, Class, ..
+	 * Subclass override for subclasses with more properties.
 	 * 
 	 * @param task The task to be compared to.
 	 * @return     true if the tasks are equal, false otherwise.
 	 */
 	public boolean equals(Task task) {
-	    return this.getAddedTime().equals(task.getAddedTime());
+	    boolean isEqual = this.getAddedTime().equals(task.getAddedTime()) &&
+	                      this.getClass() == task.getClass() &&
+	                      this.getDescription().equals(task.getDescription());	    
+	    return isEqual;
 	}
 
 }

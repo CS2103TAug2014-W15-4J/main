@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import controller.UserInput.RepeatDate;
 import exception.TaskDoneException;
+import exception.TaskInvalidDateException;
 
 //@author A0115384H
 /**
@@ -185,6 +186,27 @@ public class RepeatedTask extends Task {
         return isConsecutive;
 
         
+    }
+    
+    /**
+     * This method checks if two repeated tasks are equal.
+     * Two repeated tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline, Repeat period
+     * 
+     * @param task The repeated task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline()) &&
+                      this.getRepeatPeriod().equals(((RepeatedTask) task).getRepeatPeriod());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
     }
     
     @Override

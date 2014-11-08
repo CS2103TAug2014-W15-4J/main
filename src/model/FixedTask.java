@@ -6,6 +6,8 @@ import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import exception.TaskInvalidDateException;
+
 //@author A0115384H
 /**
  * This class models a fixed task: tasks to be done within an interval.
@@ -103,6 +105,27 @@ public class FixedTask extends Task {
         
         return newTask;
     }   
+	
+    /**
+     * This method checks if two fixed tasks are equal.
+     * Two fixed tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline, Start time
+     * 
+     * @param task The fixed task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline()) &&
+                      this.getStartTime().equals(((FixedTask) task).getStartTime());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
+    }
 	
 	@Override
 	public int getReminingDays() {

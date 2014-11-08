@@ -6,6 +6,8 @@ import java.util.Date;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import exception.TaskInvalidDateException;
+
 //@author A0115384H
 /**
  * This class models a deadline task: tasks to be done by a specified time.
@@ -78,6 +80,26 @@ public class DeadlineTask extends Task {
 	    return newTask;
 	}	
 	
+    /**
+     * This method checks if two deadline tasks are equal.
+     * Two deadline tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline
+     * 
+     * @param task The deadline task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
+    }
+
 	@Override
 	public int getReminingDays() {
 		return getDateDiff(new Date(), deadline);

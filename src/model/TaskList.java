@@ -1635,49 +1635,18 @@ public class TaskList {
 	        Task thisTask = this.getTask(i);
 	        Task thatTask = t2.getTask(i);
 
-    	    try {
-    	        if (thisTask instanceof DeadlineTask) {
-    	            
-    	            isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
-    	                      thatTask instanceof DeadlineTask &&
-                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
-                              thisTask.getAddedTime().equals(thatTask.getAddedTime());
-    	            
-    	        } else if (thisTask instanceof FixedTask) {
-                    isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
-                              thatTask instanceof FixedTask &&
-                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
-                              ((FixedTask) thisTask).getStartTime().equals(((FixedTask) thatTask).getStartTime()) &&
-                              thisTask.getAddedTime().equals(thatTask.getAddedTime());
-
-    	        } else if (thisTask instanceof RepeatedTask) {
-                    isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
-                              thatTask instanceof RepeatedTask &&
-                              thisTask.getDeadline().equals(thatTask.getDeadline()) &&
-                              thisTask.getAddedTime().equals(thatTask.getAddedTime()) &&
-                              ((RepeatedTask) thisTask).getRepeatPeriod().equals(((RepeatedTask) thatTask).getRepeatPeriod());
-                    
-    	        } else if (thisTask instanceof FloatingTask) {
-    	            isEqual = thisTask.getDescription().equals(thatTask.getDescription()) &&
-    	                      thatTask instanceof FloatingTask &&
-    	                      thisTask.getAddedTime().equals(thatTask.getAddedTime());
-    	            
-    	        } else {
-    	            assert false;
-    	        }
-    	        i++;
-    	    } catch (TaskInvalidDateException e) {
-    	        assert false;
-    	    }
-    	    
+	        isEqual = thisTask.equals(thatTask);
+	        i++;
 	    }
 	    
 	    while (isEqual && (j < this.countFinished())) {
-	        isEqual = this.getFinishedTasks().get(j).getDoneDate().equals(t2.getFinishedTasks().get(j).getDoneDate());
+	        Task thisFinishedTask = this.getFinishedTasks().get(j);
+	        Task thatFinishedTask = t2.getFinishedTasks().get(j);
+	        isEqual = thisFinishedTask.equals(thatFinishedTask) &&
+	                  thisFinishedTask.getDoneDate().equals(thatFinishedTask.getDoneDate());
 	        j++;
 	    }
-	    
-	    
+	    	    
 	    return isEqual;
 	}
 
