@@ -443,7 +443,7 @@ public class Logic {
 	 * @return             The feedback string regarding the success of the command.
 	 */
 	private static String addTask(String description, Date startTime,
-			Date endTime) {
+	                              Date endTime) {
 		try {
 			listOfTasks.addToList(description, startTime, endTime);
 			return String.format(MESSAGE_TASK_ADDED, description);

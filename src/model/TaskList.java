@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
-
 import log.ULogger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -206,6 +205,8 @@ public class TaskList {
     		}
     		this.totalTasksOngoing++;
 	    }
+	    
+	    logger.info("task added");
 	}
 	
 	//@author A0119446B
@@ -301,6 +302,8 @@ public class TaskList {
             Task clonedTask = taskToEdit.clone();
             editTaskDescription(taskToEdit, description);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+
+            logger.info("Task description edited");            
             return oldDescription;
         }
 	}
@@ -322,6 +325,7 @@ public class TaskList {
             Task clonedTask = taskToEdit.clone();
             editTaskDeadline(taskToEdit, time);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+            logger.info("Task deadline edited");
         }
 	}
 	
@@ -344,6 +348,7 @@ public class TaskList {
             editTaskDescription(taskToEdit, desc);
             editTaskDeadline(taskToEdit, time);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+            logger.info("Task description and deadline edited");
         }
 	}
 	
@@ -366,6 +371,7 @@ public class TaskList {
             editTaskStartDate(taskToEdit, startDate);
             editTaskDeadline(taskToEdit, endDate);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+            logger.info("Task start/end times edited");
         }
 	}
 	
@@ -390,6 +396,7 @@ public class TaskList {
             editTaskStartDate(taskToEdit, startDate);
             editTaskDeadline(taskToEdit, endDate);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+            logger.info("Task description and start/end times edited");
         }
 	}
 	
@@ -545,6 +552,7 @@ public class TaskList {
 	                tasksUntimed.remove(taskI);
 	            }
 	            this.totalTasksOngoing--;
+	            logger.info("Deleted a task");
 	        }
 	    }
 	}
@@ -625,6 +633,7 @@ public class TaskList {
 	    if (taskToRemove instanceof RepeatedTask) {
 	        if (tasksRepeated.contains(taskToRemove)) {
 	            tasksRepeated.remove(taskToRemove);
+	            logger.info("deleted a task from the repeated list.");
 	        }
 	    }
 	}
@@ -639,6 +648,7 @@ public class TaskList {
 	    if (taskToAdd instanceof RepeatedTask) {
 	        if (!tasksRepeated.contains(taskToAdd)) {
 	            tasksRepeated.add(taskToAdd);
+	            logger.info("added a task to the repeated list.");
 	        }
 	    }
 	}
@@ -662,6 +672,8 @@ public class TaskList {
 		this.tags.clear();
 		this.totalTasksOngoing = 0;
 		this.totalFinished = 0;
+		
+		logger.info("Task list cleared");
 	}
 
     /**
@@ -727,6 +739,7 @@ public class TaskList {
 		    }
 		    
 		    addToUndoList(LastCommand.DONE, tasksBeforeMarkingDone, tasksToMarkDone, newRepeatTaskList);
+		    logger.info("Tasks marked done");
 		}
 	}
 	
@@ -737,6 +750,7 @@ public class TaskList {
 	 */
 	private void markTaskRedone(Task task) {
 	    task.markRedone();
+	    logger.info("task has been marked redone.");
 	}
 	
 	/**
@@ -746,6 +760,7 @@ public class TaskList {
 	 */
 	private void markTaskUndone(Task task) {
 	    task.markUndone();
+	       logger.info("task has been marked undone.");
 	}
 
 	/**
@@ -774,6 +789,7 @@ public class TaskList {
 	        tagGivenTask(givenTaskToTag, tag);
 	        
 	        addToUndoList(LastCommand.TAG, clonedTask, givenTaskToTag, tag);
+	        logger.info("Task tagged.");
 	    }
 	}
 	
@@ -826,6 +842,7 @@ public class TaskList {
 	        Task clonedTask = givenTaskToUntag.clone();
 	        untagGivenTask(givenTaskToUntag, tag);
             addToUndoList(LastCommand.UNTAG, clonedTask, givenTaskToUntag, tag);
+            logger.info("Task untagged");
 	    }
 	}
 	
@@ -1257,11 +1274,15 @@ public class TaskList {
 	            Task task = lastState.getPreviousTaskState();
 	            this.deleteFromList(task);
 	            
+	            logger.info("Operation undone: add");
+	            
 	        } else if (lastState.getLastCommand() == LastCommand.DELETE) {
 	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
 	            for (Task task : tasksToReadd) {
 	                this.addToList(task);
 	            }
+	            
+                logger.info("Operation undone: delete");
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
 	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
@@ -1270,6 +1291,7 @@ public class TaskList {
 	            }
 	            
 	            updateTagsHash(tasksToReadd);
+	            logger.info("Operation undone: clear");
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
 	            List<Task> tasksAfterDone = lastState.getCurrentTaskStateList();
@@ -1287,6 +1309,8 @@ public class TaskList {
 	                this.totalTasksOngoing--;
 	            }
 	            
+	            logger.info("Operation undone: mark done");
+	            
 	        } else if (lastState.getLastCommand() == LastCommand.TAG) {
 	            Task currentTaskState = lastState.getCurrentTaskState();
 	            String tag = lastState.getTag();
@@ -1301,6 +1325,8 @@ public class TaskList {
                         assert false;
                     }
                 }
+	            
+	            logger.info("Operation undone: tag");
 	            
 	        } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
 	            Task currentTaskState = lastState.getCurrentTaskState();
@@ -1319,6 +1345,8 @@ public class TaskList {
 	            } catch (TaskTagDuplicateException e) {
 	                assert false;
 	            }
+	            
+	            logger.info("Operation undone: untag");
 
 	        } else if (lastState.getLastCommand() == LastCommand.EDIT) {
 	            Task currentTaskState = lastState.getCurrentTaskState();
@@ -1332,6 +1360,8 @@ public class TaskList {
 	                    break;
 	                }
 	            }
+	            
+	            logger.info("Operation undone: edit");
 	            
 	        } else {
 	            // add on other undo operations with a new else if statement,
@@ -1362,6 +1392,8 @@ public class TaskList {
             }
         }
         
+        logger.info("updating the tags hashmap");
+        
     }
 
     /**
@@ -1382,17 +1414,23 @@ public class TaskList {
                 Task task = lastState.getPreviousTaskState();
                 this.addToList(task);
                 
+                logger.info("Operation redone: add");
+                
             } else if (lastState.getLastCommand() == LastCommand.DELETE) {
                 List<Task> tasksToDelete = lastState.getPreviousTaskStateList();
                 for (Task task : tasksToDelete) {
                     this.deleteFromList(task);
                 }
                 
+                logger.info("Operation redone: delete");
+                
             } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
                 List<Task> tasksToDelete = lastState.getPreviousTaskStateList();
                 for (Task task : tasksToDelete) {
                     this.deleteFromList(task);
                 }                
+                
+                logger.info("Operation redone: clear");
                 
             } else if (lastState.getLastCommand() == LastCommand.DONE) {
                 List<Task> tasksAfterUndone = lastState.getCurrentTaskStateList();
@@ -1409,6 +1447,8 @@ public class TaskList {
                     this.addToList(newRepeatTask);
                 }
                 
+                logger.info("Operation redone: done");
+                
             } else if (lastState.getLastCommand() == LastCommand.TAG) {
                 Task currentTaskState = lastState.getCurrentTaskState();
                 String tag = lastState.getTag();
@@ -1424,6 +1464,8 @@ public class TaskList {
                         assert false;
                     }
                 }
+                
+                logger.info("Operation redone: tag");
                 
             } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
                 Task currentTaskState = lastState.getCurrentTaskState();
@@ -1442,6 +1484,8 @@ public class TaskList {
                     assert false;
                 }
                 
+                logger.info("Operation redone: untag");
+                
             } else if (lastState.getLastCommand() == LastCommand.EDIT) {
                 Task currentTaskState = lastState.getCurrentTaskState();
                 Task prevTaskState = lastState.getPreviousTaskState();
@@ -1455,14 +1499,14 @@ public class TaskList {
                     }
                 }
                 
+                logger.info("Operation redone: edit");
+                
             } else {
                 // add on other redo operations with a new else if statement,
                 // should not actually reach here
                 assert false;
-            }
-            
+            }            
         }
-        
     }
 	
     /**
@@ -1567,7 +1611,7 @@ public class TaskList {
 	 * @return the number of undone tasks.
 	 */
 	public int countUndone() {
-		return this.countTimedTask()+this.countUntimedTask();
+		return this.countTimedTask() + this.countUntimedTask();
 	}
 
     /**
