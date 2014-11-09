@@ -1,5 +1,6 @@
 package controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -27,8 +28,11 @@ public class Logic {
 	static Scanner scanner = new Scanner(System.in);
 	static TaskList listOfTasks;
 
-	final static String MESSAGE_TASK_ADDED = "Task added successfully.";
+	final static String MESSAGE_TASK_ADDED = "\"%s\" is added to your list.";
 	final static String MESSAGE_TASK_EDITED = "Task edited successfully.";
+	final static String MESSAGE_TASK_EDITED_DESCRITPION = "Task \"%s\" is renamed as \"%s\"";
+	final static String MESSAGE_TASK_EDITED_DEADLINE = "The deadline is changed to \"%s\"";
+	final static String MESSAGE_TASK_EDITED_ALL = "Task is renamed as \"%s\". New deadline: \"%s\"";
 	final static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
 	final static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
 	final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
@@ -87,27 +91,27 @@ public class Logic {
 
 	static ULogger log = ULogger.getLogger();
 
-	public static void main(String[] args) {
-		// get existing tasks from storage
-		listOfTasks = storage.load();
-		listOfTasks.setShowDisplayListToFalse();
-
-		// get and execute new tasks
-		while (true) {
-
-			log.info("Getting user input");
-			String userInput = getUserInput();
-
-			// parse and execute command
-			System.out.println(readAndExecuteCommands(userInput));
-
-			log.info("Execution complete.");
-
-			// update the history and storage file
-			storage.save(listOfTasks);
-
-		}
-	}
+//	public static void main(String[] args) {
+//		// get existing tasks from storage
+//		listOfTasks = storage.load();
+//		listOfTasks.setShowDisplayListToFalse();
+//
+//		// get and execute new tasks
+//		while (true) {
+//
+//			log.info("Getting user input");
+//			String userInput = getUserInput();
+//
+//			// parse and execute command
+//			System.out.println(readAndExecuteCommands(userInput));
+//
+//			log.info("Execution complete.");
+//
+//			// update the history and storage file
+//			storage.save(listOfTasks);
+//
+//		}
+//	}
 	
 	//@author A0119414L
 	/**
@@ -400,7 +404,7 @@ public class Logic {
 	 */
 	private static String addTask(String description) {
 		listOfTasks.addToList(description);
-		return MESSAGE_TASK_ADDED;
+		return String.format(MESSAGE_TASK_ADDED, description);
 	}
 
 	/**
@@ -412,7 +416,7 @@ public class Logic {
      */
 	private static String addTask(String description, Date time) {
 		listOfTasks.addToList(description, time);
-		return MESSAGE_TASK_ADDED;
+		return String.format(MESSAGE_TASK_ADDED, description);
 	}
 
     /**
@@ -427,7 +431,7 @@ public class Logic {
 	private static String addTask(String description, Date time,
 	                              RepeatDate repeatDate) {
 		listOfTasks.addToList(description, time, repeatDate);
-		return MESSAGE_TASK_ADDED;
+		return String.format(MESSAGE_TASK_ADDED, description);
 	}
 
 	/**
@@ -442,7 +446,7 @@ public class Logic {
 			Date endTime) {
 		try {
 			listOfTasks.addToList(description, startTime, endTime);
-			return MESSAGE_TASK_ADDED;
+			return String.format(MESSAGE_TASK_ADDED, description);
 		} catch (TaskInvalidDateException e) {
 			return e.getMessage();
 		}
@@ -457,8 +461,8 @@ public class Logic {
 	 */
 	private static String editTask(int taskIndex, String description) {
 		try {
-			listOfTasks.editTaskDescriptionOnly(taskIndex, description);
-			return MESSAGE_TASK_EDITED;
+			String oldDescription = listOfTasks.editTaskDescriptionOnly(taskIndex, description);
+			return String.format(MESSAGE_TASK_EDITED_DESCRITPION, oldDescription, description);
 
 		} catch (TaskInvalidIdException e) {
 			return MESSAGE_INVALID_TASKID;
@@ -475,7 +479,8 @@ public class Logic {
 	private static String editTask(int taskIndex, Date time) {
 		try {
 			listOfTasks.editTaskDeadlineOnly(taskIndex, time);
-			return MESSAGE_TASK_EDITED;
+			String timeString = formatTime(time);
+			return String.format(MESSAGE_TASK_EDITED_DEADLINE, timeString);
 
 		} catch (TaskInvalidIdException e) {
 			return MESSAGE_INVALID_TASKID;
@@ -496,7 +501,8 @@ public class Logic {
 	private static String editTask(int taskIndex, String desc, Date time) {
 		try {
 		    listOfTasks.editTaskDescriptionDeadline(taskIndex, desc, time);
-			return MESSAGE_TASK_EDITED;
+		    String timeString = formatTime(time);
+			return String.format(MESSAGE_TASK_EDITED_ALL, desc, timeString);
 
 		} catch (TaskInvalidIdException e) {
 			return MESSAGE_INVALID_TASKID;
@@ -504,6 +510,16 @@ public class Logic {
 		} catch (TaskInvalidDateException e) {
 			return MESSAGE_INVALID_DATE;
 		}
+	}
+
+	/**
+	 * @param time
+	 * @return
+	 */
+	private static String formatTime(Date time) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("EEE, MMM d HH:mm");
+		String timeString = timeFormat.format(time);
+		return timeString;
 	}
 
 	/**
@@ -518,7 +534,8 @@ public class Logic {
 
 		try {
 		    listOfTasks.editTaskTimes(taskIndex, startDate, endDate);
-			return MESSAGE_TASK_EDITED;
+		    String timeString = formatTime(endDate);
+			return String.format(MESSAGE_TASK_EDITED_DEADLINE, timeString);
 
 		} catch (TaskInvalidIdException e) {
 			return MESSAGE_INVALID_TASKID;
@@ -541,7 +558,8 @@ public class Logic {
 	                               Date startDate,Date endDate) {
 		try {
 		    listOfTasks.editTaskDescriptionTimes(taskIndex, desc, startDate, endDate);
-			return MESSAGE_TASK_EDITED;
+		    String timeString = formatTime(endDate);
+			return String.format(MESSAGE_TASK_EDITED_ALL, desc, timeString);
 
 		} catch (TaskInvalidIdException e) {
 			return MESSAGE_INVALID_TASKID;
@@ -598,7 +616,8 @@ public class Logic {
 		listOfTasks.clearList();
 		return MESSAGE_TASK_CLEARED;
 	}
-
+	
+	//@author A0119446B
 	/**
 	 * This method displays the user's tasks information, specified by the user command.
 	 * 
@@ -643,6 +662,7 @@ public class Logic {
 		}
 	}
 
+	//@author A0115384H
 	/**
 	 * This method marks done the specified tasks from the file.
 	 * 

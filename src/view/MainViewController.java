@@ -2,6 +2,7 @@ package view;
 
 import controller.Logic;
 import controller.UserInput.CMD;
+import log.ULogger;
 import model.FixedTask;
 import model.RepeatedTask;
 import model.TaskList;
@@ -34,6 +35,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -146,7 +148,7 @@ public class MainViewController extends GridPane{
 	@FXML
 	private Pagination listDisplay;
 	
-	private FadeTransition fadeOut = new FadeTransition(Duration.millis(200));
+	private FadeTransition fadeOut = new FadeTransition(Duration.millis(400));
 	
 	// Pages
 	private ScrollPane[] scrollPage;
@@ -962,6 +964,7 @@ public class MainViewController extends GridPane{
 		Label description = new Label(task.getDescription());
 		description.setPrefSize(650, 40);
 		description.setMaxHeight(40);
+		description.setTextOverrun(OverrunStyle.CENTER_WORD_ELLIPSIS);
 		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:28;");
 		GridPane.setConstraints(description, 1, 0, 1, 1);
 		taskLayout.getChildren().add(description);
@@ -1119,7 +1122,7 @@ public class MainViewController extends GridPane{
 			for (int j=0; j<task.getTags().size(); j++) {
 				List<String> tagList = task.getTags();
 				tags[j] = new Label(tagList.get(j));
-				
+				tags[j].setTextOverrun(OverrunStyle.CENTER_WORD_ELLIPSIS);
 				if (!tagColor.containsKey(tags[j].getText())) {
 					tagColor.put(tags[j].getText(), DEFAULT_TAG_COLORS[colorPointer]);
 					colorPointer = (colorPointer + 1) % 10;
@@ -1177,7 +1180,7 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
 			if (showPeriod == null) {
-				response.setText("No Period Set!");
+				response.setText("No time period shown yet. Try \"show this week\".");
 			} else {
 				List<Task> periodTasks = getPeriodTaskList(showPeriod);
 				if (periodTasks.size() > 1) {
@@ -1214,7 +1217,7 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			if (showTag == null) {
-				response.setText("No Task With This Tag!");
+				response.setText("You haven't show tags yet. Try \"show <tags>\".");
 			} else {
 				if (taskList.isTagContained(showTag)) {
 					List<Task> tagTasks = getTagTaskList(showTag);
@@ -1231,11 +1234,11 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey == null) {
-				response.setText("No Result.");
+				response.setText("You haven't search anything yet. Try \"search <keyword>\".");
 			} else {
 				int count = taskList.searchTaskByKeyword(searchKey).size();
 				if (count == 0) {
-					response.setText("No Result.");
+					response.setText(String.format("Nothing found for %s", searchKey));
 				} else if (count == 1) {
 					response.setText("1 result shown.");
 				} else {
@@ -1281,6 +1284,9 @@ public class MainViewController extends GridPane{
 	 */
 	private boolean isSpecialCommand() throws TaskInvalidDateException, TaskNoSuchTagException {		
 		if (command.trim().toLowerCase().equals("exit")) {
+			// close logger
+			ULogger.close();
+			
 			saveTaskList();
 			Platform.exit();
 		}
@@ -1288,7 +1294,12 @@ public class MainViewController extends GridPane{
 		if (command.trim().toLowerCase().substring(0, 4).equals("find") 
 				|| command.trim().toLowerCase().substring(0, 4).equals("goto")) {
 			String stringIndex = command.trim().toLowerCase().substring(5);
-			int indexOfTask = Integer.parseInt(stringIndex);
+			int indexOfTask = 1;
+			try {
+				indexOfTask = Integer.parseInt(stringIndex);
+			} catch (NumberFormatException e) {
+				
+			}
 			
 			if (listDisplay.getCurrentPageIndex() == TODAY_TASKS_PAGE_INDEX) {
 				moveToSpecificPosition(findIndexPosition(getTodayTaskList(), indexOfTask));

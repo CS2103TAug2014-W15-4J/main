@@ -20,7 +20,7 @@ public class ULogger {
 	// the actual logger
 	private Logger logWriter;
 	// file writer
-	private FileHandler fileHandler;
+	private static FileHandler fileHandler;
 	
 	/**
 	 * The private constructor to generate an instance
@@ -80,6 +80,14 @@ public class ULogger {
 	 */
 	public void error(String message) {
 		this.logWriter.severe(message);
+	}
+	
+	/**
+	 * This method close the file writer. It should be called when the system exits.
+	 */
+	public static void close() {
+		logger = null;
+		fileHandler.close();
 	}
 	
 }

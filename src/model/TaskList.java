@@ -287,17 +287,21 @@ public class TaskList {
      *  
      * @param taskIndex    The task index of the task to be edited.
      * @param description  The new description to be entered.
+     * @return the original description
 	 */
-	public void editTaskDescriptionOnly(int taskIndex, String description) {
+	public String editTaskDescriptionOnly(int taskIndex, String description) {
 
         if (isInvalidIndex(taskIndex)) {
             throw new TaskInvalidIdException();
             
         } else {
             Task taskToEdit = getTask(taskIndex - 1);
+            String oldDescription = taskToEdit.getDescription();
+            
             Task clonedTask = taskToEdit.clone();
             editTaskDescription(taskToEdit, description);
             addToUndoList(LastCommand.EDIT, clonedTask, taskToEdit);
+            return oldDescription;
         }
 	}
 	
