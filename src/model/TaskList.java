@@ -425,41 +425,6 @@ public class TaskList {
 	public void editTaskDescription(Task taskToEdit, String description) {
 
 	    taskToEdit.setDescription(description);
-	    
-//	    int indexToEdit = getTaskIndex(taskToEdit);
-	    
-	    /*
-	    // if the index comes from a list used for displaying, use time to find
-	    if (isDisplay) {
-	        boolean isFound = false;
-	        // trace the task by added time.
-	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
-	                task.setDescription(description);
-	                isFound = true;
-	                break;
-	            }
-	        }
-	        if (!isFound) {
-	            for (Task task : this.tasksUntimed) {
-	                if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
-	                    task.setDescription(description);
-	                    break;
-	                }
-	            }
-	        }
-	        
-	    } else {
-	        if (indexToEdit < tasksTimed.size()) {
-	            this.tasksTimed.get(indexToEdit).setDescription(description);
-	            
-	        } else {
-	            // update the index to the proper value in tasksUntimed.
-	            indexToEdit -= tasksTimed.size();
-	            this.tasksUntimed.get(indexToEdit).setDescription(description);
-	        }
-	    }
-	    */
 	}
 
 	/**
@@ -476,39 +441,6 @@ public class TaskList {
 	    int indexToEdit = getTaskIndex(taskToEdit);
 	    taskToEdit.setDeadline(time);
 	    
-	    /*
-	    // if the index comes from a list used for displaying, use time to
-	    // find
-	    if (isDisplay) {
-	        boolean isFound = false;
-	        // trace the task by added time.
-	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
-	                task.setDeadline(time);
-	                isFound = true;
-	                break;
-	            }
-	        }
-	        if (!isFound) {
-	            for (Task task : this.tasksUntimed) {
-	                if (task.getAddedTime().equals(
-	                                               taskToEdit.getAddedTime())) {
-	                    task.setDeadline(time);
-	                    break;
-	                }
-	            }
-	        }
-	    } else {
-	        if (indexToEdit < tasksTimed.size()) {
-	            this.tasksTimed.get(indexToEdit).setDeadline(time);
-	            
-	        } else {
-	            // update the index to the proper value in tasksUntimed.
-	            indexToEdit -= tasksTimed.size();
-	            this.tasksUntimed.get(indexToEdit).setDeadline(time);
-	        }
-	    }
-	    */
 	    ((SortedArrayList<Task>) this.tasksTimed).updateListOrder(indexToEdit);
 	    
 	}
@@ -524,40 +456,6 @@ public class TaskList {
 			throws TaskInvalidIdException {
 
 	    taskToEdit.setStartTime(startDate);
-	    /*
-	    int indexToEdit = getTaskIndex(taskToEdit);
-	    
-	    // if the index comes from a list used for displaying, use time to
-	    // find
-	    if (isDisplay) {
-	        boolean isFound = false;
-	        // trace the task by added time.
-	        for (Task task : this.tasksTimed) {
-	            if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
-	                task.setStartTime(startDate);
-	                isFound = true;
-	                break;
-	            }
-	        }
-	        if (!isFound) {
-	            for (Task task : this.tasksUntimed) {
-	                if (task.getAddedTime().equals(taskToEdit.getAddedTime())) {
-	                    task.setStartTime(startDate);
-	                    break;
-	                }
-	            }
-	        }
-	    } else {
-	        if (indexToEdit < tasksTimed.size()) {
-	            this.tasksTimed.get(indexToEdit).setStartTime(startDate);
-	            
-	        } else {
-	            // update the index to the proper value in tasksUntimed.
-	            indexToEdit -= tasksTimed.size();
-	            this.tasksUntimed.get(indexToEdit).setStartTime(startDate);
-	        }
-	    }
-	    */
 	}
 	
 	/**
@@ -864,6 +762,7 @@ public class TaskList {
 	        Task givenTaskToUntag = getTask(taskIndexToUntag - 1);
 	        Task clonedTaskBefore = givenTaskToUntag.clone();
 	        untagGivenTask(givenTaskToUntag, tag);
+	        
             addToUndoList(LastCommand.UNTAG, clonedTaskBefore, givenTaskToUntag.clone(), tag);
             logger.info("Task untagged");
 	    }
@@ -1344,15 +1243,42 @@ public class TaskList {
 	            Task previousTaskState = lastState.getPreviousTaskState();
 	            String tag = lastState.getTag();
 	            
-	            for (int i = 0; i < this.count(); i++) {
-	                Task task = this.getTask(i);
-	                if (task.equals(currentTaskState)) {
-	                    deleteFromList(task);
-	                    addToList(previousTaskState);
-	                    updateTaskTagsHash(previousTaskState, tag);
-	                    break;
-	                }
+	            List<String> currentTagsState = currentTaskState.getTags();
+	            List<String> previousTagsState = previousTaskState.getTags();
+	            
+	            
+	            List<Task> listToSearch = null;
+	            if (isContainedInList(this.tasksTimed, currentTaskState)) {
+	                listToSearch = this.tasksTimed;
+	                
+	            } else if (isContainedInList(this.tasksUntimed, currentTaskState)) {
+	                listToSearch = this.tasksUntimed; 
+	                
+	            } else if (isContainedInList(this.tasksFinished, currentTaskState)) {
+	                listToSearch = this.tasksFinished;
+	                
+	            } else {
+	                assert false;
 	            }
+
+	            
+                Task taskTagged = getTaskContainedInList(listToSearch, currentTaskState);
+                try {
+                    for (String tagNameToDelete : currentTagsState) {
+                        taskTagged.deleteTag(tagNameToDelete);
+                    }
+                    
+                    for (String tagNameToAdd : previousTagsState) {
+                        taskTagged.addTag(tagNameToAdd);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                    
+                } catch (TaskTagDuplicateException e) {
+                    assert false;
+                }
+                
+                updateTaskTagsHash(previousTaskState, tag);
 	            
 	            logger.info("Operation undone: tag");
 	            
@@ -1361,15 +1287,43 @@ public class TaskList {
 	            Task previousTaskState = lastState.getPreviousTaskState();
 	            String tag = lastState.getTag();
 	            
-	            for (int i = 0; i < this.count(); i++) {
-	                Task task = this.getTask(i);
-	                if (task.equals(currentTaskState)) {
-	                    deleteFromList(task);
-	                    addToList(previousTaskState);
-	                    updateTaskTagsHash(previousTaskState, tag);
-	                    break;
-	                }
-	            }
+	            List<String> currentTagsState = currentTaskState.getTags();
+	            List<String> previousTagsState = previousTaskState.getTags();
+	            
+	            
+                List<Task> listToSearch = null;
+                if (isContainedInList(this.tasksTimed, currentTaskState)) {
+                    listToSearch = this.tasksTimed;
+                    
+                } else if (isContainedInList(this.tasksUntimed, currentTaskState)) {
+                    listToSearch = this.tasksUntimed; 
+                    
+                } else if (isContainedInList(this.tasksFinished, currentTaskState)) {
+                    listToSearch = this.tasksFinished;
+                    
+                } else {
+                    assert false;
+                }
+
+                
+                Task taskUntagged = getTaskContainedInList(listToSearch, currentTaskState);
+                try {
+                    for (String tagNameToDelete : currentTagsState) {
+                        taskUntagged.deleteTag(tagNameToDelete);
+                    }
+                    
+                    for (String tagNameToAdd : previousTagsState) {
+                        taskUntagged.addTag(tagNameToAdd);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                    
+                } catch (TaskTagDuplicateException e) {
+                    assert false;
+                }
+                
+                updateTaskTagsHash(previousTaskState, tag);
+
 	            	            
 	            logger.info("Operation undone: untag");
 
@@ -1435,7 +1389,9 @@ public class TaskList {
 	        List<Task> tasksWithTag = tags.get(tag);
 	        
 	        if (tasksWithTag == null) {
-	            assert false;
+	            List<Task> listOfTasksWithTag = new ArrayList<Task>();
+	            listOfTasksWithTag.add(task);
+	            tags.put(tag, listOfTasksWithTag);
 	            
 	        } else {
 	            List<Task> listOfTasksWithTag = tags.get(tag);
@@ -1457,8 +1413,9 @@ public class TaskList {
 	            
 	        } else {
 	            List<Task> listOfTasksWithTag = tags.get(tag);
-	            if (listOfTasksWithTag.contains(task)) {
-	                listOfTasksWithTag.remove(task);
+	            if (isContainedInList(listOfTasksWithTag, task)) {
+	                Task taskInList = getTaskContainedInList(listOfTasksWithTag, task);
+	                listOfTasksWithTag.remove(taskInList);
 	                
 	            } else {
 	                assert false;
