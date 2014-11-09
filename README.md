@@ -6,7 +6,7 @@ CS2103T Project of team W15-4j
 Current Stage
 ====
 
-Milestone V0.3
+Milestone V0.48
 
 User Guide
 ====
@@ -21,18 +21,20 @@ e.g. add going to movie
 2.Add a fixed task:
 
 ```
-add <event><time>
+add <event> from <time> to <time>
 ```
 
 e.g. add going to school from 14 to 18 on 9 Sep 2014
 
 3.Add a repeated task:
+
 ```
-add <event> every <time>
+add <event> every <time> [daily/weekly/monthly]
 ```
 e.g. add CS1231 every 14 to 16 Friday 
 
 4.Add a deadline(of a task):
+
 ```
 add <event> by <time>
 ```
@@ -61,24 +63,6 @@ edit <taskID> every <time> [daily/weekly/monthly]
 ```
 e.g. edit 2 every Saturday
 
-4.When viewing tasks, to set a task to be non-repeating:
-```
-edit <taskID> no-repeat 
-```
-e.g. edit 3 no-repeat
-
-**\*No changes will be made if task specified is non-repeating**
-
-
-5.When viewing tasks, to set a task to be floating:
-```
-edit <taskID> no-time
-```
-e.g. edit 3 no-time
-
-**\*Any indication of time (e.g. start / end times) will be removed **
-<br/>
-
 ***It is also possible to edit some (or all) fields at the same time:***
 ```
 edit <taskID> <event> <time> 
@@ -104,7 +88,7 @@ clear
 ```
 
 ###Searching tasks
-Search task(s) by keyword: 
+Search task(s) by a keyword: 
 ```
 search <keyword> 
 ```
@@ -139,6 +123,12 @@ Undo reverts the last operation that caused a change (e.g. add, delete, edit)
 ```
 undo
 ```
+
+###Redo an operation
+Redo the last operation that caused a change (e.g. add, delete, edit)
+```
+redo
+```
 	
 ###Display Task
 
@@ -154,7 +144,7 @@ show done
 
 3.Show all the tasks which have due days
 ```
-show due
+show overdue
 ```
 
 4.Display all tasks due today
@@ -176,7 +166,6 @@ show <time>
 7.Display all the tasks due within a time range
 ```
 show from <date> to <date>
-show from <time> to <time>
 ```
 
 8.Display all tasks with the tag: 
