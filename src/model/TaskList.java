@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import log.ULogger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -40,7 +40,7 @@ public class TaskList {
 			try {
 				return o1.getDeadline().compareTo(o2.getDeadline());
 			} catch (TaskInvalidDateException e) {
-				logger.log(Level.WARNING, "Error comparing deadline.");
+				logger.warning("Error comparing deadline.");
 			}
 			return 0;
 		}
@@ -71,7 +71,7 @@ public class TaskList {
 	}
 
 	//@author A0119446B
-	private static Logger logger = Logger.getLogger("TaskList");
+	private static ULogger logger = ULogger.getLogger();
 
 	//@author A0115384H
 	static Stack<LastState> undoStack = new Stack<LastState>();
@@ -111,8 +111,6 @@ public class TaskList {
 	 * This constructor creates a new TaskList object, and initialises all values. 
 	 */
 	public TaskList() {
-		// let the logger only display warning log message.
-		logger.setLevel(Level.WARNING);
 
 		this.tasksTimed = new SortedArrayList<Task>(new DeadlineComparator());
 		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
@@ -220,7 +218,7 @@ public class TaskList {
 		Task newTask = new FloatingTask(description);
 		this.tasksUntimed.add(newTask);
 		this.totalTasksOngoing++;
-		logger.log(Level.INFO, "A floating task added");
+		logger.info("A floating task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
 	}
@@ -235,7 +233,7 @@ public class TaskList {
 		Task newTask = new DeadlineTask(description, time);
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 		this.totalTasksOngoing++;
-		logger.log(Level.INFO, "A deadline task added");
+		logger.info("A deadline task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
 	}
@@ -252,7 +250,7 @@ public class TaskList {
 		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 		this.tasksRepeated.add(newTask);
 		this.totalTasksOngoing++;
-		logger.log(Level.INFO, "A repeated task added");
+		logger.info("A repeated task added");
 		
 		addToUndoList(LastCommand.ADD, newTask);
 	}
@@ -277,7 +275,7 @@ public class TaskList {
 
 			((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
 			this.totalTasksOngoing++;
-			logger.log(Level.INFO, "A fixed task added");
+			logger.info("A fixed task added");
 			
 			addToUndoList(LastCommand.ADD, newTask);
 		}
@@ -1124,7 +1122,7 @@ public class TaskList {
 					output.add(task);
 				}
 			} catch (TaskInvalidDateException e) {
-				logger.log(Level.WARNING,
+				logger.warning(
 						"Invalid Deadline when checking Overdue!");
 			}
 		}
@@ -1200,7 +1198,7 @@ public class TaskList {
 			try {
 				task.checkOverdue();
 			} catch (TaskInvalidDateException e) {
-				logger.log(Level.WARNING,
+				logger.warning(
 						"Invalid Deadline when checking Overdue!");
 			}
 		}

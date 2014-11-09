@@ -3,8 +3,6 @@ package controller;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import controller.UserInput.RepeatDate;
 import exception.RedoException;
@@ -15,6 +13,7 @@ import exception.TaskNoSuchTagException;
 import exception.TaskTagDuplicateException;
 import exception.TaskTagException;
 import exception.UndoException;
+import log.ULogger;
 import model.TaskList;
 import model.Task;
 
@@ -86,12 +85,9 @@ public class Logic {
 
 	static Storage storage = new Storage();
 
-	static Logger log = Logger.getLogger("controller.logic");
+	static ULogger log = ULogger.getLogger();
 
 	public static void main(String[] args) {
-		// let the logger only display warning log message.
-		log.setLevel(Level.WARNING);
-
 		// get existing tasks from storage
 		listOfTasks = storage.load();
 		listOfTasks.setShowDisplayListToFalse();

@@ -7,11 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
+import log.ULogger;
 import model.DeadlineTask;
 import model.FixedTask;
 import model.FloatingTask;
@@ -46,7 +45,7 @@ public class Storage {
 	private static final String MESSAGE_SUCCESS = "Success";
 	private static final String ERROR_IO = "Error when trying to read/write the file.";
 	
-	private static Logger logger = Logger.getLogger("Storage");
+	private static ULogger logger = ULogger.getLogger();
 	
 	// These two Reader and Writer are used to access and manipulate the given
 	// text file
@@ -75,16 +74,16 @@ public class Storage {
 	 * @return a feedback message
 	 */
 	public String save(TaskList tasks) {
-		logger.log(Level.INFO, "Going to save tasks on hard disk");
+		logger.info("Going to save tasks on hard disk");
 		try {
 			this.writer = new BufferedWriter(new FileWriter(this.file_name, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "I/O error when saving tasks.");
+			logger.error("I/O error when saving tasks.");
 			throw new Error(ERROR_IO);
 		}
-		logger.log(Level.INFO, "Saving complete.");
+		logger.info("Saving complete.");
 		return MESSAGE_SUCCESS;
 	}
 	
@@ -95,16 +94,16 @@ public class Storage {
 	 * @return a feedback message
 	 */
 	public String save(TaskList tasks, String filename) {
-		logger.log(Level.INFO, "Going to save tasks on hard disk");
+		logger.info("Going to save tasks on hard disk");
 		try {
 			this.writer = new BufferedWriter(new FileWriter(filename, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "I/O error when saving tasks.");
+			logger.error("I/O error when saving tasks.");
 			throw new Error(ERROR_IO);
 		}
-		logger.log(Level.INFO, "Saving complete.");
+		logger.info("Saving complete.");
 		return MESSAGE_SUCCESS;
 	}
 	
@@ -113,7 +112,7 @@ public class Storage {
 	 * @return a TaskList object
 	 */
 	public TaskList load() {
-		logger.log(Level.INFO, "Going to load tasks from data file.");
+		logger.info("Going to load tasks from data file.");
 		String input = null;
 		StringBuilder xml = new StringBuilder(); 
 		try {
@@ -121,10 +120,10 @@ public class Storage {
 				xml.append(input);
 			}
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "I/O error when loading tasks.");
+			logger.error("I/O error when loading tasks.");
 			throw new Error(ERROR_IO);
 		}
-		logger.log(Level.INFO, "Loading completed.");
+		logger.info("Loading completed.");
 		return (TaskList)xstream.fromXML(xml.toString());
 	}
 	
@@ -144,7 +143,7 @@ public class Storage {
 	 * @return a feedback message
 	 */
 	public static void export(List<Task> taskTImed, List<Task> taskTodo, List<Task> taskFinished) {
-		logger.log(Level.INFO, "Going to export task list to tasklist.txt file");
+		logger.info("Going to export task list to tasklist.txt file");
 		// preparation work
 		StringBuilder output = new StringBuilder();
 		output.append("Thank you for using uClear\n");
@@ -170,10 +169,10 @@ public class Storage {
 			writer.write(output.toString());
 			writer.close();
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "I/O error when exporting tasks.");
+			logger.error("I/O error when exporting tasks.");
 			throw new Error(ERROR_IO);
 		}
-		logger.log(Level.INFO, "Exporting complete.");
+		logger.info("Exporting complete.");
 	}
 
 	/**
@@ -190,8 +189,6 @@ public class Storage {
 	 * @param filename the name of the task list to be stored
 	 */
 	private void initilize(String filename) {
-		// let the logger only display warning log message.
-		logger.setLevel(Level.WARNING);
 		
 		this.xstream = new XStream();
 		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);

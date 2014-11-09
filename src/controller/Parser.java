@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import log.ULogger;
 import controller.UserInput.CMD;
 import controller.UserInput.RepeatDate;
 
@@ -43,7 +42,7 @@ public class Parser {
 	private static final String END_OF_DAY_TIME = "235959999";
 	private static final String BEGIN_OF_DAY_TIME = "000000000";
 	private static final String SHOW_THIS_WEEK = "this week";
-	private static Logger log = Logger.getLogger("controller.Parser");
+	private static ULogger log = ULogger.getLogger();
 	
 	//@author A0119387U
 	/**
@@ -54,8 +53,6 @@ public class Parser {
 	 **/
 
 	public UserInput parse(String input) {
-		// let the logger only display warning log message.
-		log.setLevel(Level.WARNING);
 
 		String[] inputSplit = input.split(" ", 2);
 		String command = inputSplit[0];
@@ -324,7 +321,6 @@ public class Parser {
 		String[] contents = content.split("(?i)by ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		System.out.println(description+" "+contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);

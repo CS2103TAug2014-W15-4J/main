@@ -110,7 +110,9 @@ public class MainViewController extends GridPane{
 	final static String TITLE_DONE_TASKS = "Done";
 	final static String TITLE_OVERDUE_TASKS = "Overdue";
 	final static String TITLE_TASKS_WITH_TAG = "Tag";
+	final static String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tag \'%s\"";
 	final static String TITLE_SEARCH_RESULT = "Search";
+	final static String TITLE_SHOW_SEARCH_RESULT = "Searching \"%s\"";
 	final static String TITLE_HELP_PAGE = "Help";
 	
 	final static int TOTAL_PAGE_NUM = 8;
