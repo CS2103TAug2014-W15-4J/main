@@ -44,6 +44,8 @@ public class LogicTest {
     
     final String COMMAND_SHOW = "show";
     final String COMMAND_CLEAR = "clear";
+    final String COMMAND_UNDO = "undo";
+    final String COMMAND_REDO = "redo";
 
     String feedback;
     String show;
@@ -329,104 +331,104 @@ public class LogicTest {
        
         
         // testing the invalid undo/redo of a new tasklist
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
         
 
         // testing the undo/redo functionalities of add
         testAdd();
-        feedback = Logic.readAndExecuteCommands("undo"); // undo add: repeated task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo add: fixed task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo add: deadline task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo add: floating task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: repeated task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: fixed task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: deadline task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: floating task
         assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
        
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
         
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_REDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
 
         
         // testing the undo/redo functionalities of edit
         testEdit();
-        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: fixed task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: repeat task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: deadline task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo edit: floating task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: fixed task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: repeat task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: deadline task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: floating task
         assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
        
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
         
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_REDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
         
         
         // testing the undo/redo functionalities of delete
         testDelete();
-        feedback = Logic.readAndExecuteCommands("undo"); // undo delete: multiple tasks
-        feedback = Logic.readAndExecuteCommands("undo"); // undo delete: one task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo delete: multiple tasks
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo delete: one task
         assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
         
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_REDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
 
         
         // testing the undo/redo functionalities of mark done
         testMarkDone();
-        feedback = Logic.readAndExecuteCommands("undo"); // undo mark done: multiple tasks
-        feedback = Logic.readAndExecuteCommands("undo"); // undo mark done: one task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo mark done: multiple tasks
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo mark done: one task
         assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
         
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_REDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
         
         
         // testing the undo/redo functionalities of tagging
         testTagging();
-        feedback = Logic.readAndExecuteCommands("undo"); // undo untagging from task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo a second tag on a task
-        feedback = Logic.readAndExecuteCommands("undo"); // undo a first tag on a task 
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo untagging from task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo a second tag on a task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo a first tag on a task 
         assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("undo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
         assertEquals(feedback, MESSAGE_INVALID_UNDO);
         
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_REDO_SUCCESS);
         
-        feedback = Logic.readAndExecuteCommands("redo");
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
         assertEquals(feedback, MESSAGE_INVALID_REDO);
 
     }
