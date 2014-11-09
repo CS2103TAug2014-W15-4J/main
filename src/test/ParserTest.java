@@ -26,7 +26,7 @@ public class ParserTest {
 		assertTrue(input.isFloat());
 		assertFalse(input.isDeadline());
 		// test add deadline
-		String test2 = "add go to sleep tomorrow";
+		String test2 = "add go to sleep by tomorrow";
 		input = parser.parse(test2);
 		assertTrue(input.getValid());
 		assertEquals(UserInput.CMD.ADD, input.getCommand());
@@ -47,7 +47,7 @@ public class ParserTest {
 		input = parser.parse(test4);
 		assertFalse(input.getValid());
 		// test edit
-		String test5 = "edit 2 going to school 11pm to 6pm";
+		String test5 = "edit 2 going to school from 11pm to 6pm";
 		input = parser.parse(test5);
 		assertTrue(input.getValid());
 		assertEquals(2, input.getEditID());

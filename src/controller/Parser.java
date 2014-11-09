@@ -287,10 +287,12 @@ public class Parser {
 		default:
 			return parseFloat(input, content);
 		}
-		String[] contents = tempContent.split(" (?i)every ",2);
+		System.out.println(tempContent);
+		String[] contents = tempContent.split("(?i)every ",2);
 		description = contents[0].trim();
+		System.out.println(contents[1]);
 		times.parseTime(contents[1]);
-		if (description.equals("")||!input.getCommand().equals(CMD.EDIT)) {
+		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT)) {
 				return parseFloat(input, content);
 		}
 		List<Date> dates = times.getDates();
