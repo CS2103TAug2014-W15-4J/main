@@ -109,7 +109,7 @@ public class FixedTask extends Task {
     /**
      * This method checks if two fixed tasks are equal.
      * Two fixed tasks are equal if they have the same value for different properties:
-     * Added time, Description, Class, Deadline, Start time
+     * Added time, Description, Class, Deadline, Start time, Tags
      * 
      * @param task The fixed task to be compared to.
      * @return     true if the tasks are equal, false otherwise.
