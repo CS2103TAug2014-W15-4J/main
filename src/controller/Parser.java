@@ -47,10 +47,10 @@ public class Parser {
 	
 	//@author A0119387U
 	/**
-	 * @param input
+	 * this differs different kinds of command
+	 * @param input String
 	 * @return UserInput after parsing
 	 *
-	 *         this differs different kinds of command
 	 **/
 
 	public UserInput parse(String input) {
@@ -65,37 +65,37 @@ public class Parser {
 		}
 		log.info("parse main function");
 		switch (parseCommand(command.toLowerCase())) {
-		case CMD_EXIT:
+		  case CMD_EXIT:
 			return parseExit(content);
-		case CMD_HELP:
+		  case CMD_HELP:
 			return parseHelp(content);
-		case CMD_ADD:
+		  case CMD_ADD:
 			return parseAdd(content);
-		case CMD_DELETE:
+		  case CMD_DELETE:
 			return parseDelete(content);
-		case CMD_CLEAR:
+		  case CMD_CLEAR:
 			return parseClear(content);
-		case CMD_SEARCH:
+		  case CMD_SEARCH:
 			return parseSearch(content);
-		case CMD_EDIT:
+		  case CMD_EDIT:
 			return parseEdit(content);
-		case CMD_DONE:
+		  case CMD_DONE:
 			return parseDone(content);
-		case CMD_COMPLETE:
+		  case CMD_COMPLETE:
+		 	return parseDone(content);
+		  case CMD_FINISH:
 			return parseDone(content);
-		case CMD_FINISH:
-			return parseDone(content);
-		case CMD_SHOW:
+		  case CMD_SHOW:
 			return parseShow(content);
-		case CMD_TAG:
+	      case CMD_TAG:
 			return parseTag(content);
-		case CMD_UNDO:
+		  case CMD_UNDO:
 			return parseUndo(content);
-		case CMD_REDO:
+		  case CMD_REDO:
 			return parseRedo(content);
-		case CMD_UNTAG:
+		  case CMD_UNTAG:
 			return parseUntag(content);
-		case CMD_EXPORT:
+		  case CMD_EXPORT:
 			return parseExport(content);
 		default:
 			return errorCommand();
@@ -104,7 +104,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * give flexiable commands
-	 * @param command
+	 * @param command String
 	 * @return parsed command
 	 */
 	private String parseCommand(String command) {
@@ -145,8 +145,8 @@ public class Parser {
 	/**
 	 * redo command parsing
 	 * 
-	 * @param content
-	 * @return UserInput
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseRedo(String content) {
@@ -164,8 +164,8 @@ public class Parser {
 	/**
 	 * undo command parsing
 	 * 
-	 * @param content
-	 * @return UserInput
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseUndo(String content) {
@@ -181,10 +181,11 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
+	 * 
+	 *   this is for entering exit command
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for entering exit command
 	 */
 
 	private UserInput parseExit(String content) {
@@ -200,11 +201,12 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
+	 *   for help command
 	 *
-	 * @param content
-	 * @return UserInput
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         for help command
+	 *       
 	 *
 	 *
 	 */
@@ -222,10 +224,10 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
+	 *  this is for entering add command
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for entering add command(temporally floating only)
 	 */
 
 	private UserInput parseAdd(String content) {
@@ -248,13 +250,13 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
+	 * 
+	 *  this is for repeated task for add command or edit command
 	 *
-	 * @param input
-	 * @param content
-	 * @param times
-	 * @return UserInput for parseAdd or parseEdit
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for repeated task for add command or edit command
 	 */
 
 	private UserInput parseRepeated(UserInput input, String content) {
@@ -291,7 +293,7 @@ public class Parser {
 		String[] contents = tempContent.split(" (?i)every ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		if (description.equals("")) {
+		if (description.equals("")||!input.getCommand().equals(CMD.EDIT)) {
 				return parseFloat(input, content);
 		}
 		List<Date> dates = times.getDates();
@@ -306,13 +308,12 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
+	 * 
+	 *  this is for deadline task for add command or edit command
 	 *
-	 * @param input
-	 * @param content
-	 * @param times
-	 * @return UserInput for parseAdd or parseEdit
-	 *
-	 *         this is for deadline task for add command or edit command
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
 	 * @throws ParseException
 	 */
 
@@ -320,9 +321,10 @@ public class Parser {
 		log.info("dealine task found");
 		String description = null;
 		ParseTime times = new ParseTime();
-		String[] contents = content.split(" (?i)by ",2);
+		String[] contents = content.split("(?i)by ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
+		System.out.println(description+" "+contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);
@@ -359,22 +361,21 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *
-	 * @param input
-	 * @param content
-	 * @param times
-	 * @param taskType
-	 * @return UserInput for parseAdd or parseEdit
-	 *
-	 *         this is for fixed tasks for parseAdd and parseEdit
+	 *  this is for fixed tasks for parseAdd and parseEdit
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
+	 *  
 	 */
 
 	private UserInput parseFixed(UserInput input, String content) {
 		log.info("fixed task found");
 		String description = null;
 		ParseTime times = new ParseTime();
-		String[] contents = content.split(" (?i)from ",2);
+		String[] contents = content.split("(?i)from ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
+		System.out.println(description+" "+contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);
@@ -391,11 +392,11 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *
-	 * @param input
-	 * @param content
-	 * @return UserInput for parseAdd or parseEdit
+	 *  this is for floating task for parseAdd or parseEdit
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for floating task for parseAdd or parseEdit
 	 */
 
 	private UserInput parseFloat(UserInput input, String content) {
@@ -408,35 +409,35 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
+	 * 
+	 *   this is for check what kind of command by keywords
 	 *
-	 * @param content
+	 * @param content String
 	 * @return TaskType
-	 *
-	 *         this is for check what kind of command by keywords
 	 */
 
 	private TaskType taskType(String content) {
-		Pattern pattern = Pattern.compile(".+ (?i)by(?-i) .+");
+		Pattern pattern = Pattern.compile(".*(?i)by(?-i) .+");
 		Matcher matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.DEADLINE;
 		}
-		pattern = Pattern.compile(".+ (?i)from(?-i) .+");
+		pattern = Pattern.compile(".*(?i)from(?-i) .+");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.FIX;
 		}
-		pattern = Pattern.compile(".+ (?i)every .+ daily(?-i)");
+		pattern = Pattern.compile(".*(?i)every .+ daily(?-i)");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
 		}
-		pattern = Pattern.compile(".+ (?i)every .+ weekly(?-i)");
+		pattern = Pattern.compile(".*(?i)every .+ weekly(?-i)");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
 		}
-		pattern = Pattern.compile(".+ (?i)every .+ monthly(?-i)");
+		pattern = Pattern.compile(".*(?i)every .+ monthly(?-i)");
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
@@ -445,10 +446,10 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
+	 * this is for entering delete command
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for entering delete command
 	 */
 
 	private UserInput parseDelete(String content) {
@@ -474,10 +475,9 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
-	 *
-	 *         this is for entering clearing command
+	 * this is for entering clearing command	
+	 * @param content String
+	 * @return input UserInput         
 	 */
 
 	private UserInput parseClear(String content) {
@@ -494,10 +494,10 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
+	 * 	this is for entering edit command
+	 * @param content String
+	 * @return input UserInput
 	 *
-	 *         this is for entering edit command(temporally floating only)
 	 */
 
 	private UserInput parseEdit(String content) {
@@ -529,9 +529,9 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this is work for parsing edit
-	 * @param input
-	 * @param content
-	 * @return parsed userinput
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
 	 */
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
 		if (content == null || content.equals("")) {
@@ -551,9 +551,9 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * for parsing special commands in edit command
-	 * @param input
-	 * @param content
-	 * @return parsed userinput
+	 * @param input UserInput
+	 * @param content String
+	 * @return input UserInput
 	 */
 	private UserInput parseEditCommand(UserInput input, String content) {
 		input.add(content);
@@ -570,10 +570,9 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
-	 *
-	 *         this is for entering show command(temporally show all only)
+	 *    this is for entering show command
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseShow(String content) {
@@ -707,10 +706,9 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
-	 *
-	 *         this is for entering search command(not begin yet)
+	 *   this is for entering search command
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseSearch(String content) {
@@ -726,10 +724,9 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return UserInput
-	 *
-	 *         this is for entering mark done command
+	 *  this is for entering mark done command	 
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseDone(String content) {
@@ -756,8 +753,9 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * tag command parsing
-	 * @param content
-	 * @return userinput
+	 * 
+	 * @param content String
+	 * @return input UserInput
 	 */
 	private UserInput parseTag(String content) {
 		log.info("entering tag command");
@@ -786,8 +784,8 @@ public class Parser {
 	/**
 	 * Untag command parsing
 	 * 
-	 * @param content
-	 * @return userInput
+	 * @param content String
+	 * @return input UserInput
 	 */
 
 	private UserInput parseUntag(String content) {
@@ -822,11 +820,11 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * @param content
-	 * @return whether the content contents numbers only
+	 * 	 this is for checking if the contents are only numbers in done and
+	 *  delete command
+	 * @param content String
+	 * @return boolean whether the content contents numbers only
 	 *
-	 *         this is for checking if the contents are only numbers in done and
-	 *         delete command
 	 */
 
 	private boolean trueNumberFormat(String content) {
@@ -842,10 +840,8 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 *
-	 * @return UserInput
-	 *
-	 *         give the error command
+	 *give the error command
+	 * @return input UserInput
 	 */
 
 	private UserInput errorCommand() {
