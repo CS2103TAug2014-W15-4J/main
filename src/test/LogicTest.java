@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import java.util.Calendar;
 import java.util.Date;
 
+import model.DeadlineTask;
 import model.FixedTask;
+import model.FloatingTask;
 import model.RepeatedTask;
 import model.Task;
 
@@ -22,7 +24,9 @@ import exception.TaskInvalidIdException;
  */
 public class LogicTest {
     final String MESSAGE_ADD_SUCCESS = "Task added successfully.";
-    final String MESSAGE_EDIT_SUCCESS = "Task edited successfully.";
+    final String MESSAGE_EDIT_DESCRIPTION = "Task \"%s\" is renamed as \"%s\"";
+    final String MESSAGE_EDIT_DEADLINE = "The deadline is changed to \"%s\"";
+    final String MESSAGE_EDIT_DESCRIPTION_DEADLINE = "Task is renamed as \"%s\". New deadline: \"%s\"";
     final String MESSAGE_DELETE_SUCCESS = "Task(s) deleted successfully.";
     final String MESSAGE_DONE_SUCCESS = "Task(s) marked done successfully.";
     final String MESSAGE_INVALID_REPEAT_TAG = "Task already contains this tag.";
@@ -68,30 +72,34 @@ public class LogicTest {
         feedback = Logic.readAndExecuteCommands("add");
         assertEquals(feedback, MESSAGE_FAIL);
 
-
-        // check the adding of a floating task (only description given) is successful
-        Task floatingTask = Logic.getTask(3);
-        assertEquals(floatingTask.getDescription(), "testing floatingtask");
-
-
-        // check the adding of a deadline task (description and one date given) is successful
-        Task deadlineTask = Logic.getTask(0);
-        assertEquals(deadlineTask.getDescription(), "testing");
-        assertEquals(deadlineTask.getDeadline(), deadline);
-
-
-        // check the adding of a fixed task (description and two dates given) is successful
-        FixedTask fixedTask = (FixedTask) Logic.getTask(2);
-        assertEquals(fixedTask.getDescription(), "meeting");
-        assertEquals(fixedTask.getStartTime(), startTime);
-        assertEquals(fixedTask.getDeadline(), endTime);
-
-
-        // check the adding of a repeated task (description, date and repeat period given) is successful
-        RepeatedTask repeatedTask = (RepeatedTask) Logic.getTask(1);
-        assertEquals(repeatedTask.getDescription(), "repeatingtask test");
-        assertEquals(repeatedTask.getDeadline(), endTime);
-        assertEquals(repeatedTask.getRepeatPeriod(), "every MONDAY");
+        for (int i = 0; i < 4; i++) {
+            Task task = Logic.getTask(i);
+            
+            if (task instanceof FloatingTask) {
+                // check the adding of a floating task (only description given) is successful
+                assertEquals(task.getDescription(), "testing floatingtask");
+                
+            } else if (task instanceof DeadlineTask) {
+                // check the adding of a deadline task (description and one date given) is successful
+                assertEquals(task.getDescription(), "testing");
+                assertEquals(task.getDeadline(), deadline);
+                
+            } else if (task instanceof FixedTask) {
+                // check the adding of a fixed task (description and two dates given) is successful
+                assertEquals(((FixedTask) task).getDescription(), "meeting");
+                assertEquals(((FixedTask) task).getStartTime(), startTime);
+                assertEquals(((FixedTask) task).getDeadline(), endTime);
+                
+            } else if (task instanceof RepeatedTask) {
+                // check the adding of a repeated task (description, date and repeat period given) is successful
+                assertEquals(((RepeatedTask) task).getDescription(), "repeatingtask test");
+                assertEquals(((RepeatedTask) task).getDeadline(), endTime);
+                assertEquals(((RepeatedTask) task).getRepeatPeriod(), "every MONDAY");
+                
+            } else {
+                assert false;
+            }
+        }
     }
     
     @Test
@@ -124,15 +132,15 @@ public class LogicTest {
 
         // test the editing of floating task (only description)
         feedback = Logic.readAndExecuteCommands("edit 4 edited description");
-        assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
-
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DESCRIPTION, "testing floatingtask", "edited description"));
+        
         Task floatingTask = Logic.getTask(3);
         assertEquals(floatingTask.getDescription(), "edited description");
 
 
         // test the editing of deadline task (only time)
-        feedback = Logic.readAndExecuteCommands("edit 1 8 October 2013 3pm");
-        assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
+        feedback = Logic.readAndExecuteCommands("edit 1 by 8 October 2013 3pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DEADLINE, "Tue, Oct 8 15:00"));
 
         cal.set(Calendar.YEAR, 2013);
         cal.set(Calendar.MONTH, 9);
@@ -151,8 +159,8 @@ public class LogicTest {
 
         // test the editing of time for repeat tasks
         // after the edit, the order is changed: repeated, deadline, fixed, floated
-        feedback = Logic.readAndExecuteCommands("edit 2 8 october 2013 3pm");
-        assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
+        feedback = Logic.readAndExecuteCommands("edit 2 by 8 october 2013 3pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DEADLINE, "Tue, Oct 8 15:00"));
 
         RepeatedTask repeatedTask = (RepeatedTask) Logic.getTask(0);
         assertEquals(repeatedTask.getRepeatPeriod(), "every TUESDAY");
@@ -160,8 +168,8 @@ public class LogicTest {
 
 
         // test the editing of fixed task (both description and time)
-        feedback = Logic.readAndExecuteCommands("edit 3 lalala 3pm 8 oct 2013 to 13 oct 2014 5pm");
-        assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
+        feedback = Logic.readAndExecuteCommands("edit 3 lalala from 3pm 8 oct 2013 to 13 oct 2014 5pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DESCRIPTION_DEADLINE, "lalala", "Mon, Oct 13 17:00"));
 
         FixedTask fixedTask = (FixedTask) Logic.getTask(2); 
 
@@ -431,7 +439,7 @@ public class LogicTest {
         // order after adding: deadline, repeating, fixed, floating
         Logic.readAndExecuteCommands("add testing floatingtask");
         Logic.readAndExecuteCommands("add testing by 13 Oct 2014 4pm");
-        Logic.readAndExecuteCommands("add meeting 4pm 13 Oct 2014 to 5pm 13 Oct 2014");
+        Logic.readAndExecuteCommands("add meeting from 4pm 13 Oct 2014 to 5pm 13 Oct 2014");
         Logic.readAndExecuteCommands("add repeatingtask test every 5pm oct 13 weekly");
 
         // set the date values.
