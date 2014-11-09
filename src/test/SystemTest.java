@@ -1,6 +1,6 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import controller.Logic;
 
 import org.junit.BeforeClass;
@@ -9,8 +9,11 @@ import org.junit.Test;
 
 public class SystemTest {
 	
-    final String MESSAGE_ADD_SUCCESS = "Task added successfully.";
-    final String MESSAGE_EDIT_SUCCESS = "Task edited successfully.";
+    final String MESSAGE_ADD_SUCCESS_ONE = "\"task one\" is added to your list.";
+    final String MESSAGE_ADD_SUCCESS_TWO = "\"task two\" is added to your list.";
+    final String MESSAGE_ADD_SUCCESS_THREE = "\"task three\" is added to your list.";
+    final String MESSAGE_EDIT_SUCCESS_ONE = "Task \"task one\" is renamed as \"task zero\"";
+   
     final String MESSAGE_DELETE_SUCCESS = "Task(s) deleted successfully.";
     final String MESSAGE_DONE_SUCCESS = "Task(s) marked done successfully.";
     final String MESSAGE_REPEAT_TAG = "Task already contains this tag.";
@@ -60,11 +63,11 @@ public class SystemTest {
 		
 		// add task one
 		feedback = Logic.readAndExecuteCommands(COMMAND_ADD_TASK_ONE); 
-		assertEquals(feedback, MESSAGE_ADD_SUCCESS);
+		assertEquals(feedback, MESSAGE_ADD_SUCCESS_ONE);
 		
 		// add task two
 		feedback = Logic.readAndExecuteCommands(COMMAND_ADD_TASK_TWO);
-		assertEquals(feedback, MESSAGE_ADD_SUCCESS);
+		assertEquals(feedback, MESSAGE_ADD_SUCCESS_TWO);
 		
 		// add empty
 		feedback = Logic.readAndExecuteCommands(COMMAND_ADD_EMPTY);
@@ -72,7 +75,7 @@ public class SystemTest {
 		
 		// add task three
 		feedback = Logic.readAndExecuteCommands(COMMAND_ADD_TASK_THREE);
-		assertEquals(feedback, MESSAGE_ADD_SUCCESS);
+		assertEquals(feedback, MESSAGE_ADD_SUCCESS_THREE);
 		
 		// delete invalid id
 		feedback = Logic.readAndExecuteCommands(COMMAND_DELETE_INVALID_ID);
@@ -104,7 +107,7 @@ public class SystemTest {
 		
 		// edit one
 		feedback = Logic.readAndExecuteCommands(COMMAND_EDIT_ONE_TO_ZERO);
-		assertEquals(feedback, MESSAGE_EDIT_SUCCESS);
+		assertEquals(feedback, MESSAGE_EDIT_SUCCESS_ONE);
 		
 		// clear
 		feedback = Logic.readAndExecuteCommands(COMMAND_CLEAR);

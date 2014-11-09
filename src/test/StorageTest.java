@@ -1,12 +1,9 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
-import model.DeadlineTask;
-import model.FixedTask;
-import model.FloatingTask;
 import model.TaskList;
 
 import org.junit.BeforeClass;
