@@ -569,57 +569,57 @@ public class TaskList {
 			throw new TaskInvalidIdException("Nothing to delete");
 		} else {
 
+		    Collections.sort(taskIndexList);
+		    Collections.reverse(taskIndexList);
+		    ArrayList<Integer> taskIndicesToDelete = new ArrayList<Integer>();
+		    
+		    // check beforehand if there are any invalid indices
+		    for (int i = 0; i < taskIndexList.size(); i++) {
+		        int indexToDelete = taskIndexList.get(i);
+		        if (isInvalidIndex(indexToDelete)) {
+		            throw new TaskInvalidIdException("Invalid index for deleting!");
+		        }
+		        taskIndicesToDelete.add(indexToDelete);
+		    }
+		    
 		    ArrayList<Task> tasksRemoved = new ArrayList<Task>();
 		    
-			Collections.sort(taskIndexList);
-			for (int i = taskIndexList.size() - 1; i >= 0; i--) {
-				int indexToRemove = taskIndexList.get(i);
-				if (isShowingDone) {
-					// displaying done tasks
-					if (indexToRemove>this.tasksFinished.size() || indexToRemove<=0) {
-						throw new TaskInvalidIdException("Error index for deleting!");
-					} else {
-					    Task taskRemoved = this.tasksFinished.remove(indexToRemove - 1); 
-					    deleteFromTasksRepeated(taskRemoved);
-					    tasksRemoved.add(taskRemoved);
-					}
-					this.totalTasksOngoing--;
-				} else {
-					if (isInvalidIndex(indexToRemove)) {
-
-						throw new TaskInvalidIdException("Error index for deleting!");
-
-					} else {
-						Task taskToRemove = getTask(indexToRemove - 1);
-						deleteFromTasksRepeated(taskToRemove);
-						tasksRemoved.add(taskToRemove);
-						// if the index comes from a list used for displaying, use
-						// time to find
-						boolean isFound = false;
-						// trace the task by added time.
-						for (Task task : this.tasksTimed) {
-							if (task.getAddedTime().equals(
-									taskToRemove.getAddedTime())) {
-								this.tasksTimed.remove(task);
-								isFound = true;
-								break;
-							}
-						}
-						if (!isFound) {
-							for (Task task : this.tasksUntimed) {
-								if (task.getAddedTime().equals(
-										taskToRemove.getAddedTime())) {
-									this.tasksUntimed.remove(task);
-									break;
-								}
-							}
-						}
-
-						this.totalTasksOngoing--;
-					}
-				}	
-			}
-			addToUndoList(LastCommand.DELETE, tasksRemoved);
+		    for (int i = 0; i < taskIndicesToDelete.size(); i++) {
+		        int indexToRemove = taskIndicesToDelete.get(i);
+		        if (isShowingDone) {
+		            Task taskRemoved = this.tasksFinished.remove(indexToRemove - 1);
+		            deleteFromTasksRepeated(taskRemoved);
+		            tasksRemoved.add(taskRemoved);
+		            
+		        } else {
+                    Task taskToRemove = getTask(indexToRemove - 1);
+                    deleteFromTasksRepeated(taskToRemove);
+                    tasksRemoved.add(taskToRemove);
+                    
+                    // if the index comes from a list used for displaying, use time to find
+                    boolean isFound = false;
+                    
+                    // trace the task by added time.
+                    for (Task task : this.tasksTimed) {
+                        if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+                            this.tasksTimed.remove(task);
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if (!isFound) {
+                        for (Task task : this.tasksUntimed) {
+                            if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+                                this.tasksUntimed.remove(task);
+                                break;
+                            }
+                        }
+                    }
+		        }
+		        
+		        this.totalTasksOngoing--;
+		    }
+		    addToUndoList(LastCommand.DELETE, tasksRemoved);
 		}
 	}
 	
@@ -1250,6 +1250,8 @@ public class TaskList {
 	public boolean isInvalidIndex(int taskIndex) {
 	    if (isDisplay) {
 	        return (taskIndex > this.tasksToDisplay.size()) || (taskIndex <= 0);
+	    } else if (isShowingDone) {
+	        return (taskIndex > this.tasksFinished.size() || (taskIndex <= 0));
 	    } else {
 	        return (taskIndex > this.countUndone()) || (taskIndex <= 0);
 	    }
