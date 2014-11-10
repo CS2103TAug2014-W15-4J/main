@@ -39,7 +39,7 @@ public class ParseTime {
 		return recursUntil;
 	}
 	/**
-	 * Get the description of the task
+	 * Get the time of the task
 	 * @return the time in format of string
 	 */
 	public String getTime() {
