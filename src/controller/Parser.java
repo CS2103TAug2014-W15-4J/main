@@ -195,7 +195,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * 
-	 *   this is for entering exit command
+	 * this is for entering exit command
 	 * @param content String
 	 * @return input UserInput
 	 *
@@ -203,10 +203,8 @@ public class Parser {
 
 	private UserInput parseExit(String content) {
 		log.info("entering exit command");
-		if (content != null && !content.equals("")) {
-
+		if (content != null && !content.equals(""))
 			return errorCommand();
-		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.EXIT);
 		log.info("exit exit command");
@@ -314,9 +312,8 @@ public class Parser {
 		description = contents[0].trim();
 		System.out.println(contents[1]);
 		times.parseTime(contents[1]);
-		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT)) {
+		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT))
 				return parseFloat(input, content);
-		}
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
@@ -345,22 +342,19 @@ public class Parser {
 		String[] contents = content.split("(?i)by ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		if (input.getCommand() == CMD.ADD) {
+		if (input.getCommand() == CMD.ADD)
 			if (description.equals("")) {
 				return parseFloat(input, content);
 			}
-		}
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			// System.out.println(timeRest);
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
 				SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
 				String dateTime = timeFormat1.format(dates.get(0));
-				// System.out.println(dateTime);
 				SimpleDateFormat timeFormat2 = new SimpleDateFormat(
 						"yyyyMMddHHmmssSSS");
 				Date realDate = null;
@@ -680,10 +674,8 @@ public class Parser {
 		if (dates.size() == 1) {
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			// System.out.println(timeRest);
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
 				String dateTime = timeFormat1.format(dates.get(0));
-				// System.out.println(dateTime);
 				Date realDate = null;
 				try {
 					realDate = timeFormat2.parse(dateTime + BEGIN_OF_DAY_TIME);
@@ -702,7 +694,6 @@ public class Parser {
 		}
 		if(dates.size()==2){
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
-			// System.out.println(timeRest);
 			if (!(timeRestFormat.format(dates.get(0)).equals(DEADLINE_ONETIME)||
 					timeRestFormat.format(dates.get(1)).equals(DEADLINE_ONETIME))) {
 				String dateBeginTime = timeFormat1.format(dates.get(0));

@@ -39,6 +39,7 @@ public class ParseTime {
 	}
 	
 	public void parseTime(String input) {
+		input = input.replaceAll("(?i) tmr ", " tomorrow ").trim();
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(input);
 		for (DateGroup group : groups) {
