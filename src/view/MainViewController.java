@@ -113,6 +113,7 @@ public class MainViewController extends GridPane{
 	private static final String TITLE_OVERDUE_TASKS = "Overdue";
 	private static final String TITLE_TASKS_WITH_TAG = "Tag";
 	private static final String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tasks With Tag:   <%s>";
+	private static final String TITLE_SHOW_TASKS_IN_PERIOD = "Showing Tasks Due During:   \"%s\" to \"%s\"";
 	private static final String TITLE_SEARCH_RESULT = "Search";
 	private static final String TITLE_SHOW_SEARCH_RESULT = "Searching Result For:   \"%s\"";
 	private static final String TITLE_HELP_PAGE = "Help";
@@ -165,6 +166,7 @@ public class MainViewController extends GridPane{
 	String searchKey;
 	String showTag;
 	String showPeriod;
+	List<Date> periodDate;
 	
 	private List<String> historyCommands;
 	private int historyPointer;
@@ -174,6 +176,7 @@ public class MainViewController extends GridPane{
 	
 	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat("MMM dd, EE  HH : mm", Locale.US);
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss", Locale.US);
+	final SimpleDateFormat dateFormatForShow = new SimpleDateFormat("MMM dd", Locale.US);
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
@@ -656,6 +659,7 @@ public class MainViewController extends GridPane{
 	 */
 	private List<Task> getPeriodTaskList(String userCommand) throws TaskInvalidDateException {
 		List<Date> periodDate = Logic.getDateList(userCommand);
+		this.periodDate = periodDate;
 		List<Task> periodTasks = taskList.getDateRangeTask(periodDate);
 		
 		return periodTasks;
@@ -1184,9 +1188,8 @@ public class MainViewController extends GridPane{
 			} else {
 				List<Task> periodTasks = getPeriodTaskList(showPeriod);
 				if (periodTasks.size() > 1) {
-					response.setText(String.format(MANY_TASKS_NOT_DONE, periodTasks.size()));
-				} else if (periodTasks.size() == 1) {
-					response.setText(ONE_TASK_NOT_DONE);
+					response.setText(String.format(TITLE_SHOW_TASKS_IN_PERIOD, 
+							dateFormatForShow.format(periodDate.get(0)), dateFormatForShow.format(periodDate.get(1))));
 				} else {
 					response.setText(ALL_TASKS_DONE);
 				}

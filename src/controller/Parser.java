@@ -47,7 +47,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this differs different kinds of command
-	 * @param input String
+	 * @param input String given by Logic
 	 * @return UserInput after parsing
 	 *
 	 **/
@@ -118,7 +118,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * give flexiable commands
-	 * @param command String
+	 * @param command only command such as add delete.
 	 * @return parsed command
 	 */
 	private String parseCommand(String command) {
@@ -130,24 +130,21 @@ public class Parser {
 			return CMD_ADD;
 		if (command.equals(CMD_DELETE) || command.equals("-"))
 			return CMD_DELETE;
-		if (command.equals(CMD_CLEAR) || command.equals("--")
-				|| command.equals("cl"))
+		if (command.equals(CMD_CLEAR) || command.equals("--"))
 			return CMD_CLEAR;
-		if (command.equals(CMD_SEARCH) || command.equals("?")
-				|| command.equals("s"))
+		if (command.equals(CMD_SEARCH))
 			return CMD_SEARCH;
-		if (command.equals(CMD_EDIT) || command.equals("<")
-				|| command.equals("ed"))
+		if (command.equals(CMD_EDIT) || command.equals("<"))
 			return CMD_EDIT;
 		if (command.equals(CMD_DONE) || command.equals("d"))
 			return CMD_DONE;
-		if (command.equals(CMD_SHOW) || command.equals("sh"))
+		if (command.equals(CMD_SHOW))
 			return CMD_SHOW;
 		if (command.equals(CMD_TAG) || command.equals("t"))
 			return CMD_TAG;
 		if (command.equals(CMD_UNTAG) || command.equals("ut"))
 			return CMD_UNTAG;
-		if (command.equals(CMD_UNDO) || command.equals("b"))
+		if (command.equals(CMD_UNDO) || command.equals("u"))
 			return CMD_UNDO;
 		if (command.equals(CMD_REDO) || command.equals("r"))
 			return CMD_REDO;
@@ -159,8 +156,8 @@ public class Parser {
 	/**
 	 * redo command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseRedo(String content) {
@@ -177,8 +174,8 @@ public class Parser {
 	/**
 	 * undo command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseUndo(String content) {
@@ -195,18 +192,16 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * 
-	 *   this is for entering exit command
-	 * @param content String
-	 * @return input UserInput
+	 * this is for entering exit command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
 	private UserInput parseExit(String content) {
 		log.info("entering exit command");
-		if (content != null && !content.equals("")) {
-
+		if (content != null && !content.equals(""))
 			return errorCommand();
-		}
 		UserInput input = new UserInput();
 		input.addCommand(CMD.EXIT);
 		log.info("exit exit command");
@@ -216,8 +211,8 @@ public class Parser {
 	/**
 	 *   for help command
 	 *
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 *       
 	 *
@@ -238,8 +233,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *  this is for entering add command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -270,8 +265,8 @@ public class Parser {
 	 *  this is for repeated task for add command or edit command
 	 *
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -314,9 +309,8 @@ public class Parser {
 		description = contents[0].trim();
 		System.out.println(contents[1]);
 		times.parseTime(contents[1]);
-		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT)) {
+		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT))
 				return parseFloat(input, content);
-		}
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
@@ -333,8 +327,8 @@ public class Parser {
 	 *  this is for deadline task for add command or edit command
 	 *
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 * @throws ParseException
 	 */
 
@@ -345,22 +339,19 @@ public class Parser {
 		String[] contents = content.split("(?i)by ",2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		if (input.getCommand() == CMD.ADD) {
+		if (input.getCommand() == CMD.ADD)
 			if (description.equals("")) {
 				return parseFloat(input, content);
 			}
-		}
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			// System.out.println(timeRest);
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
 				SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
 				String dateTime = timeFormat1.format(dates.get(0));
-				// System.out.println(dateTime);
 				SimpleDateFormat timeFormat2 = new SimpleDateFormat(
 						"yyyyMMddHHmmssSSS");
 				Date realDate = null;
@@ -383,8 +374,8 @@ public class Parser {
 	 *
 	 *  this is for fixed tasks for parseAdd and parseEdit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *  
 	 */
 
@@ -414,8 +405,8 @@ public class Parser {
 	 *
 	 *  this is for floating task for parseAdd or parseEdit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -432,7 +423,7 @@ public class Parser {
 	 * 
 	 *   this is for check what kind of command by keywords
 	 *
-	 * @param content String
+	 * @param content String after command word
 	 * @return TaskType
 	 */
 
@@ -467,8 +458,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this is for entering delete command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -496,8 +487,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this is for entering clearing command	
-	 * @param content String
-	 * @return input UserInput         
+	 * @param content String after command word
+	 * @return input UserInput which is already edited         
 	 */
 
 	private UserInput parseClear(String content) {
@@ -515,8 +506,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * 	this is for entering edit command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -550,8 +541,8 @@ public class Parser {
 	/**
 	 * this is work for parsing edit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
 		if (content == null || content.equals("")) {
@@ -575,8 +566,8 @@ public class Parser {
 	/**
 	 * for parsing special commands in edit command
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseEditCommand(UserInput input, String content) {
 		input.add(content);
@@ -594,8 +585,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *    this is for entering show command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseShow(String content) {
@@ -680,10 +671,8 @@ public class Parser {
 		if (dates.size() == 1) {
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
 			String timeRest = timeRestFormat.format(dates.get(0));
-			// System.out.println(timeRest);
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
 				String dateTime = timeFormat1.format(dates.get(0));
-				// System.out.println(dateTime);
 				Date realDate = null;
 				try {
 					realDate = timeFormat2.parse(dateTime + BEGIN_OF_DAY_TIME);
@@ -702,7 +691,6 @@ public class Parser {
 		}
 		if(dates.size()==2){
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
-			// System.out.println(timeRest);
 			if (!(timeRestFormat.format(dates.get(0)).equals(DEADLINE_ONETIME)||
 					timeRestFormat.format(dates.get(1)).equals(DEADLINE_ONETIME))) {
 				String dateBeginTime = timeFormat1.format(dates.get(0));
@@ -730,8 +718,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *   this is for entering search command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseSearch(String content) {
@@ -748,8 +736,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *  this is for entering mark done command	 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseDone(String content) {
@@ -777,8 +765,8 @@ public class Parser {
 	/**
 	 * tag command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseTag(String content) {
 		log.info("entering tag command");
@@ -807,8 +795,8 @@ public class Parser {
 	/**
 	 * Untag command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseUntag(String content) {
@@ -845,7 +833,7 @@ public class Parser {
 	/**
 	 * 	 this is for checking if the contents are only numbers in done and
 	 *  delete command
-	 * @param content String
+	 * @param content String after command word
 	 * @return boolean whether the content contents numbers only
 	 *
 	 */
@@ -864,7 +852,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *give the error command
-	 * @return input UserInput
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput errorCommand() {
