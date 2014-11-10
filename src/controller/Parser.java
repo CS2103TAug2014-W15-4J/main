@@ -61,40 +61,57 @@ public class Parser {
 			content = inputSplit[1].trim();
 		}
 		log.info("parse main function");
+		
 		switch (parseCommand(command.toLowerCase())) {
-		  case CMD_EXIT:
+		  case CMD_EXIT :
 			return parseExit(content);
-		  case CMD_HELP:
+			
+		  case CMD_HELP :
 			return parseHelp(content);
-		  case CMD_ADD:
+			
+		  case CMD_ADD :
 			return parseAdd(content);
-		  case CMD_DELETE:
+			
+		  case CMD_DELETE :
 			return parseDelete(content);
-		  case CMD_CLEAR:
+			
+		  case CMD_CLEAR :
 			return parseClear(content);
-		  case CMD_SEARCH:
+			
+		  case CMD_SEARCH :
 			return parseSearch(content);
-		  case CMD_EDIT:
+			
+		  case CMD_EDIT :
 			return parseEdit(content);
-		  case CMD_DONE:
+			
+		  case CMD_DONE :
 			return parseDone(content);
-		  case CMD_COMPLETE:
+			
+		  case CMD_COMPLETE :
 		 	return parseDone(content);
-		  case CMD_FINISH:
+		 	
+		  case CMD_FINISH :
 			return parseDone(content);
-		  case CMD_SHOW:
+			
+		  case CMD_SHOW :
 			return parseShow(content);
-	      case CMD_TAG:
+			
+	      case CMD_TAG :
 			return parseTag(content);
-		  case CMD_UNDO:
+			
+		  case CMD_UNDO :
 			return parseUndo(content);
-		  case CMD_REDO:
+			
+		  case CMD_REDO :
 			return parseRedo(content);
-		  case CMD_UNTAG:
+			
+		  case CMD_UNTAG :
 			return parseUntag(content);
-		  case CMD_EXPORT:
+			
+		  case CMD_EXPORT :
 			return parseExport(content);
-		default:
+			
+		default :
 			return errorCommand();
 		}
 	}
@@ -149,7 +166,6 @@ public class Parser {
 	private UserInput parseRedo(String content) {
 		log.info("entering redo command");
 		if (content != null && !content.equals("")) {
-
 			return errorCommand();
 		}
 		UserInput input = new UserInput();
@@ -235,13 +251,16 @@ public class Parser {
 		UserInput input = new UserInput();
 		input.addCommand(CMD.ADD);
 		switch (taskType(content)) {
-		case DEADLINE:
+		case DEADLINE :
 			return parseDeadline(input, content);
-		case REPEAT:
+			
+		case REPEAT :
 			return parseRepeated(input, content);
-		case FLOAT:
+			
+		case FLOAT :
 			return parseFloat(input, content);
-		default:
+			
+		default :
 			return parseFixed(input, content);
 		}
 	}
@@ -269,23 +288,26 @@ public class Parser {
 			return parseFloat(input, content);
 		}
 		switch (repeatDate.trim().toLowerCase()) {
-		case "daily": {
-			input.addRepeatDate(RepeatDate.DAILY);
-			tempContent = content.replaceAll("(?i)daily", "").trim();
-			break;
-		}
-		case "weekly": {
-			input.addRepeatDate(RepeatDate.WEEKLY);
-			tempContent = content.replaceAll("(?i)weekly", "").trim();
-			break;
-		}
-		case "monthly": {
-			input.addRepeatDate(RepeatDate.MONTHLY);
-			tempContent = content.replaceAll("(?i)monthly", "").trim();
-			break;
-		}
-		default:
-			return parseFloat(input, content);
+			case "daily" : {
+				input.addRepeatDate(RepeatDate.DAILY);
+				tempContent = content.replaceAll("(?i)daily", "").trim();
+				break;
+				
+			}
+			case "weekly" : {
+				input.addRepeatDate(RepeatDate.WEEKLY);
+				tempContent = content.replaceAll("(?i)weekly", "").trim();
+				break;
+				
+			}
+			case "monthly" : {
+				input.addRepeatDate(RepeatDate.MONTHLY);
+				tempContent = content.replaceAll("(?i)monthly", "").trim();
+				break;
+				
+			}
+			default :
+				return parseFloat(input, content);
 		}
 		System.out.println(tempContent);
 		String[] contents = tempContent.split("(?i)every ",2);
@@ -536,13 +558,16 @@ public class Parser {
 			return input;
 		}
 		switch (taskType(content)) {
-		case DEADLINE:
+		case DEADLINE :
 			return parseDeadline(input, content);
-		case REPEAT:
+			
+		case REPEAT :
 			return parseRepeated(input, content);
-		case FLOAT:
+			
+		case FLOAT :
 			return parseFloat(input, content);
-		default:
+			
+		default :
 			return parseFixed(input, content);
 		}
 	}

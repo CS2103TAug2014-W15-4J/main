@@ -13,7 +13,8 @@ import exception.TaskInvalidDateException;
 
 //@author A0115384H
 /**
- * This class models a repeated task: tasks that recur after a period of time
+ * This class models a repeated task: tasks that recur after a period of time.
+ * 
  */
 public class RepeatedTask extends Task {
 	@XStreamAlias("Deadline")
@@ -191,7 +192,7 @@ public class RepeatedTask extends Task {
     /**
      * This method checks if two repeated tasks are equal.
      * Two repeated tasks are equal if they have the same value for different properties:
-     * Added time, Description, Class, Deadline, Repeat period
+     * Added time, Description, Class, Deadline, Repeat period, Tags
      * 
      * @param task The repeated task to be compared to.
      * @return     true if the tasks are equal, false otherwise.

@@ -18,7 +18,8 @@ import exception.TaskTagException;
 
 public abstract class Task {
 	protected static final String DATE_FORMAT = "EEE HH:mm dd/MMM/yyyy";
-
+	
+	/** This is the default four types of task */
 	public enum Type {
 		FLOAT, DEADLINE, FIXED, REPEATED
 	}
@@ -324,7 +325,7 @@ public abstract class Task {
 	/**
 	 * This method checks if two tasks are equal.
 	 * Two tasks are equal if they have the same value for different properties:
-	 * Added time, Description, Class, ..
+	 * Added time, Description, Class, Tags, ..
 	 * Subclass override for subclasses with more properties.
 	 * 
 	 * @param task The task to be compared to.
@@ -333,7 +334,8 @@ public abstract class Task {
 	public boolean equals(Task task) {
 	    boolean isEqual = this.getAddedTime().equals(task.getAddedTime()) &&
 	                      this.getClass() == task.getClass() &&
-	                      this.getDescription().equals(task.getDescription());	    
+	                      this.getDescription().equals(task.getDescription()) &&
+	                      this.getTags().equals(task.getTags());	    
 	    return isEqual;
 	}
 

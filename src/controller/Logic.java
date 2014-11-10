@@ -24,49 +24,60 @@ import model.Task;
  */
 
 public class Logic {
-
+	
 	static Scanner scanner = new Scanner(System.in);
 	static TaskList listOfTasks;
+	
+	private static final String PROMOT_INPUT = "Enter command: ";
+	private static final String TIME_FORMAT = "EEE, MMM d HH:mm";
+	private static final String CMD_OVERDUE = "overdue";
+	private static final String CMD_DONE = "done";
+	private static final String CMD_ADDED = "added";
+	private static final String CMD_ALL = "all";
+	private static final String NEW_LINE = "\n\n";
+	
+	private static final String MESSAGE_TASK_ADDED = "\"%s\" is added to your list.";
+	private static final String MESSAGE_TASK_EDITED = "Task edited successfully.";
+	private static final String MESSAGE_TASK_EDITED_DESCRITPION = "Task \"%s\" is renamed as \"%s\"";
+	private static final String MESSAGE_TASK_EDITED_DEADLINE = "The deadline is changed to \"%s\"";
+	private static final String MESSAGE_TASK_EDITED_ALL = "Task is renamed as \"%s\". New deadline: \"%s\"";
+	private static final String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
+	private static final String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
+	private static final String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
+	private static final String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
+	private static final String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+	private static final String MESSAGE_TASK_EXPORT = "Export successfully.";
+	private static final String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
 
-	final static String MESSAGE_TASK_ADDED = "\"%s\" is added to your list.";
-	final static String MESSAGE_TASK_EDITED = "Task edited successfully.";
-	final static String MESSAGE_TASK_EDITED_DESCRITPION = "Task \"%s\" is renamed as \"%s\"";
-	final static String MESSAGE_TASK_EDITED_DEADLINE = "The deadline is changed to \"%s\"";
-	final static String MESSAGE_TASK_EDITED_ALL = "Task is renamed as \"%s\". New deadline: \"%s\"";
-	final static String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
-	final static String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
-	final static String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
-	final static String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
-	final static String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
-	final static String MESSAGE_TASK_EXPORT = "Export successfully.";
-	final static String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
+	private static final String MESSAGE_PARSING_END = "Done parsing. Executing command..";
+	private static final String MESSAGE_PARSING_START = "Processing user input: start parsing.";
+	
+	private static final String MESSAGE_PROGRAM_REDO = "redo successful.";
+	private static final String MESSAGE_PROGRAM_UNDO = "undo successful.";
+	private static final String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
 
-	final static String MESSAGE_PROGRAM_REDO = "redo successful.";
-	final static String MESSAGE_PROGRAM_UNDO = "undo successful.";
-	final static String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
+	private static final String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
+	private static final String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
 
-	final static String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
-	final static String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
+	private static final String MESSAGE_INVALID_EDIT = "Invalid edit.";
+	private static final String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
+	private static final String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
 
-	final static String MESSAGE_INVALID_EDIT = "Invalid edit.";
-	final static String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
-	final static String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+	private static final String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
+	private static final String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+	private static final String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
 
-	final static String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
-	final static String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
-	final static String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
+	private static final String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+	private static final String MESSAGE_INVALID_REDO = "No next operation to redo.";
 
-	final static String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
-	final static String MESSAGE_INVALID_REDO = "No next operation to redo.";
+	private static final String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
+	private static final String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
+	private static final String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+	private static final String MESSAGE_INVALID_DATE = "Invalid date(s).";
+	private static final String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
 
-	final static String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
-	final static String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
-	final static String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
-	final static String MESSAGE_INVALID_DATE = "Invalid date(s).";
-	final static String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
-
-	final static String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
-	final static String MESSAGE_HELP = "Current list of available commands: \n" +
+	private static final String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
+	private static final String MESSAGE_HELP = "Current list of available commands: \n" +
 			"- add a floating task     : add <description>\n" +
 			"- add a deadline task     : add <description> by <time/date>\n" +
 			"- add a fixed time        : add <description> <time/date1> to <time/date2>\n" +
@@ -182,12 +193,12 @@ public class Logic {
 	 */
 	public static String readAndExecuteCommands(String userInput) {
 
-		log.info("Processing user input: start parsing.");
+		log.info(MESSAGE_PARSING_START);
 		// parse and execute command
 		Parser parser = new Parser();
 		UserInput userCommand = parser.parse(userInput);
 
-		log.info("Done parsing. Executing command..");
+		log.info(MESSAGE_PARSING_END);
 
 		return executeCommand(userCommand);
 	}
@@ -511,17 +522,21 @@ public class Logic {
 			return MESSAGE_INVALID_DATE;
 		}
 	}
-
+	
+	//@author A0119446B
 	/**
-	 * @param time
-	 * @return
+	 * This method formats a Date object to a formatted time string.
+	 * 
+	 * @param time	The Date object for formatting.
+	 * @return		The formatted string.
 	 */
 	private static String formatTime(Date time) {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("EEE, MMM d HH:mm");
+		SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
 		String timeString = timeFormat.format(time);
 		return timeString;
 	}
 
+	//@author A0115384H
 	/**
 	 * This method edits the times of a fixed task.
 	 * 
@@ -636,18 +651,18 @@ public class Logic {
 				return MESSAGE_INVALID_DATE;
 			}
 		}
-		if (userCommand.equals("all")) {
+		if (userCommand.equals(CMD_ALL)) {
 			listOfTasks.setNotShowingDone();
 			return displayTasks(listOfTasks.prepareDisplayList(false));
 
-		} else if (userCommand.equals("added")) {
+		} else if (userCommand.equals(CMD_ADDED)) {
 			listOfTasks.setNotShowingDone();
 			return displayTasks(listOfTasks.prepareDisplayList(true));
 
-		} else if (userCommand.equals("done")) {
+		} else if (userCommand.equals(CMD_DONE)) {
 			return displayTasks(listOfTasks.getFinishedTasks());
 
-		}  else if (userCommand.equals("overdue")) {
+		}  else if (userCommand.equals(CMD_OVERDUE)) {
 			return displayTasks(listOfTasks.getOverdueTask());
 
 		} else {
@@ -756,13 +771,12 @@ public class Logic {
 			taskDisplay.append((j + 1) + ". " + task.toString());
 
 			if (j != taskListSize - 1) {
-				taskDisplay.append("\n\n");
+				taskDisplay.append(NEW_LINE);
 
 			}
 		}
 
 		return taskDisplay.toString();
-
 	}
 
 	//@author A0115384H
@@ -802,7 +816,7 @@ public class Logic {
 	 * This method reads the user input from the command line and returns it as a string.
 	 */
 	public static String getUserInput() {
-		System.out.print("Enter command: ");
+		System.out.print(PROMOT_INPUT);
 		String userInput = scanner.nextLine();
 		return userInput;
 	}

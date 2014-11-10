@@ -24,14 +24,15 @@ import model.TaskList;
  * This Storage class is for saving tasks to local file, 
  * and loading tasks from local file.
  * 
- * @author Jiang Sheng
+ * @author A0119446B
  *
  */
 public class Storage {
-	
-	
+
+
 	private static final String ALIAS_CLASS_LIST = "list";
 	private static final String ALIAS_CLASS_MAP = "map";
+	
 	// XML tag for Model Class 
 	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatingTask";
 	private static final String ALIAS_CLASS_FIXED_TASK = "FixedTask";
@@ -42,7 +43,22 @@ public class Storage {
 
 
 	private static final String TASK_FILE = "uClear.xml";
+	private static final String EXPORT_FILE_NAME = "tasklist.txt";
+	
+	private static final String EXPORT_HEADING = "Thank you for using uClear\nHere are your current tasks."
+									+ "\n\nTasks that due soon:\n";
+	private static final String NEW_LINE = "\n\n";
+	private static final String EXPORT_HEADING_DONE = "Tasks finished:\n";
+	private static final String EXPORT_HEADING_TODO = "Tasks to do:\n";
+	
+	private static final String MESSAGE_EXPORTING = "Going to export task list to tasklist.txt file";
 	private static final String MESSAGE_SUCCESS = "Success";
+	private static final String MESSAGE_SAVING_DONE = "Saving complete.";
+	private static final String MESSAGE_SAVING_START = "Going to save tasks on hard disk";
+	private static final String MESSAGE_LOADING_START = "Going to load tasks from data file.";
+	private static final String MESSAGE_LOADING_DONE = "Loading completed.";
+	private static final String MESSAGE_EXPORT_DONE = "Exporting complete.";
+	
 	private static final String ERROR_IO = "Error when trying to read/write the file.";
 	
 	private static ULogger logger = ULogger.getLogger();
@@ -54,6 +70,7 @@ public class Storage {
 	private XStream xstream;
 	
 	private String file_name;
+	
 	/**
 	 * Constructor
 	 * 
@@ -70,49 +87,52 @@ public class Storage {
 	
 	/**
 	 * Save a TaskList object into the data file.
-	 * @param tasks the TaskList object which contains the list of tasks
-	 * @return a feedback message
+	 * 
+	 * @param tasks 	the TaskList object which contains the list of tasks.
+	 * @return a feedback message.
 	 */
 	public String save(TaskList tasks) {
-		logger.info("Going to save tasks on hard disk");
+		logger.info(MESSAGE_SAVING_START);
 		try {
 			this.writer = new BufferedWriter(new FileWriter(this.file_name, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
-			logger.error("I/O error when saving tasks.");
+			logger.error(ERROR_IO);
 			throw new Error(ERROR_IO);
 		}
-		logger.info("Saving complete.");
+		logger.info(MESSAGE_SAVING_DONE);
 		return MESSAGE_SUCCESS;
 	}
 	
 	/**
-	 * Overload
-	 * @param tasks the TaskList object which contains the list of tasks\
-	 * @param filename the name of the task list to be stored
-	 * @return a feedback message
+	 * Save a TaskList object into the data file with the given filename.
+	 * 
+	 * @param tasks		 the TaskList object which contains the list of tasks.
+	 * @param filename 	 the name of the task list to be stored.
+	 * @return a feedback message.
 	 */
 	public String save(TaskList tasks, String filename) {
-		logger.info("Going to save tasks on hard disk");
+		logger.info(MESSAGE_SAVING_START);
 		try {
 			this.writer = new BufferedWriter(new FileWriter(filename, false));
 			this.writer.write(serialize(tasks));
 			this.writer.close();
 		} catch (IOException e) {
-			logger.error("I/O error when saving tasks.");
+			logger.error(ERROR_IO);
 			throw new Error(ERROR_IO);
 		}
-		logger.info("Saving complete.");
+		logger.info(MESSAGE_SAVING_DONE);
 		return MESSAGE_SUCCESS;
 	}
 	
 	/**
 	 * Load and build a TaskList object from the data file.
+	 * 
 	 * @return a TaskList object
 	 */
 	public TaskList load() {
-		logger.info("Going to load tasks from data file.");
+		logger.info(MESSAGE_LOADING_START);
 		String input = null;
 		StringBuilder xml = new StringBuilder(); 
 		try {
@@ -120,13 +140,17 @@ public class Storage {
 				xml.append(input);
 			}
 		} catch (IOException e) {
-			logger.error("I/O error when loading tasks.");
+			logger.error(ERROR_IO);
 			throw new Error(ERROR_IO);
 		}
-		logger.info("Loading completed.");
+		logger.info(MESSAGE_LOADING_DONE);
 		return (TaskList)xstream.fromXML(xml.toString());
 	}
 	
+	/**
+	 * Close the storage.
+	 * 
+	 */
 	public void close() {
 		try {
 			this.reader.close();
@@ -138,41 +162,40 @@ public class Storage {
 	}
 	
 	/**
-	 * Export user's list of task into txt file.
-	 * @param tasks the TaskList object which contains the list of tasks
+	 * Export user's list of task into a text file.
+	 * @param tasks 	the TaskList object which contains the list of tasks
 	 * @return a feedback message
 	 */
 	public static void export(List<Task> taskTImed, List<Task> taskTodo, List<Task> taskFinished) {
-		logger.info("Going to export task list to tasklist.txt file");
+		logger.info(MESSAGE_EXPORTING);
 		// preparation work
+		
 		StringBuilder output = new StringBuilder();
-		output.append("Thank you for using uClear\n");
-		output.append("Here are your current tasks.\n\n");
-		output.append("Tasks that due soon:\n");
+		output.append(EXPORT_HEADING);
 		for (Task task : taskTImed) {
 			output.append(task.toString());
-			output.append("\n\n");
+			output.append(NEW_LINE);
 		}
-		output.append("Tasks to do:\n");
+		output.append(EXPORT_HEADING_TODO);
 		for (Task task : taskTodo) {
 			output.append(task.toString());
-			output.append("\n\n");
+			output.append(NEW_LINE);
 		}
-		output.append("Tasks finished:\n");
+		output.append(EXPORT_HEADING_DONE);
 		for (Task task : taskFinished) {
 			output.append(task.toString());
-			output.append("\n\n");
+			output.append(NEW_LINE);
 		}
 		
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("tasklist.txt", false));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(EXPORT_FILE_NAME, false));
 			writer.write(output.toString());
 			writer.close();
 		} catch (IOException e) {
-			logger.error("I/O error when exporting tasks.");
+			logger.error(ERROR_IO);
 			throw new Error(ERROR_IO);
 		}
-		logger.info("Exporting complete.");
+		logger.info(MESSAGE_EXPORT_DONE);
 	}
 
 	/**
