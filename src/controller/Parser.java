@@ -130,24 +130,21 @@ public class Parser {
 			return CMD_ADD;
 		if (command.equals(CMD_DELETE) || command.equals("-"))
 			return CMD_DELETE;
-		if (command.equals(CMD_CLEAR) || command.equals("--")
-				|| command.equals("cl"))
+		if (command.equals(CMD_CLEAR) || command.equals("--"))
 			return CMD_CLEAR;
-		if (command.equals(CMD_SEARCH) || command.equals("?")
-				|| command.equals("s"))
+		if (command.equals(CMD_SEARCH))
 			return CMD_SEARCH;
-		if (command.equals(CMD_EDIT) || command.equals("<")
-				|| command.equals("ed"))
+		if (command.equals(CMD_EDIT) || command.equals("<"))
 			return CMD_EDIT;
 		if (command.equals(CMD_DONE) || command.equals("d"))
 			return CMD_DONE;
-		if (command.equals(CMD_SHOW) || command.equals("sh"))
+		if (command.equals(CMD_SHOW))
 			return CMD_SHOW;
 		if (command.equals(CMD_TAG) || command.equals("t"))
 			return CMD_TAG;
 		if (command.equals(CMD_UNTAG) || command.equals("ut"))
 			return CMD_UNTAG;
-		if (command.equals(CMD_UNDO) || command.equals("b"))
+		if (command.equals(CMD_UNDO) || command.equals("u"))
 			return CMD_UNDO;
 		if (command.equals(CMD_REDO) || command.equals("r"))
 			return CMD_REDO;

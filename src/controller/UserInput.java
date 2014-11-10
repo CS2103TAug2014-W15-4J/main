@@ -5,27 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * All write/read option in userInput: 
- * validation of cmd:
- *               unvalidation()/getValid(); 
- * allCommands: 
- *               addCommand(CMD);
- *               add(String)/--;
- * addCommand: 
- *               addDate(List<Date>);beRepeated();beDeadline();beFloat();
- *                        /getDescription();getDate();isFloat() or isRepeated or isDeadline();
- * editCommad;
- *          addDate(List<Date>);addEdit(int,String)
- *                      /getEditID();getDescription();getDate();getEditCommand() (the description and date need to be changed) 
- * deleteCommand:
- *          addDeleteID(List<Integer>)/getDeleteID(); 
- * doneCommand:
- *          addDoneID(List<Integer>)/getDoneID(); 
- * showCommand:
- *          addShow(string)/getShowCommand();
- * tagCommand:
- *          addTagID(string)/getTagID();getDescription();
- * 
+ * This class is an object of parsed command for Logic
  * 
  *
  */
