@@ -117,6 +117,94 @@ public class MainViewController extends GridPane{
 	private static final String TITLE_SEARCH_RESULT = "Search";
 	private static final String TITLE_SHOW_SEARCH_RESULT = "Searching Result For:   \"%s\"";
 	private static final String TITLE_HELP_PAGE = "Help";
+	private static final String TITLE_HELP_COMMAND = "Press \"Esc\" to return";
+	
+	private static final String DISPLAY_HELP_OTHER_COMMAND = "OTHER COMMANDS";
+	private static final String DISPLAY_HELP_DISCRIPTION = "Description";
+	private static final String DISPLAY_HELP_STRUCTURE = "Structure";
+	private static final String DISPLAY_HELP_EXAMPLE = "Example";
+	
+	private static final String[] DISPLAY_HELP_COMMAND = {
+		"ADD",
+		"DELETE",
+		"DONE",
+		"EDIT",
+		"SEARCH",
+		"SHOW",
+		"TAG"
+	};
+	
+	private static final String DISPLAY_HELP_ADD_FLOATING_TASK_DESCRIPTION = "      add a floating task";
+	private static final String DISPLAY_HELP_ADD_FLOATING_TASK_STRUCTURE = "      add <description>";
+	private static final String DISPLAY_HELP_ADD_FLOATING_TASK_EXAMPLE = "      add do homework";
+	
+	private static final String DISPLAY_HELP_ADD_DEADLINE_TASK_DESCRIPTION = "      add a deadline task";
+	private static final String DISPLAY_HELP_ADD_DEADLINE_TASK_STRUCTURE = "      add <description> by <time/date>";
+	private static final String DISPLAY_HELP_ADD_DEADLINE_TASK_EXAMPLE = "      add do homework by Oct 31";
+	
+	private static final String DISPLAY_HELP_ADD_REPEATED_TASK_DESCRIPTION = "      add a repeated task";
+	private static final String DISPLAY_HELP_ADD_REPEATED_TASK_STRUCTURE = "      add <description> every <time/date> <period>";
+	private static final String DISPLAY_HELP_ADD_REPEATED_TASK_EXAMPLE = "      add do homework every week";
+	
+	private static final String DISPLAY_HELP_ADD_FIXED_TASK_DESCRIPTION = "      add a fixed task";
+	private static final String DISPLAY_HELP_ADD_FIXED_TASK_STRUCTURE = "      add <description> <time/date1> to <time/date2>";
+	private static final String DISPLAY_HELP_ADD_FIXED_TASK_EXAMPLE = "      add do homework Nov 10 to Nov 20";
+	
+	private static final String DISPLAY_HELP_DELETE_ONE_TASK_DESCRIPTION = "      delete one task";
+	private static final String DISPLAY_HELP_DELETE_ONE_TASK_STRUCTURE = "      delete <taskID>";
+	private static final String DISPLAY_HELP_DELETE_ONE_TASK_EXAMPLE = "      delete 1";
+	
+	private static final String DISPLAY_HELP_DELETE_MANY_TASKS_DESCRIPTION = "      delete many tasks";
+	private static final String DISPLAY_HELP_DELETE_MANY_TASKS_STRUCTURE = "      delete <taskID_1> <taskID_2> ...";
+	private static final String DISPLAY_HELP_DELETE_MANY_TASKS_EXAMPLE = "      delete 1 2 3";
+	
+	private static final String DISPLAY_HELP_DONE_ONE_TASK_DESCRIPTION = "      mark one task done";
+	private static final String DISPLAY_HELP_DONE_ONE_TASK_STRUCTURE = "      done <taskID>";
+	private static final String DISPLAY_HELP_DONE_ONE_TASK_EXAMPLE = "      done 1";
+	
+	private static final String DISPLAY_HELP_DONE_MANY_TASKS_DESCRIPTION = "      mark many tasks done";
+	private static final String DISPLAY_HELP_DONE_MANY_TASKS_STRUCTURE = "      done <taskID_1> <taskID_2> ...";
+	private static final String DISPLAY_HELP_DONE_MANY_TASKS_EXAMPLE = "      done 1 2 3";
+	
+	private static final String DISPLAY_HELP_EDIT_DESCRIPTION_DESCRIPTION = "      edit task description of one task";
+	private static final String DISPLAY_HELP_EDIT_DESCRIPTION_STRUCTURE = "      edit <taskID> <new description>";
+	private static final String DISPLAY_HELP_EDIT_DESCRIPTION_EXAMPLE = "      edit 1 sleep";
+	
+	private static final String DISPLAY_HELP_EDIT_TIME_DESCRIPTION = "      edit task time of one task";
+	private static final String DISPLAY_HELP_EDIT_TIME_STRUCTURE = "      edit <taskID> <new time>";
+	private static final String DISPLAY_HELP_EDIT_TIME_EXAMPLE = "      edit 1 Oct 31";
+	
+	private static final String DISPLAY_HELP_SEARCH_DESCRIPTION = "      search tasks with keyword";
+	private static final String DISPLAY_HELP_SEARCH_STRUCTURE = "      search <keyword>";
+	private static final String DISPLAY_HELP_SEARCH_EXAMPLE = "      search school";
+	
+	private static final String DISPLAY_HELP_SHOW_ALL_DESCRIPTION = "      show all ongoing tasks";
+	private static final String DISPLAY_HELP_SHOW_ALL_STRUCTURE = "      show all";
+	private static final String DISPLAY_HELP_SHOW_ALL_EXAMPLE = "      show all";
+	
+	private static final String DISPLAY_HELP_SHOW_DONE_DESCRIPTION = "      show all done tasks";
+	private static final String DISPLAY_HELP_SHOW_DONE_STRUCTURE = "      show done";
+	private static final String DISPLAY_HELP_SHOW_DONE_EXAMPLE = "      show done";
+	
+	private static final String DISPLAY_HELP_TAG_ONE_DESCRIPTION = "      tag one task";
+	private static final String DISPLAY_HELP_TAG_ONE_STRUCTURE = "      tag <taskID> <tag>";
+	private static final String DISPLAY_HELP_TAG_ONE_EXAMPLE = "      tag 1 important";
+	
+	private static final String DISPLAY_HELP_UNTAG_ONE_DESCRIPTION = "      remove a tag from one task";
+	private static final String DISPLAY_HELP_UNTAG_ONE_STRUCTURE = "      untag <taskID> <tag>";
+	private static final String DISPLAY_HELP_UNTAG_ONE_EXAMPLE = "      untag 1 important";
+	
+	private static final String DISPLAY_HELP_UNTAG_ALL_DESCRIPTION = "      remove all tags from one task";
+	private static final String DISPLAY_HELP_UNTAG_ALL_STRUCTURE = "      untag <taskID>";
+	private static final String DISPLAY_HELP_UNTAG_ALL_EXAMPLE = "      untag 1";
+	
+	private static final String DISPLAY_HELP_CLEAR_DESCRIPTION = "      remove all tasks";
+	private static final String DISPLAY_HELP_CLEAR_STRUCTURE = "      clear";
+	private static final String DISPLAY_HELP_CLEAR_EXAMPLE = "      clear";
+	
+	private static final String DISPLAY_HELP_EXIT_DESCRIPTION = "      exit uClear";
+	private static final String DISPLAY_HELP_EXIT_STRUCTURE = "      exit";
+	private static final String DISPLAY_HELP_EXIT_EXAMPLE = "      exit";
 	
 	private static final int TOTAL_PAGE_NUM = 8;
 	private static final int TODAY_TASKS_PAGE_INDEX = 0;
@@ -127,6 +215,53 @@ public class MainViewController extends GridPane{
 	private static final int TASKS_WITH_TAG_PAGE_INDEX = 5;
 	private static final int SEARCH_RESULT_PAGE_INDEX = 6;
 	private static final int HELP_DOC_PAGE_INDEX = 7;
+	
+	private static final String FORMAT_TASK_TIME = "MMM dd, EE  HH : mm";
+	private static final String FORMAT_DATE = "MMM dd  HH : mm : ss";
+	private static final String FORMAT_DATE_FOR_SHOW = "MMM dd";
+	
+	private static final int FADE_TIME = 400;
+	private static final double FADE_FROM_VALUE = 1.0;
+	private static final double FADE_TO_VALUE = 0.65;
+	private static final int FADE_CYCLES = 4;
+	private static final boolean FADE_AUTO_REVERSE = true;
+	private static final int INITIAL_POSITION = 0;
+	
+	private static final double DIFFERENCE_HEIGHT = 66;
+	private static final int TOTAL_FKEYS = 8;
+	private static final int F_KEY_ADD = 0;
+	private static final int F_KEY_DELETE = 1;
+	private static final int F_KEY_DONE = 2;
+	private static final int F_KEY_EDIT = 3;
+	private static final int F_KEY_SEARCH = 4;
+	private static final int F_KEY_SHOW = 5;
+	private static final int F_KEY_TAG = 6;
+	private static final int F_KEY_OTHER_COMMAND = 7;
+	
+	private static final String STYLE_PAGE = "-fx-background-color: white; -fx-padding: 0 0 0 20;";
+	private static final String STYLE_FONT_DATE = "-fx-font-size: 18";
+	private static final String STYLE_FONT_RESPONSE = "-fx-font-size: 20";
+	private static final String STYLE_FONT_INPUT = "-fx-font-size: 20";
+	private static final String STYLE_FONT_DISPLAYTITLETEXT = "-fx-font-size: 34";
+	private static final String STYLE_F_KEYS = "-fx-padding: 0 0 0 50; -fx-font-size: 24; -fx-text-fill: #03a9f4";
+	private static final String STYLE_F_KEYS_INFO = "-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: rgb(0,0,0,87)";
+	
+	private static final String STYLE_HELP_DESCRIPTION = "-fx-text-fill:  #03a9f4";
+	private static final String STYLE_HELP_STRUCTURE = "-fx-text-fill:  #03a9f4";
+	private static final String STYLE_HELP_EXAMPLE = "-fx-text-fill:  #03a9f4";
+	private static final String STYLE_HELP_GRIDPANE = "-fx-padding: 0 5 10 50; -fx-font-size: 18";
+	private static final String STYLE_HELP_DESCRIPTION_CONTENT = "-fx-text-fill: rgb(0,0,0,87)";
+	private static final String STYLE_HELP_STRUCTURE_CONTENT = "-fx-text-fill: rgb(0,0,0,87)";
+	private static final String STYLE_HELP_EXAMPLE_CONTENT = "-fx-text-fill: rgb(0,0,0,87)";
+	
+	private static final String STYLE_HELP_COMMAND = "-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24";
+	
+	private static final double SIZE_HEIGHT_HELPBOX = 40;
+	private static final double SIZE_WIDTH_HELPBOX = 900;
+	private static final double SIZE_HEIGHT_HELP_GRIDPANE = 140;
+	private static final double SIZE_WIDTH_HELP_GRIDPANE = 900;
+	
+	private static final double SPACING_HELP_COOMPONENT = 20;
 	
 	@FXML
 	private Label date;
@@ -149,7 +284,7 @@ public class MainViewController extends GridPane{
 	@FXML
 	private Pagination listDisplay;
 	
-	private FadeTransition fadeOut = new FadeTransition(Duration.millis(400));
+	private FadeTransition fadeOut = new FadeTransition(Duration.millis(FADE_TIME));
 	
 	// Pages
 	private ScrollPane[] scrollPage;
@@ -174,9 +309,9 @@ public class MainViewController extends GridPane{
 	private Hashtable<String, String> tagColor;
 	private int colorPointer;
 	
-	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat("MMM dd, EE  HH : mm", Locale.US);
-	final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd  HH : mm : ss", Locale.US);
-	final SimpleDateFormat dateFormatForShow = new SimpleDateFormat("MMM dd", Locale.US);
+	final SimpleDateFormat taskTimeFormat = new SimpleDateFormat(FORMAT_TASK_TIME, Locale.US);
+	final SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT_DATE, Locale.US);
+	final SimpleDateFormat dateFormatForShow = new SimpleDateFormat(FORMAT_DATE_FOR_SHOW, Locale.US);
 	final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
@@ -229,9 +364,9 @@ public class MainViewController extends GridPane{
 	 * Initialize the history command and history command pointer.
 	 * 
 	 */
-	public void initHistory() {
+	private void initHistory() {
 		historyCommands = new ArrayList<String>();
-		historyPointer = 0;
+		historyPointer = INITIAL_POSITION;
 	}
 	
 	//@author A0119414L
@@ -239,7 +374,7 @@ public class MainViewController extends GridPane{
 	 * Initialize the function up and down keys 
 	 * 
 	 */
-	public void initTextFieldKey() {
+	private void initTextFieldKey() {
 		setUpKey();
 		setDownKey();
 	}
@@ -280,10 +415,10 @@ public class MainViewController extends GridPane{
 	 */
 	private void initFadeEffect() {
 		fadeOut.setNode(response);
-		fadeOut.setFromValue(1.0);
-		fadeOut.setToValue(0.65);
-		fadeOut.setCycleCount(4);
-		fadeOut.setAutoReverse(true);
+		fadeOut.setFromValue(FADE_FROM_VALUE);
+		fadeOut.setToValue(FADE_TO_VALUE);
+		fadeOut.setCycleCount(FADE_CYCLES);
+		fadeOut.setAutoReverse(FADE_AUTO_REVERSE);
 	}
 	
 	//@author A0119414L
@@ -309,16 +444,16 @@ public class MainViewController extends GridPane{
 			scrollPage[i] = new ScrollPane();
 			setScrollPage(i);
 			page[i] = new VBox();
-			page[i].setPrefHeight(listDisplay.getPrefHeight() - 66);
+			page[i].setPrefHeight(listDisplay.getPrefHeight() - DIFFERENCE_HEIGHT);
 			page[i].setPrefWidth(listDisplay.getPrefWidth());
-			page[i].setStyle("-fx-background-color: white; -fx-padding: 0 0 0 20;");
+			page[i].setStyle(STYLE_PAGE);
 			scrollPage[i].setContent(page[i]);
 		}
 		
 		setLeftKey();
 		setRightKey();
 		setEscKey();
-		for (int i=0; i<8; i++) {
+		for (int i=0; i<TOTAL_FKEYS; i++) {
 			setFKey(i);
 		}
 		setPageUpKey();
@@ -347,10 +482,10 @@ public class MainViewController extends GridPane{
 	 * 
 	 */
 	private void setFont() {
-	    date.setStyle("-fx-font-size: 18");
-	    response.setStyle("-fx-font-size: 20");
-	    input.setStyle("-fx-font-size: 20");
-	    displayTitleText.setStyle("-fx-font-size: 34");
+	    date.setStyle(STYLE_FONT_DATE);
+	    response.setStyle(STYLE_FONT_RESPONSE);
+	    input.setStyle(STYLE_FONT_INPUT);
+	    displayTitleText.setStyle(STYLE_FONT_DISPLAYTITLETEXT);
 	}
 	
 	//@author A0119414L
@@ -360,7 +495,7 @@ public class MainViewController extends GridPane{
 	 */
 	private void initTagColor() {
 		tagColor = new Hashtable<String, String>();
-		colorPointer = 0;
+		colorPointer = INITIAL_POSITION;
 	}
 	
 	//@author A0119414L
@@ -404,20 +539,20 @@ public class MainViewController extends GridPane{
 		page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 		setRestTaskResponse();
 		
-		commandInfo = new GridPane[8];
-		fKeys = new Label[8];
-		fKeysInfo = new Label[8];
+		commandInfo = new GridPane[TOTAL_FKEYS];
+		fKeys = new Label[TOTAL_FKEYS];
+		fKeysInfo = new Label[TOTAL_FKEYS];
 		
-		for (int i=0; i<7; i++) {
+		for (int i=0; i<TOTAL_FKEYS-1; i++) {
 			
 			commandInfo[i] = new GridPane();
-			setHelpHBoxSize(i, 900, 40);
+			setHelpHBoxSize(i, SIZE_WIDTH_HELPBOX, SIZE_HEIGHT_HELPBOX);
 			
 			fKeys[i] = new Label(F_KEYS[i].toString());
-			fKeys[i].setStyle("-fx-padding: 0 0 0 50; -fx-font-size: 24; -fx-text-fill: #03a9f4");
+			fKeys[i].setStyle(STYLE_F_KEYS);
 			
 			fKeysInfo[i] = new Label(F_KEY_COMMAND[i].toString());
-			fKeysInfo[i].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: rgb(0,0,0,87)");
+			fKeysInfo[i].setStyle(STYLE_F_KEYS_INFO);
 			
 			GridPane.setConstraints(fKeys[i], 0, 0);
 			commandInfo[i].getChildren().add(0, fKeys[i]);
@@ -430,24 +565,24 @@ public class MainViewController extends GridPane{
 			GridPane.setMargin(fKeysInfo[i], new Insets(5, 15, 5, 16));
 			
 		}
-		commandInfo[7] = new GridPane();
-		setHelpHBoxSize(7, 900, 40);
+		commandInfo[F_KEY_OTHER_COMMAND] = new GridPane();
+		setHelpHBoxSize(F_KEY_OTHER_COMMAND, SIZE_WIDTH_HELPBOX, SIZE_HEIGHT_HELPBOX);
 		
-		fKeys[7] = new Label(F_KEYS[7].toString());
-		fKeys[7].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: #03a9f4");
+		fKeys[F_KEY_OTHER_COMMAND] = new Label(F_KEYS[F_KEY_OTHER_COMMAND].toString());
+		fKeys[F_KEY_OTHER_COMMAND].setStyle(STYLE_F_KEYS);
 		
-		fKeysInfo[7] = new Label("OTHER COMMANDS");
-		fKeysInfo[7].setStyle("-fx-padding: 0; -fx-font-size: 24; -fx-text-fill: rgb(0,0,0,87)");
+		fKeysInfo[F_KEY_OTHER_COMMAND] = new Label(DISPLAY_HELP_OTHER_COMMAND);
+		fKeysInfo[F_KEY_OTHER_COMMAND].setStyle(STYLE_F_KEYS_INFO);
 		
-		GridPane.setConstraints(fKeys[7], 0, 0);
-		commandInfo[7].getChildren().add(fKeys[7]);
-		GridPane.setConstraints(fKeysInfo[7], 1, 0);
-		commandInfo[7].getChildren().add(fKeysInfo[7]);
+		GridPane.setConstraints(fKeys[F_KEY_OTHER_COMMAND], 0, 0);
+		commandInfo[F_KEY_OTHER_COMMAND].getChildren().add(fKeys[F_KEY_OTHER_COMMAND]);
+		GridPane.setConstraints(fKeysInfo[F_KEY_OTHER_COMMAND], 1, 0);
+		commandInfo[F_KEY_OTHER_COMMAND].getChildren().add(fKeysInfo[F_KEY_OTHER_COMMAND]);
 		
-		page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[7]);
+		page[HELP_DOC_PAGE_INDEX].getChildren().add(commandInfo[F_KEY_OTHER_COMMAND]);
 		
-		GridPane.setMargin(fKeys[7], new Insets(5, 15, 5, 50));
-		GridPane.setMargin(fKeysInfo[7], new Insets(5, 15, 5, 16));
+		GridPane.setMargin(fKeys[F_KEY_OTHER_COMMAND], new Insets(5, 15, 5, 50));
+		GridPane.setMargin(fKeysInfo[F_KEY_OTHER_COMMAND], new Insets(5, 15, 5, 16));
 	}
 	
 	//@author A0119414L
@@ -474,21 +609,21 @@ public class MainViewController extends GridPane{
 	 * @param exampleString			Example of a command.
 	 */
 	private void setHelpForCommand(GridPane command, String descriptionString, String structureString, String exampleString) {
-		Label description = new Label("Description");
-		description.setStyle("-fx-text-fill:  #03a9f4");
-		Label structure = new Label("Structure");
-		structure.setStyle("-fx-text-fill:  #03a9f4");
-		Label example = new Label("Example");
-		example.setStyle("-fx-text-fill:  #03a9f4");
+		Label description = new Label(DISPLAY_HELP_DISCRIPTION);
+		description.setStyle(STYLE_HELP_DESCRIPTION);
+		Label structure = new Label(DISPLAY_HELP_STRUCTURE);
+		structure.setStyle(STYLE_HELP_STRUCTURE);
+		Label example = new Label(DISPLAY_HELP_EXAMPLE);
+		example.setStyle(STYLE_HELP_EXAMPLE);
 		
-		command.setStyle("-fx-padding: 0 5 10 50; -fx-font-size: 18");
-		setGridPaneSize(command, 900, 140);
+		command.setStyle(STYLE_HELP_GRIDPANE);
+		setGridPaneSize(command, SIZE_WIDTH_HELP_GRIDPANE, SIZE_HEIGHT_HELP_GRIDPANE);
 		Label descriptionContent = new Label(descriptionString);
-		descriptionContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
+		descriptionContent.setStyle(STYLE_HELP_DESCRIPTION_CONTENT);
 		Label structureContent = new Label(structureString);
-		structureContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
+		structureContent.setStyle(STYLE_HELP_STRUCTURE_CONTENT);
 		Label exampleContent = new Label(exampleString);
-		exampleContent.setStyle("-fx-text-fill: rgb(0,0,0,87)");
+		exampleContent.setStyle(STYLE_HELP_EXAMPLE_CONTENT);
 		
 		GridPane.setConstraints(description, 0, 0);
 		GridPane.setConstraints(descriptionContent, 0, 1);
@@ -506,122 +641,140 @@ public class MainViewController extends GridPane{
 	 * @param index		The page index of each type of command to display.
 	 */
 	private void setHelpPage(int index) {
-		response.setText("Press \"Esc\" to return");
-		page[HELP_DOC_PAGE_INDEX].setSpacing(20);
-		if (index == 0) {
+		response.setText(TITLE_HELP_COMMAND);
+		page[HELP_DOC_PAGE_INDEX].setSpacing(SPACING_HELP_COOMPONENT);
+		if (index == F_KEY_ADD) {
 			
-			Label add = new Label("ADD");
-			add.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label add = new Label(DISPLAY_HELP_COMMAND[F_KEY_ADD]);F
+			add.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane addFloatTask = new GridPane();
-			setHelpForCommand(addFloatTask, "      add a floating task", "      add <description>", "      add do homework");
+			setHelpForCommand(addFloatTask, DISPLAY_HELP_ADD_FLOATING_TASK_DESCRIPTION, 
+					DISPLAY_HELP_ADD_FLOATING_TASK_STRUCTURE, DISPLAY_HELP_ADD_FLOATING_TASK_EXAMPLE);
 			
 			GridPane addDeadlineTask = new GridPane();
-			setHelpForCommand(addDeadlineTask, "      add a deadline task", "      add <description> by <time/date>", "      add do homework by Oct 31");
+			setHelpForCommand(addDeadlineTask, DISPLAY_HELP_ADD_DEADLINE_TASK_DESCRIPTION, 
+					DISPLAY_HELP_ADD_DEADLINE_TASK_STRUCTURE, DISPLAY_HELP_ADD_DEADLINE_TASK_EXAMPLE);
 			
 			GridPane addRepeatedTask = new GridPane();
-			setHelpForCommand(addRepeatedTask, "      add a repeated task", "      add <description> every <time/date> <period>", "      add do homework every week");
+			setHelpForCommand(addRepeatedTask, DISPLAY_HELP_ADD_REPEATED_TASK_DESCRIPTION, 
+					DISPLAY_HELP_ADD_REPEATED_TASK_STRUCTURE, DISPLAY_HELP_ADD_REPEATED_TASK_EXAMPLE);
 			
 			GridPane addFixedTask = new GridPane();
-			setHelpForCommand(addFixedTask, "      add a fixed task", "      add <description> <time/date1> to <time/date2>", "      add do homework Nov 10 to Nov 20");
+			setHelpForCommand(addFixedTask, DISPLAY_HELP_ADD_FIXED_TASK_DESCRIPTION, 
+					DISPLAY_HELP_ADD_REPEATED_TASK_STRUCTURE, DISPLAY_HELP_ADD_REPEATED_TASK_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(add, addFloatTask, addDeadlineTask, addRepeatedTask, addFixedTask);
 			
-		} else if (index == 1) {
+		} else if (index == F_KEY_DELETE) {
 			
-			Label delete = new Label("DELETE");
-			delete.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label delete = new Label(DISPLAY_HELP_COMMAND[F_KEY_DELETE]);
+			delete.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane deleteOneTask = new GridPane();
-			setHelpForCommand(deleteOneTask, "      delete one task", "      delete <taskID>", "      delete 1");
+			setHelpForCommand(deleteOneTask, DISPLAY_HELP_DELETE_ONE_TASK_DESCRIPTION, 
+					DISPLAY_HELP_DELETE_ONE_TASK_STRUCTURE, DISPLAY_HELP_DELETE_ONE_TASK_EXAMPLE);
 			
 			GridPane deleteManyTasks = new GridPane();
-			setHelpForCommand(deleteManyTasks, "      delete many tasks", "      delete <taskID_1> <taskID_2> ...", "      delete 1 2 3");
+			setHelpForCommand(deleteManyTasks, DISPLAY_HELP_DONE_MANY_TASKS_DESCRIPTION, 
+					DISPLAY_HELP_DELETE_MANY_TASKS_STRUCTURE, DISPLAY_HELP_DELETE_MANY_TASKS_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(delete, deleteOneTask, deleteManyTasks);
 			
-		} else if (index == 2) {
+		} else if (index == F_KEY_DONE) {
 			
-			Label done = new Label("DONE");
-			done.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label done = new Label(DISPLAY_HELP_COMMAND[F_KEY_DONE]);
+			done.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane doneOneTask = new GridPane();
-			setHelpForCommand(doneOneTask, "      mark one task done", "      done <taskID>", "      done 1");
+			setHelpForCommand(doneOneTask, DISPLAY_HELP_DONE_ONE_TASK_DESCRIPTION, 
+					DISPLAY_HELP_DONE_ONE_TASK_STRUCTURE, DISPLAY_HELP_DONE_ONE_TASK_EXAMPLE);
 			
 			GridPane doneManyTasks = new GridPane();
-			setHelpForCommand(doneManyTasks, "      mark many tasks done", "      done <taskID_1> <taskID_2> ...", "      done 1 2 3");
+			setHelpForCommand(doneManyTasks, DISPLAY_HELP_DONE_MANY_TASKS_DESCRIPTION, 
+					DISPLAY_HELP_DONE_MANY_TASKS_STRUCTURE, DISPLAY_HELP_DONE_MANY_TASKS_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(done, doneOneTask, doneManyTasks);
 			
-		} else if (index == 3) {
+		} else if (index == F_KEY_EDIT) {
 			
-			Label edit = new Label("EDIT");
-			edit.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label edit = new Label(DISPLAY_HELP_COMMAND[F_KEY_EDIT]);
+			edit.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane editTaskDescription = new GridPane();
-			setHelpForCommand(editTaskDescription, "      edit task description of one task", "      edit <taskID> <new description>", "      edit 1 sleep");
+			setHelpForCommand(editTaskDescription, DISPLAY_HELP_EDIT_DESCRIPTION_DESCRIPTION, 
+					DISPLAY_HELP_EDIT_DESCRIPTION_STRUCTURE, DISPLAY_HELP_EDIT_DESCRIPTION_EXAMPLE);
 			
 			GridPane editTaskTime = new GridPane();
-			setHelpForCommand(editTaskTime, "      edit task time of one task", "      edit <taskID> <new time>", "      edit 1 Oct 31");
+			setHelpForCommand(editTaskTime, DISPLAY_HELP_EDIT_TIME_DESCRIPTION, 
+					DISPLAY_HELP_EDIT_TIME_STRUCTURE, DISPLAY_HELP_EDIT_TIME_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(edit, editTaskDescription, editTaskTime);
 			
-		} else if (index == 4) {
+		} else if (index == F_KEY_SEARCH) {
 			
-			Label search = new Label("SEARCH");
-			search.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label search = new Label(DISPLAY_HELP_COMMAND[F_KEY_SEARCH]);
+			search.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane searchKeyword = new GridPane();
-			setHelpForCommand(searchKeyword, "      search tasks with keyword", "      search <keyword>", "      search school");
+			setHelpForCommand(searchKeyword, DISPLAY_HELP_SEARCH_DESCRIPTION, 
+					DISPLAY_HELP_SEARCH_STRUCTURE, DISPLAY_HELP_SEARCH_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(search, searchKeyword);
 			
-		} else if (index == 5) {
+		} else if (index == F_KEY_SHOW) {
 			
-			Label show = new Label("SHOW");
-			show.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label show = new Label(DISPLAY_HELP_COMMAND[F_KEY_SHOW]);
+			show.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane showAll = new GridPane();
-			setHelpForCommand(showAll, "      show all ongoing tasks", "      show all", "      show all");
+			setHelpForCommand(showAll, DISPLAY_HELP_SHOW_ALL_DESCRIPTION, 
+					DISPLAY_HELP_SHOW_ALL_STRUCTURE, DISPLAY_HELP_SHOW_ALL_EXAMPLE);
 			
 			GridPane showDone = new GridPane();
-			setHelpForCommand(showDone, "      show all done tasks", "      show done", "      show done");
+			setHelpForCommand(showDone, DISPLAY_HELP_SHOW_DONE_DESCRIPTION, 
+					DISPLAY_HELP_SHOW_DONE_STRUCTURE, DISPLAY_HELP_SHOW_DONE_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(show, showAll, showDone);
 			
-		} else if (index == 6) {
+		} else if (index == F_KEY_TAG) {
 			
-			Label tag = new Label("TAG");
-			tag.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label tag = new Label(DISPLAY_HELP_COMMAND[F_KEY_TAG]);
+			tag.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane tagOneTask = new GridPane();
-			setHelpForCommand(tagOneTask, "      tag one task", "      tag <taskID> <tag>", "      tag 1 important");
+			setHelpForCommand(tagOneTask, DISPLAY_HELP_TAG_ONE_DESCRIPTION, 
+					DISPLAY_HELP_TAG_ONE_STRUCTURE, DISPLAY_HELP_TAG_ONE_EXAMPLE);
 			
 			GridPane untagOneTag = new GridPane();
-			setHelpForCommand(untagOneTag, "      remove a tag from one task", "      untag <taskID> <tag>", "      untag 1 important");
+			setHelpForCommand(untagOneTag, DISPLAY_HELP_UNTAG_ONE_DESCRIPTION, 
+					DISPLAY_HELP_UNTAG_ONE_STRUCTURE, DISPLAY_HELP_UNTAG_ONE_EXAMPLE);
 			
 			GridPane untagAllTags = new GridPane();
-			setHelpForCommand(untagAllTags, "      remove all tags from one task", "      untag <taskID>", "      untag 1");
+			setHelpForCommand(untagAllTags, DISPLAY_HELP_UNTAG_ALL_DESCRIPTION, 
+					DISPLAY_HELP_UNTAG_ALL_STRUCTURE, DISPLAY_HELP_UNTAG_ALL_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(tag, tagOneTask, untagOneTag, untagAllTags);
 			
 		} else {
 			
-			Label otherCommands = new Label("OTHER COMMANDS");
-			otherCommands.setStyle("-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24");
+			Label otherCommands = new Label(DISPLAY_HELP_OTHER_COMMAND);
+			otherCommands.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane clear = new GridPane();
-			setHelpForCommand(clear, "      remove all tasks", "      clear", "      clear");
+			setHelpForCommand(clear, DISPLAY_HELP_CLEAR_DESCRIPTION, 
+					DISPLAY_HELP_CLEAR_STRUCTURE, DISPLAY_HELP_CLEAR_EXAMPLE);
 			
 			GridPane exit = new GridPane();
-			setHelpForCommand(exit, "      exit uClear", "      exit", "      exit");
+			setHelpForCommand(exit, DISPLAY_HELP_EXIT_DESCRIPTION, 
+					DISPLAY_HELP_EXIT_STRUCTURE, DISPLAY_HELP_EXIT_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(otherCommands, clear, exit);
