@@ -81,28 +81,6 @@ public class Logic {
 
 	static ULogger log = ULogger.getLogger();
 
-//	public static void main(String[] args) {
-//		// get existing tasks from storage
-//		listOfTasks = storage.load();
-//		listOfTasks.setShowDisplayListToFalse();
-//
-//		// get and execute new tasks
-//		while (true) {
-//
-//			log.info("Getting user input");
-//			String userInput = getUserInput();
-//
-//			// parse and execute command
-//			System.out.println(readAndExecuteCommands(userInput));
-//
-//			log.info("Execution complete.");
-//
-//			// update the history and storage file
-//			storage.save(listOfTasks);
-//
-//		}
-//	}
-	
 	//@author A0119414L
 	/**
 	 * Loads the task list from the storage.
