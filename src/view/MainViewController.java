@@ -23,7 +23,6 @@ import java.util.Locale;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -33,21 +32,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -105,6 +101,7 @@ public class MainViewController extends GridPane{
 	private static final String ONE_OVERDUE_TASK = "Sigh! 1 task overdue";
 	private static final String MANY_OVERDUE_TASKS = "Sigh! %s tasks overdue";
 	private static final String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
+	private static final String WHITE_SPACE_TWO = "  ";
 	
 	private static final String TITLE_TODAY_TASKS = "Today";
 	private static final String TITLE_PERIOD_TASKS = "Sometime";
@@ -133,6 +130,8 @@ public class MainViewController extends GridPane{
 		"SHOW",
 		"TAG"
 	};
+	
+	private static final String DISPLAY_EMPTY = "";
 	
 	private static final String DISPLAY_HELP_ADD_FLOATING_TASK_DESCRIPTION = "      add a floating task";
 	private static final String DISPLAY_HELP_ADD_FLOATING_TASK_STRUCTURE = "      add <description>";
@@ -219,6 +218,8 @@ public class MainViewController extends GridPane{
 	private static final int SEARCH_RESULT_PAGE_INDEX = 6;
 	private static final int HELP_DOC_PAGE_INDEX = 7;
 	
+	private static final int NOT_SPECIAL_COMMAND = 4;
+	
 	private static final String FORMAT_TASK_TIME = "MMM dd, EE  HH : mm";
 	private static final String FORMAT_DATE = "MMM dd  HH : mm : ss";
 	private static final String FORMAT_DATE_FOR_SHOW = "MMM dd";
@@ -262,14 +263,63 @@ public class MainViewController extends GridPane{
 	private static final String STYLE_FLOAT_DIVISION = "-fx-background-color: white";
 	private static final String STYLE_CAPTION = "-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;";
 	
+	private static final String STYLE_TASK_INDEX_ONGOING = "-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; "
+			+ "-fx-background-color:#29b6f6;-fx-background-radius: 2px 0 0 2px;";
+	private static final String STYLE_TASK_INDEX_DONE = "-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30;"
+			+ " -fx-background-color:#4CAF50;-fx-background-radius: 2px 0 0 2px;";
+	private static final String STYLE_TASK_INDEX_OVERDUE = "-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; "
+			+ "-fx-background-color:#F44336;-fx-background-radius: 2px 0 0 2px;";
+	
+	private static final String STYLE_TASK_DEADLINE = "-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;";
+	private static final String STYLE_TASK_START_TIME = "-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;";
+	
+	private static final String STYLE_RESPONSE = "-fx-text-fill: #4CAF50;";
+	private static final String STYLE_RESPONSE_FADE = "-fx-font-size: 20;-fx-text-fill: #e51c23";
+	
 	private static final double SIZE_HEIGHT_HELPBOX = 40;
 	private static final double SIZE_WIDTH_HELPBOX = 900;
 	private static final double SIZE_HEIGHT_HELP_GRIDPANE = 140;
 	private static final double SIZE_WIDTH_HELP_GRIDPANE = 900;
 	private static final double SIZE_HEIGHT_FLOAT_DIVISION = 20;
 	private static final double SIZE_WIDTH_FLOAT_DIVISION = 850;
+	private static final double SIZE_HEIGHT_FLOATING_TASK = 60;
+	private static final double SIZE_WIDTH_FLOATING_TASK = 850;
+	private static final double SIZE_HEIGHT_DEADLINE_TASK = 90;
+	private static final double SIZE_WIDTH_DEADLINE_TASK = 850;
+	private static final double SIZE_HEIGHT_REPEATED_TASK = 120;
+	private static final double SIZE_WIDTH_REPEATED_TASK = 850;
+	private static final double SIZE_HEIGHT_FIXED_TASK = 120;
+	private static final double SIZE_WIDTH_FIXED_TASK = 850;
+	
+	private static final double HEIGHT_FLOAT_DIVISION = 30;
+	private static final double HEIGHT_FLOATING_TASK = 70;
+	private static final double HEIGHT_DEADLINE_TASK = 100;
+	private static final double HEIGHT_FIXED_AND_REPEATED_TASK = 130;
 	
 	private static final double SPACING_HELP_COOMPONENT = 20;
+	private static final double SPACING_TASK_GRIDPANE = 10;
+	
+	private static final String COMMAND_EXIT = "exit";
+	private static final String COMMAND_FIND = "find";
+	private static final String COMMAND_GOTO = "goto";
+	private static final String COMMAND_DEMO = "demo";
+	private static final String COMMAND_SHOW_TODAY = "show today";
+	private static final String COMMAND_SHOW = "show";
+	private static final String COMMAND_SHOW_ALL = "show all";
+	private static final String COMMAND_SEARCH = "search";
+	private static final String COMMAND_HELP = "help";
+	private static final String COMMAND_SHOW_OVERDUE = "show overdue";
+	private static final String COMMAND_SHOW_DONE = "show done";
+	private static final String COMMAND_SHOW_TDY = "show tdy";
+	
+	private static final String KEY_ONE = "1";
+	private static final String KEY_TWO = "2";
+	private static final String KEY_THREE = "3";
+	private static final String KEY_FOUR = "4";
+	private static final String KEY_FIVE = "5";
+	private static final String KEY_SIX = "6";
+	private static final String KEY_SEVEN = "7";
+	private static final String KEY_EIGHT = "8";
 	
 	private static final String CLASS_NAME_TASKCARD = "taskCard";
 	
@@ -854,7 +904,7 @@ public class MainViewController extends GridPane{
 			GridPane taskLayout = new GridPane();
 			taskLayout.getStyleClass().add(CLASS_NAME_TASKCARD);
       
-			setTaskFormat(taskLayout, i);F
+			setTaskFormat(taskLayout, i);
 			
 			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
 					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0)) && (i==INITIAL_POSITION)) {
@@ -879,18 +929,18 @@ public class MainViewController extends GridPane{
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 			
-			page[pageIndex].setSpacing(10);
+			page[pageIndex].setSpacing(SPACING_TASK_GRIDPANE);
 			page[pageIndex].getChildren().add(taskLayout);
 			
 			if ((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false))-1 == i)) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) To Do");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_TO_DO);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
@@ -916,40 +966,42 @@ public class MainViewController extends GridPane{
 			setTaskFormat(taskLayout, specificTaskList.get(i), i);
 			
 			if ((((taskList.indexOfFirstFloatingTask(specificTaskList) == -1) 
-					|| (taskList.indexOfFirstFloatingTask(specificTaskList) > 0)) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+					|| (taskList.indexOfFirstFloatingTask(specificTaskList) > INITIAL_POSITION)) && (i==INITIAL_POSITION)) 
+					&& pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) Due Soon");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_DUE_SOON);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
-			} else if (((taskList.indexOfFirstFloatingTask(specificTaskList) == 0) && (i==0)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			} else if (((taskList.indexOfFirstFloatingTask(specificTaskList) == INITIAL_POSITION) && (i==INITIAL_POSITION)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) To Do");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_TO_DO);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 			
-			page[pageIndex].setSpacing(10);
+			page[pageIndex].setSpacing(SPACING_TASK_GRIDPANE);
 			page[pageIndex].getChildren().add(taskLayout);
 			
-			if (((taskList.indexOfFirstFloatingTask(specificTaskList)-1 == i)) && pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
+			if (((taskList.indexOfFirstFloatingTask(specificTaskList)-1 == i)) 
+					&& pageIndex!=DONE_TASKS_PAGE_INDEX && pageIndex!=SEARCH_RESULT_PAGE_INDEX) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) To Do");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_TO_DO);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 		}
@@ -968,16 +1020,16 @@ public class MainViewController extends GridPane{
 	 */
 	private void setTaskFormat(GridPane taskLayout, Task task, int index) throws TaskInvalidDateException {
 		if (task.getType().equals(Type.FLOAT)) {
-			setGridPaneSize(taskLayout, 850, 60);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_FLOATING_TASK, SIZE_HEIGHT_FLOATING_TASK);
 			setFloatTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.DEADLINE)) {
-			setGridPaneSize(taskLayout, 850, 90);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_DEADLINE_TASK, SIZE_HEIGHT_DEADLINE_TASK);
 			setDeadlineTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.FIXED)) {
-			setGridPaneSize(taskLayout, 850, 120);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_FIXED_TASK, SIZE_HEIGHT_FIXED_TASK);
 			setFixedTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.REPEATED)) {
-			setGridPaneSize(taskLayout, 850, 120);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_REPEATED_TASK, SIZE_HEIGHT_REPEATED_TASK);
 			setRepeatedTaskFormat(taskLayout, task, index);
 		} 
 	}
@@ -994,18 +1046,18 @@ public class MainViewController extends GridPane{
 	private void setTaskFormat(GridPane taskLayout, int index) throws TaskInvalidDateException {
 		Task task = taskList.getTask(index);
 		if (task.getType().equals(Type.FLOAT)) {
-			setGridPaneSize(taskLayout, 850, 60);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_FLOATING_TASK, SIZE_HEIGHT_FLOATING_TASK);
 			setFloatTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.DEADLINE)) {
-			setGridPaneSize(taskLayout, 850, 90);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_DEADLINE_TASK, SIZE_HEIGHT_DEADLINE_TASK);
 			setDeadlineTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.FIXED)) {
-			setGridPaneSize(taskLayout, 850, 120);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_FIXED_TASK, SIZE_HEIGHT_FIXED_TASK);
 			setFixedTaskFormat(taskLayout, task, index);
 		} else if (task.getType().equals(Type.REPEATED)) {
-			setGridPaneSize(taskLayout, 850, 120);
+			setGridPaneSize(taskLayout, SIZE_WIDTH_REPEATED_TASK, SIZE_HEIGHT_REPEATED_TASK);
 			setRepeatedTaskFormat(taskLayout, task, index);
-		} 
+		}
 	}
 	
 	//@author A0119414L
@@ -1097,11 +1149,11 @@ public class MainViewController extends GridPane{
 		displayIndex.setMinWidth(50);
 		displayIndex.setMaxWidth(50);
 		 if (isDone) {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#4CAF50;-fx-background-radius: 2px 0 0 2px;");
+			displayIndex.setStyle(STYLE_TASK_INDEX_DONE);
 		} else if (isOverdue) {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#F44336;-fx-background-radius: 2px 0 0 2px;");
+			displayIndex.setStyle(STYLE_TASK_INDEX_OVERDUE);
 		} else {
-			displayIndex.setStyle("-fx-text-fill: white; -fx-alignment: center; -fx-font-size: 30; -fx-background-color:#29b6f6;-fx-background-radius: 2px 0 0 2px;");
+			displayIndex.setStyle(STYLE_TASK_INDEX_ONGOING);
 		}
 		
 		GridPane.setConstraints(displayIndex, 0, 0, 1, 5);
@@ -1115,7 +1167,7 @@ public class MainViewController extends GridPane{
 	 * @param taskLayout		GridPane to hold the content of each task.
 	 */
 	private void setSpace(GridPane taskLayout) {
-		Label space = new Label("  ");
+		Label space = new Label(WHITE_SPACE_TWO);
 		GridPane.setConstraints(space, 2, 0, 1, 1);
 		taskLayout.getChildren().add(space);
 	}
@@ -1219,7 +1271,7 @@ public class MainViewController extends GridPane{
 		deadline.setText("Deadline:   " + taskTimeFormat.format(task.getDeadline()));
 		deadline.setPrefSize(650, 30);
 		deadline.setMaxHeight(30);
-		deadline.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
+		deadline.setStyle(STYLE_TASK_DEADLINE);
 		
 		if (task.getType().equals(Type.DEADLINE) || task.getType().equals(Type.REPEATED)) {
 			GridPane.setConstraints(deadline, 1, 1, 3, 1);
@@ -1244,7 +1296,7 @@ public class MainViewController extends GridPane{
 		
 		startTime.setPrefSize(650, 30);
 		startTime.setMaxHeight(30);
-		startTime.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;");
+		startTime.setStyle(STYLE_TASK_START_TIME);
 		
 		GridPane.setConstraints(startTime, 1, 1, 3, 1);
 		taskLayout.getChildren().add(startTime);
@@ -1449,11 +1501,11 @@ public class MainViewController extends GridPane{
 	 * @throws TaskNoSuchTagException 
 	 */
 	private boolean isSpecialCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
-		if (command.length() < 4) {
+		if (command.length() < NOT_SPECIAL_COMMAND) {
 			return false;
 		}
 		
-		if (command.trim().toLowerCase().equals("exit")) {
+		if (command.trim().toLowerCase().equals(COMMAND_EXIT)) {
 			// close logger
 			ULogger.close();
 			
@@ -1461,10 +1513,10 @@ public class MainViewController extends GridPane{
 			Platform.exit();
 		}
 		
-		if (command.trim().toLowerCase().substring(0, 4).equals("find") 
-				|| command.trim().toLowerCase().substring(0, 4).equals("goto")) {
+		if (command.trim().toLowerCase().substring(INITIAL_POSITION, 4).equals(COMMAND_FIND) 
+				|| command.trim().toLowerCase().substring(0, 4).equals(COMMAND_GOTO)) {
 			String stringIndex = command.trim().toLowerCase().substring(5);
-			int indexOfTask = 1;
+			int indexOfTask = INITIAL_POSITION;
 			try {
 				indexOfTask = Integer.parseInt(stringIndex);
 			} catch (NumberFormatException e) {
@@ -1492,7 +1544,7 @@ public class MainViewController extends GridPane{
 			return true;
 		}
 		
-		if (command.trim().toLowerCase().substring(0, 4).equals("demo")) {
+		if (command.trim().toLowerCase().substring(INITIAL_POSITION, 4).equals(COMMAND_DEMO)) {
 			Logic.readAndExecuteCommands("clear");
 			Logic.readAndExecuteCommands("add project meeting by 7pm");
 			Logic.readAndExecuteCommands("add family dinner by sat 6.30pm");
@@ -1535,45 +1587,6 @@ public class MainViewController extends GridPane{
 			return true;
 		}
 		
-		if (command.trim().toLowerCase().equals("option") || command.trim().toLowerCase().equals("settings")) {
-			Stage option = new Stage();
-			Pane testWindow = new Pane();
-			Label test = new Label("Haha, no settings here!");
-			test.setStyle("-fx-text-fill: orangered; -fx-font-size: 15");
-			testWindow.getChildren().add(test);
-			testWindow.setStyle("-fx-background-color: black;");
-			Scene optionScene = new Scene(testWindow, 300, 300);
-			option.setTitle("Settings");
-			option.getIcons().add(new Image("/view/Settings-icon.png"));
-			option.setScene(optionScene);
-			option.show();
-			setTextFieldEmpty();
-			return true;
-		}
-		
-		if (command.trim().toLowerCase().equals("fun")) {
-			final Stage option = new Stage();
-			Pane testWindow = new Pane();
-			Label test = new Label("Like us on Facebook!");
-			test.setStyle("-fx-text-fill: skyblue; -fx-font-size: 28");
-			testWindow.getChildren().add(test);
-			testWindow.setStyle("-fx-background-color: black");
-			Scene optionScene = new Scene(testWindow, 300, 300);
-			option.setTitle("Fun");
-			option.setScene(optionScene);
-			option.show();
-			setTextFieldEmpty();
-			PauseTransition pause = new PauseTransition(Duration.seconds(3));
-			pause.setOnFinished(new EventHandler<ActionEvent>() {
-			    @Override
-			    public void handle(ActionEvent event) {
-			        option.hide();
-			    }
-			});
-			pause.play();
-			return true;
-		}
-		
 		return false;
 	}
 	
@@ -1613,7 +1626,7 @@ public class MainViewController extends GridPane{
 	 * @throws TaskInvalidDateException
 	 */
 	private List<Task> getTodayTaskList() throws TaskInvalidDateException {
-		List<Date> today = Logic.getDateList("show today");
+		List<Date> today = Logic.getDateList(COMMAND_SHOW_TODAY);
 		List<Task> todayTasks = taskList.getDateRangeTask(today);
 		
 		return todayTasks;
@@ -1649,7 +1662,7 @@ public class MainViewController extends GridPane{
 	 * 
 	 */
 	private void setTextFieldEmpty() {
-		setTextField("");
+		setTextField(DISPLAY_EMPTY);
 	}
 	
 	//@author A0119414L
@@ -1813,7 +1826,7 @@ public class MainViewController extends GridPane{
 		
 		response.setText(feedback);
 		
-		response.setStyle("-fx-text-fill: #4CAF50;");
+		response.setStyle(STYLE_RESPONSE);
 		
 		fadeOut.playFromStart();
 		setDisplayTitleText();
@@ -1828,25 +1841,26 @@ public class MainViewController extends GridPane{
 	 * @throws TaskNoSuchTagException
 	 */
 	private void analyseCommand(String command) throws TaskInvalidDateException, TaskNoSuchTagException {
-		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("help")) {
+		if (command.trim().length() == 4 && command.trim().toLowerCase().substring(INITIAL_POSITION, 4).equals(COMMAND_HELP)) {
 			displayHelpCommand();
-		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(0, 6).equals("search")) {
+		} else if (command.trim().length() > 6 && command.trim().toLowerCase().substring(INITIAL_POSITION, 6).equals(COMMAND_SEARCH)) {
 			searchKey = command.trim().toLowerCase().substring(7);
 			displaySearchCommand();
-		} else if (command.trim().length() == 12 && command.trim().toLowerCase().substring(0, 12).equals("show overdue")) {
+		} else if (command.trim().length() == 12 
+				&& command.trim().toLowerCase().substring(INITIAL_POSITION, 12).equals(COMMAND_SHOW_OVERDUE)) {
 			displayShowOverdueCommand();
-		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show all")) 
-				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(0, 4).equals("show"))) {
+		} else if ((command.trim().length() == 8 && command.trim().toLowerCase().substring(INITIAL_POSITION, 8).equals(COMMAND_SHOW_ALL)) 
+				|| (command.trim().length() == 4 && command.trim().toLowerCase().substring(INITIAL_POSITION, 4).equals(COMMAND_SHOW))) {
 			taskList.setNotShowingDone();
 			taskList.setShowDisplayListToFalse();
 			displayShowAllCommand();
-		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(0, 9).equals("show done")) {
+		} else if (command.trim().length() == 9 && command.trim().toLowerCase().substring(INITIAL_POSITION, 9).equals(COMMAND_SHOW_DONE)) {
 			taskList.setShowDisplayListToFalse();
 			displayShowDoneCommand();
-		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(0, 10).equals("show today")
-				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(0, 8).equals("show tdy")) {
+		} else if (command.trim().length() == 10 && command.trim().toLowerCase().substring(INITIAL_POSITION, 10).equals(COMMAND_SHOW_TODAY)
+				|| command.trim().length() == 8 && command.trim().toLowerCase().substring(INITIAL_POSITION, 8).equals(COMMAND_SHOW_TDY)) {
 			displayShowTodayCommand();
-		} else if (command.trim().length() > 4 && command.trim().toLowerCase().substring(0, 4).equals("show")) {
+		} else if (command.trim().length() > 4 && command.trim().toLowerCase().substring(INITIAL_POSITION, 4).equals(COMMAND_SHOW)) {
 			if (!isShowDateCommand(command)) {
 				showTag = command.trim().toLowerCase().substring(5);
 				displayShowTagCommand();
@@ -1897,82 +1911,82 @@ public class MainViewController extends GridPane{
 		double position;
 		
 		if (listDisplay.getCurrentPageIndex()!=SEARCH_RESULT_PAGE_INDEX && listDisplay.getCurrentPageIndex()!=DONE_TASKS_PAGE_INDEX) {
-			if (firstFloatIndex == 0) {
-				position = 30 + 70*(indexOfTask-1);
+			if (firstFloatIndex == INITIAL_POSITION) {
+				position = HEIGHT_FLOAT_DIVISION + HEIGHT_FLOATING_TASK*(indexOfTask-1);
 				return position;
 			} else {
 				if (firstFloatIndex == -1) {
-					position = 30;
+					position = HEIGHT_FLOAT_DIVISION;
 					for (int i=0; i<indexOfTask-1; i++) {
 						if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-							position = position + 100;
+							position = position + HEIGHT_DEADLINE_TASK;
 						} else {
-							position = position + 130;
+							position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 						}
 					}
 					return position;
 				} else {
 					if (indexOfTask < firstFloatIndex+1) {
-						position = 30;
-						for (int i=0; i<indexOfTask-1; i++) {
+						position = HEIGHT_FLOAT_DIVISION;
+						for (int i=INITIAL_POSITION; i<indexOfTask-1; i++) {
 							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-								position = position + 100;
+								position = position + HEIGHT_DEADLINE_TASK;
 							} else {
-								position = position + 130;
+								position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 							}
 						}
 						return position;
 					} else {
-						position = 60;
-						for (int i=0; i<firstFloatIndex; i++) {
+						position = HEIGHT_FLOAT_DIVISION + HEIGHT_FLOAT_DIVISION;
+						for (int i=INITIAL_POSITION; i<firstFloatIndex; i++) {
 							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-								position = position + 100;
+								position = position + HEIGHT_DEADLINE_TASK;
 							} else {
-								position = position + 130;
+								position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 							}
 						}
-						position = position + 70*(indexOfTask-firstFloatIndex-1);
+						position = position + HEIGHT_FLOATING_TASK * (indexOfTask-firstFloatIndex-1);
 						return position;
 					}
 				}
 			}
 		// Done page and Search page
 		} else {
-			if (firstFloatIndex == 0) {
-				position = 0 + 70*(indexOfTask-1);
+			if (firstFloatIndex == INITIAL_POSITION) {
+				position = HEIGHT_FLOATING_TASK * (indexOfTask-1);
 				return position;
 			} else {
 				if (firstFloatIndex == -1) {
-					position = 0;
-					for (int i=0; i<indexOfTask-1; i++) {
+					position = INITIAL_POSITION;
+					for (int i=INITIAL_POSITION; i<indexOfTask-1; i++) {
 						if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-							position = position + 100;
+							position = position + HEIGHT_DEADLINE_TASK;
 						} else {
-							position = position + 130;
+							position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 						}
 					}
 					return position;
 				} else {
 					if (indexOfTask < firstFloatIndex+1) {
-						position = 0;
-						for (int i=0; i<indexOfTask-1; i++) {
+						position = INITIAL_POSITION;
+						for (int i=INITIAL_POSITION; i<indexOfTask-1; i++) {
 							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-								position = position + 100;
+								position = position + HEIGHT_DEADLINE_TASK;
 							} else {
-								position = position + 130;
+								position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 							}
 						}
 						return position;
 					} else {
-						position = 0;
-						for (int i=0; i<firstFloatIndex; i++) {
+						position = INITIAL_POSITION;
+						for (int i=INITIAL_POSITION; i<firstFloatIndex; i++) {
 							if (specificTaskList.get(i).getType().equals(Type.DEADLINE)) {
-								position = position + 100;
+								position = position + HEIGHT_DEADLINE_TASK;
 							} else {
-								position = position + 130;
+								position = position + HEIGHT_FIXED_AND_REPEATED_TASK;
 							}
 						}
-						position = position + 70*(indexOfTask-firstFloatIndex-1);
+						position = position + HEIGHT_FLOATING_TASK*(indexOfTask-firstFloatIndex-1);
 						return position;
 					}
 				}
@@ -2005,7 +2019,7 @@ public class MainViewController extends GridPane{
 		command = getUserInput();
 		resetHistoryCommands(command);
 		
-		if (!command.equals("")) {			
+		if (!command.equals(DISPLAY_EMPTY)) {			
 			
 			if (!isSpecialCommand()) {
 				feedback = executeCommand(command);
@@ -2034,7 +2048,7 @@ public class MainViewController extends GridPane{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						response.setStyle("-fx-font-size: 20;-fx-text-fill: #e51c23");
+						response.setStyle(STYLE_RESPONSE_FADE);
 					}
 					
 				});
@@ -2053,67 +2067,31 @@ public class MainViewController extends GridPane{
 	 * @throws TaskNoSuchTagException
 	 */
 	private void onKeyTyped(KeyEvent keyEvent) throws TaskInvalidDateException, TaskNoSuchTagException {
-		if (keyEvent.getCharacter().equals("1")) {
+		if (keyEvent.getCharacter().equals(KEY_ONE)) {
 			displayShowTodayCommand();
 		}
-		if (keyEvent.getCharacter().equals("2")) {
+		if (keyEvent.getCharacter().equals(KEY_TWO)) {
 			displayShowPeriodCommand();
 		}
-		if (keyEvent.getCharacter().equals("3")) {
+		if (keyEvent.getCharacter().equals(KEY_THREE)) {
 			taskList.setShowDisplayListToFalse();
 			taskList.setNotShowingDone();
 			displayShowAllCommand();
 		}
-		if (keyEvent.getCharacter().equals("4")) {
+		if (keyEvent.getCharacter().equals(KEY_FOUR)) {
 			displayShowDoneCommand();
 		}
-		if (keyEvent.getCharacter().equals("5")) {
+		if (keyEvent.getCharacter().equals(KEY_FIVE)) {
 			displayShowOverdueCommand();
 		}
-		if (keyEvent.getCharacter().equals("6")) {
+		if (keyEvent.getCharacter().equals(KEY_SIX)) {
 			displayShowTagCommand();
 		}
-		if (keyEvent.getCharacter().equals("7")) {
+		if (keyEvent.getCharacter().equals(KEY_SEVEN)) {
 			displaySearchCommand();
 		}
-		if (keyEvent.getCharacter().equals("8")) {
+		if (keyEvent.getCharacter().equals(KEY_EIGHT)) {
 			displayHelpCommand();
-		}
-		if (keyEvent.getCharacter().equals("a")) {
-			setTextField("add ");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		if (keyEvent.getCharacter().equals("d")) {
-			setTextField("done ");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		if (keyEvent.getCharacter().equals("e")) {
-			setTextField("edit ");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		if (keyEvent.getCharacter().equals("t")) {
-			setTextField("tag ");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		if (keyEvent.getCharacter().equals("h")) {
-			setTextField("help");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		
-		if (keyEvent.getCharacter().equals("o")) {
-			setTextField("option");
-			input.requestFocus();
-			input.selectEnd();
-		}
-		if (keyEvent.getCharacter().equals("f")) {
-			setTextField("fun");
-			input.requestFocus();
-			input.selectEnd();
 		}
 	}
 	
