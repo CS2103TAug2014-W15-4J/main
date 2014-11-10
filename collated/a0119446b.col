@@ -1,0 +1,2090 @@
+//@author: a0119446b
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method formats a Date object to a formatted time string.
+	 * 
+	 * @param time	The Date object for formatting.
+	 * @return		The formatted string.
+	 */
+	private static String formatTime(Date time) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+		String timeString = timeFormat.format(time);
+		return timeString;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method searches for a task.
+	 * 
+	 * @param keyword  The keyword to search.
+	 * @return         The search result.
+	 * 
+	 */
+	private static String searchTask(String keyword) {
+		List<Task> result = listOfTasks.searchTaskByKeyword(keyword);
+		if (result.size() == 0) {
+			// disable user from manipulating on search result directly
+			listOfTasks.setShowDisplayListToFalse();
+			return MESSAGE_EMPTY_SEARCH_RESULT;
+		}
+
+		return displayTasks(result);
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method displays the user's tasks information, specified by the user command.
+	 * 
+	 * @param userCommand  The specific type of show command.
+	 * @param showDate     The given date period for displaying.
+	 * @return             User's task information.
+	 */
+	private static String display(String userCommand, List<Date> showDate) {
+
+		assert (userCommand != null);
+		if (!showDate.isEmpty()) {
+			listOfTasks.setNotShowingDone();
+			try {
+				return displayTasks(listOfTasks.getDateRangeTask(showDate));
+			} catch (TaskInvalidDateException e) {
+				return MESSAGE_INVALID_DATE;
+			}
+		}
+		if (userCommand.equals(CMD_ALL)) {
+			listOfTasks.setNotShowingDone();
+			return displayTasks(listOfTasks.prepareDisplayList(false));
+
+		} else if (userCommand.equals(CMD_ADDED)) {
+			listOfTasks.setNotShowingDone();
+			return displayTasks(listOfTasks.prepareDisplayList(true));
+
+		} else if (userCommand.equals(CMD_DONE)) {
+			return displayTasks(listOfTasks.getFinishedTasks());
+
+		}  else if (userCommand.equals(CMD_OVERDUE)) {
+			return displayTasks(listOfTasks.getOverdueTask());
+
+		} else {
+			listOfTasks.setNotShowingDone();
+			try {
+				return String.format(MESSAGE_TASKTAG_RETURNED, userCommand,
+				                     displayTasks(listOfTasks.prepareDisplayList(userCommand)));
+
+			} catch (TaskNoSuchTagException e) {
+				return MESSAGE_INVALID_TAG_NONEXISTENT;
+			}
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method extracts the tasks information and exports them into a txt file.
+	 * 
+	 * @return The feedback string regarding the success of the command.
+	 */
+	private static String exportTasks() {
+		listOfTasks.export();
+	    return MESSAGE_TASK_EXPORT;
+	}
+
+	/**
+	 * This method extracts tasks information into a string and returns it.
+	 * 
+	 * @param taskList List of tasks to be displayed.
+	 * @return         The tasks information.
+	 */
+	private static String displayTasks(List<Task> taskList) {
+
+		int taskListSize = taskList.size();
+
+		if (taskList.size() == 0) {
+			// empty task list
+			return MESSAGE_EMPTY_TASK_LIST;
+		}
+
+		StringBuilder taskDisplay = new StringBuilder();
+
+		for (int j = 0; j < taskListSize; j++) {
+			Task task = taskList.get(j);
+
+			taskDisplay.append((j + 1) + ". " + task.toString());
+
+			if (j != taskListSize - 1) {
+				taskDisplay.append(NEW_LINE);
+
+			}
+		}
+
+		return taskDisplay.toString();
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Storage.java
+	 */
+
+/**
+ * This Storage class is for saving tasks to local file, 
+ * and loading tasks from local file.
+ * 
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Storage.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Storage.java
+	 */
+
+ *
+ */
+public class Storage {
+
+
+	private static final String ALIAS_CLASS_LIST = "list";
+	private static final String ALIAS_CLASS_MAP = "map";
+	
+	// XML tag for Model Class 
+	private static final String ALIAS_CLASS_FLOATING_TASK = "FloatingTask";
+	private static final String ALIAS_CLASS_FIXED_TASK = "FixedTask";
+	private static final String ALIAS_CLASS_DEADLINE_TASK = "DeadlineTask";
+	private static final String ALIAS_CLASS_REPEATED_TASK = "RepeatedTask";
+	private static final String ALIAS_CLASS_TASKLIST = "CompleteList";
+	private static final String ALIAS_CLASS_SORTED_LIST = "SortedList";
+
+
+	private static final String TASK_FILE = "uClear.xml";
+	private static final String EXPORT_FILE_NAME = "tasklist.txt";
+	
+	private static final String EXPORT_HEADING = "Thank you for using uClear\nHere are your current tasks."
+									+ "\n\nTasks that due soon:\n";
+	private static final String NEW_LINE = "\n\n";
+	private static final String EXPORT_HEADING_DONE = "Tasks finished:\n";
+	private static final String EXPORT_HEADING_TODO = "Tasks to do:\n";
+	
+	private static final String MESSAGE_EXPORTING = "Going to export task list to tasklist.txt file";
+	private static final String MESSAGE_SUCCESS = "Success";
+	private static final String MESSAGE_SAVING_DONE = "Saving complete.";
+	private static final String MESSAGE_SAVING_START = "Going to save tasks on hard disk";
+	private static final String MESSAGE_LOADING_START = "Going to load tasks from data file.";
+	private static final String MESSAGE_LOADING_DONE = "Loading completed.";
+	private static final String MESSAGE_EXPORT_DONE = "Exporting complete.";
+	
+	private static final String ERROR_IO = "Error when trying to read/write the file.";
+	
+	private static ULogger logger = ULogger.getLogger();
+	
+	// These two Reader and Writer are used to access and manipulate the given
+	// text file
+	private BufferedReader reader;
+	private BufferedWriter writer;
+	private XStream xstream;
+	
+	private String file_name;
+	
+	/**
+	 * Constructor
+	 * 
+	 */
+	public Storage() {
+		this.file_name = TASK_FILE;
+		this.initilize(file_name);
+	}
+	
+	public Storage(String filename) {
+		this.file_name = filename;
+		this.initilize(file_name);
+	}
+	
+	/**
+	 * Save a TaskList object into the data file.
+	 * 
+	 * @param tasks 	the TaskList object which contains the list of tasks.
+	 * @return a feedback message.
+	 */
+	public String save(TaskList tasks) {
+		logger.info(MESSAGE_SAVING_START);
+		try {
+			this.writer = new BufferedWriter(new FileWriter(this.file_name, false));
+			this.writer.write(serialize(tasks));
+			this.writer.close();
+		} catch (IOException e) {
+			logger.error(ERROR_IO);
+			throw new Error(ERROR_IO);
+		}
+		logger.info(MESSAGE_SAVING_DONE);
+		return MESSAGE_SUCCESS;
+	}
+	
+	/**
+	 * Save a TaskList object into the data file with the given filename.
+	 * 
+	 * @param tasks		 the TaskList object which contains the list of tasks.
+	 * @param filename 	 the name of the task list to be stored.
+	 * @return a feedback message.
+	 */
+	public String save(TaskList tasks, String filename) {
+		logger.info(MESSAGE_SAVING_START);
+		try {
+			this.writer = new BufferedWriter(new FileWriter(filename, false));
+			this.writer.write(serialize(tasks));
+			this.writer.close();
+		} catch (IOException e) {
+			logger.error(ERROR_IO);
+			throw new Error(ERROR_IO);
+		}
+		logger.info(MESSAGE_SAVING_DONE);
+		return MESSAGE_SUCCESS;
+	}
+	
+	/**
+	 * Load and build a TaskList object from the data file.
+	 * 
+	 * @return a TaskList object
+	 */
+	public TaskList load() {
+		logger.info(MESSAGE_LOADING_START);
+		String input = null;
+		StringBuilder xml = new StringBuilder(); 
+		try {
+			while ((input = reader.readLine()) != null) {
+				xml.append(input);
+			}
+		} catch (IOException e) {
+			logger.error(ERROR_IO);
+			throw new Error(ERROR_IO);
+		}
+		logger.info(MESSAGE_LOADING_DONE);
+		return (TaskList)xstream.fromXML(xml.toString());
+	}
+	
+	/**
+	 * Close the storage.
+	 * 
+	 */
+	public void close() {
+		try {
+			this.reader.close();
+			this.writer.close();
+		} catch (IOException e) {
+			throw new Error(ERROR_IO);
+		}
+		
+	}
+	
+	/**
+	 * Export user's list of task into a text file.
+	 * 
+	 * @param tasks 	the TaskList object which contains the list of tasks
+	 * @return a feedback message
+	 */
+	public static void export(List<Task> taskTImed, List<Task> taskTodo, List<Task> taskFinished) {
+		logger.info(MESSAGE_EXPORTING);
+
+		// preparation work
+		StringBuilder output = new StringBuilder();
+		output.append(EXPORT_HEADING);
+		for (Task task : taskTImed) {
+			output.append(task.toString());
+			output.append(NEW_LINE);
+		}
+		output.append(EXPORT_HEADING_TODO);
+		for (Task task : taskTodo) {
+			output.append(task.toString());
+			output.append(NEW_LINE);
+		}
+		output.append(EXPORT_HEADING_DONE);
+		for (Task task : taskFinished) {
+			output.append(task.toString());
+			output.append(NEW_LINE);
+		}
+		
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(EXPORT_FILE_NAME, false));
+			writer.write(output.toString());
+			writer.close();
+		} catch (IOException e) {
+			logger.error(ERROR_IO);
+			throw new Error(ERROR_IO);
+		}
+		logger.info(MESSAGE_EXPORT_DONE);
+	}
+
+	/**
+	 * Serialize a TaskList object into xml string
+	 * @return xml format string
+	 */
+	private String serialize(TaskList tasks) {
+		String xml = xstream.toXML(tasks);
+		return xml;
+	}
+
+	/**
+	 * This method initialize all the file operators
+	 * @param filename the name of the task list to be stored
+	 */
+	private void initilize(String filename) {
+		
+		this.xstream = new XStream();
+		this.xstream.alias(ALIAS_CLASS_TASKLIST, TaskList.class);
+		this.xstream.alias(ALIAS_CLASS_FLOATING_TASK, FloatingTask.class);		
+		this.xstream.alias(ALIAS_CLASS_FIXED_TASK, FixedTask.class);
+		this.xstream.alias(ALIAS_CLASS_DEADLINE_TASK, DeadlineTask.class);
+		this.xstream.alias(ALIAS_CLASS_REPEATED_TASK, RepeatedTask.class);
+		this.xstream.alias(ALIAS_CLASS_SORTED_LIST, SortedArrayList.class);
+		this.xstream.alias(ALIAS_CLASS_MAP, java.util.Map.class);
+		this.xstream.alias(ALIAS_CLASS_LIST, java.util.ArrayList.class);
+		
+		this.xstream.processAnnotations(TaskList.class);
+		this.xstream.processAnnotations(FloatingTask.class);
+		this.xstream.processAnnotations(FixedTask.class);
+		this.xstream.processAnnotations(DeadlineTask.class);
+		this.xstream.processAnnotations(RepeatedTask.class);
+		this.xstream.processAnnotations(SortedArrayList.class);
+
+		File inputFile = new File(filename);
+		try {
+			if (inputFile.exists()) {
+				this.reader = new BufferedReader(new FileReader(inputFile));
+			} else {
+				// if the file does not exist, we create a new file
+				this.writer = new BufferedWriter(new FileWriter(inputFile, false));
+				this.reader = new BufferedReader(new FileReader(inputFile));
+				
+				// write an empty list to it.
+				TaskList empty = new TaskList();
+				try {
+					this.writer.write(serialize(empty));
+					this.writer.close();
+				} catch (IOException e) {
+					throw new Error(ERROR_IO);
+				}
+			}
+		} catch (Exception e) {
+			throw new Error(ERROR_IO);
+		}	
+	}
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Storage.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\log\ULogger.java
+	 */
+
+/**
+ * This class is used to write logging information to the default log file ('uClear.log').
+ * This class adapt the singleton pattern.
+ * 
+	// End of segment: D:\CS2103TProject-W15-4J\src\log\ULogger.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\log\ULogger.java
+	 */
+
+ */
+public class ULogger {
+	
+	// the shared logger singleton
+	private static ULogger logger; 
+	// the actual logger
+	private Logger logWriter;
+	// file writer
+	private static FileHandler fileHandler;
+	
+	/**
+	 * The private constructor to generate an instance.
+	 * 
+	 */
+	private ULogger() {
+		logWriter = Logger.getLogger("uClear");
+		// prepare file handler
+		try {  
+	        // This block configure the logger with handler and formatter  
+			fileHandler = new FileHandler("uClear.log");  
+	        logWriter.addHandler(fileHandler);
+	        logWriter.setUseParentHandlers(false);
+	        
+	        SimpleFormatter formatter = new SimpleFormatter();  
+	        fileHandler.setFormatter(formatter);  
+	        
+	        // the following statement is used to log a initial message
+	        logWriter.info("Logger is ready.");  
+
+	    } catch (SecurityException e) {  
+	    	System.out.println("Security failed.");
+	    } catch (IOException e) {  
+	    	System.out.println("Failed to write log file.");
+	    }  
+	}
+	
+	public static final ULogger getLogger() {
+		if (logger == null) {
+			logger = new ULogger();
+		}
+		return logger;
+	}
+	
+	/**
+	 * This method write a information message into the log file.
+	 * 
+	 * @param message	The information message
+	 */
+	public void info(String message) {
+		this.logWriter.info(message);
+	}
+	
+	/**
+	 * This method write a warning message into the log file.
+	 * 
+	 * @param message	The warning message
+	 */
+	public void warning(String message) {
+		this.logWriter.warning(message);
+	}
+	
+	/**
+	 * This method write a error message into the log file.
+	 * 
+	 * @param message	The error message
+	 */
+	public void error(String message) {
+		this.logWriter.severe(message);
+	}
+	
+	/**
+	 * This method close the file writer. It should be called when the system exits.
+	 * 
+	 */
+	public static void close() {
+		logger = null;
+		fileHandler.close();
+	}
+	
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\log\ULogger.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+	 */
+
+	/**
+	 * This method returns a formatted string of the task information.
+	 * 
+	 * @return The String object representing the task display information.
+	 */
+	@Override
+	public String toString() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description + "\nDue: "+ dateFormatter.format(this.deadline) + 
+		       "\n" + this.displayTags() + "\n" + this.displayDone();
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+	 */
+
+    /**
+     * This method returns a formatted string of the task information.
+     * 
+     * @return The String object representing the task display information.
+     */
+	@Override
+	public String toString() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description + "\nStart: "+ dateFormatter.format(this.startTime) + "\nEnd: " +
+		       dateFormatter.format(this.endTime) + "\n" + this.displayTags() +
+		       "\n" + this.displayDone();
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\FloatingTask.java
+	 */
+
+	/**
+	 * This method returns a formatted string of the task information.
+	 * 
+	 * @return The String object representing the task display information.
+	 */
+	@Override
+	public String toString() {
+		return this.description + "\n" +this.displayTags() + "\n" + this.displayDone();
+	}
+	
+	/**
+	 * This method creates a copy of the FloatingTask object
+	 * (same values for fields, but different references).
+	 * This method supports the undo/redo functionality.
+	 * 
+	 * @return The FloatingTask object newly created.
+	 */
+    @Override
+    public Task clone() {
+        FloatingTask newTask = new FloatingTask(this.description);
+        newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+        newTask.isDone = this.isDone;
+        
+        return newTask;
+    }
+}
+
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\FloatingTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+	 */
+
+    /**
+     * This method returns a formatted string of the task information.
+     * 
+     * @return The String object representing the task display information.
+     */
+	@Override
+	public String toString() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+		return this.description +"\nDeadline: " + dateFormatter.format(this.deadline) + 
+			   "\nRepeat: " + this.period + "\n" +this.displayTags() + "\n" + this.displayDone();
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+	/**
+	 * This method returns the added time of the task.
+	 * 
+	 * @return The Date object representing the time the task was added.
+	 */
+	public Date getAddedTime() {
+		return this.addedTime;
+    }
+
+    /**
+     * This method returns the done time of the task.
+     * 
+     * @return The Date object representing the time the task was done.
+     */
+	public Date getDoneDate() {
+	    return this.doneDate;
+    }
+	
+    /**
+     * This method returns the type of the task
+     * 
+     * @return The Type object representing the task type.
+     */
+	public Type getType() {
+		return taskType;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+	/**
+     * This method return the days remain to the due date.
+     * 
+     * To be override by subclass.
+     * 
+     * @return 	an integer represent how many days left for doing task
+     */
+	public int getReminingDays() {
+		return 0;
+    }
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+	/**
+	 * This method calculates two days' difference (Unit: day)
+	 * 
+	 * @param date1 the old date
+	 * @param date2 the new date
+	 * @return the difference value, in days
+	 */
+	public int getDateDiff(Date date1, Date date2) {
+		return Days.daysBetween(new DateTime(date1).toLocalDate(), new DateTime(date2).toLocalDate()).getDays();
+	}
+	
+	/**
+	 * This method represents the tags of the task in a string, and returns it.
+	 * 
+	 * @return The string representation of the task tags.
+	 */
+	public String displayTags() {
+		StringBuilder output = new StringBuilder();
+		if (this.tags.isEmpty()) {
+			output.append("Tags: None");
+        } else {
+            String tagDisplay = "";
+            for (int j = 0; j < tags.size(); j++) {
+                if (j == 0) {
+                    tagDisplay = tags.get(0);
+                } else {
+                    tagDisplay += ", " + tags.get(j);
+                }
+            }
+
+            output.append("Tags: " + tagDisplay);
+        }
+		return output.toString();
+	}
+	
+	/**
+	 * This method returns the status of the task in a string representation.
+	 * 
+	 * @return The string representation of the task status.
+	 */
+	public String displayDone() {
+		if (this.isDone) {
+			return "Status: Done";
+		} else if (this.isOverdue) {
+			return "Status: OVERDUE!!!";
+		} else {
+			return "Status: Ongoing";
+		}
+	}
+	
+	/**
+	 * This method checks if the task is overdue.
+	 * 
+	 * @throws TaskInvalidDateException    if task being checked is a floating task.
+	 */
+	public void checkOverdue() throws TaskInvalidDateException {
+		Date now = new Date();
+		if (now.after(getDeadline())) {
+			this.isOverdue = true;
+		} else {
+			this.isOverdue = false;
+		}
+	}
+	
+    /**
+     * This abstract method returns a formatted string of the task information.
+     * 
+     * @return The String object representing the task display information.
+     */
+	@Override
+    public abstract String toString();
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	private static ULogger logger = ULogger.getLogger();
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	@XStreamAlias("TaskListTimed")
+	private List<Task> tasksTimed;
+	@XStreamAlias("TaskListUntimed")
+	private List<Task> tasksUntimed;
+	@XStreamAlias("TaskFinished")
+	private List<Task> tasksFinished;
+	
+	@XStreamOmitField
+	private List<Task> tasksToDisplay;
+	
+	@XStreamAlias("TaskRepeated")
+	private List<Task> tasksRepeated;
+
+	
+	@XStreamAlias("showDisplay")
+	private boolean isDisplay;
+	@XStreamAlias("showDone")
+	private boolean isShowingDone;
+
+	@XStreamAlias("TasksCount")
+	private int totalTasksOngoing;
+	
+	@XStreamAlias("Tags")
+	private HashMap<String, List<Task>> tags;
+
+	// count the total number of tasks finished.
+	@XStreamAlias("TotalTaskFinished")
+	private int totalFinished;
+
+	/**
+	 * This constructor creates a new TaskList object, and initializes all values. 
+	 * 
+	 */
+	public TaskList() {
+
+		this.tasksTimed = new SortedArrayList<Task>(new DeadlineComparator());
+		this.tasksUntimed = new SortedArrayList<Task>(new AddedDateComparator());
+		this.tasksFinished = new SortedArrayList<Task>(new DoneDateComparator());
+		this.tasksToDisplay = new ArrayList<Task>();
+		this.tasksRepeated = new ArrayList<Task>();
+		this.totalTasksOngoing = this.tasksTimed.size() + this.tasksUntimed.size();
+		this.tags = new HashMap<String, List<Task>>();
+		this.totalFinished = 0;
+		this.isDisplay = false;
+	}
+
+	/**
+	 * This method sets the isDisplay attribute to false when called.
+	 * When isDisplay is set to false, every task is displayed.
+	 * 
+	 */
+	public void setShowDisplayListToFalse() {
+		// lazy evaluation
+		if (this.tasksToDisplay == null) {
+			this.tasksToDisplay = new ArrayList<Task>();
+		}
+		this.isDisplay = false;
+		this.tasksToDisplay.clear();
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method adds a floating task.
+	 * 
+	 * @param description  the description of the task.
+	 */
+	public void addToList(String description) {
+		Task newTask = new FloatingTask(description);
+		this.tasksUntimed.add(newTask);
+		this.totalTasksOngoing++;
+		logger.info("A floating task added");
+		
+		addToUndoList(LastCommand.ADD, newTask);
+	}
+
+	/**
+	 * This method adds a deadline task.
+	 * 
+	 * @param description  the description of the task.
+	 * @param time         the deadline of the task.
+	 */
+	public void addToList(String description, Date time) {
+		Task newTask = new DeadlineTask(description, time);
+		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
+		this.totalTasksOngoing++;
+		logger.info("A deadline task added");
+		
+		addToUndoList(LastCommand.ADD, newTask);
+	}
+
+	/**
+	 * This method adds a Repeated Task.
+	 * 
+	 * @param description  the description of the task.
+	 * @param time         the deadline of the task.
+	 * @param repeatDate   the repeat frequency.
+	 */
+	public void addToList(String description, Date time, RepeatDate repeatDate) {
+		Task newTask = new RepeatedTask(description, time, repeatDate);
+		((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
+		this.tasksRepeated.add(newTask);
+		this.totalTasksOngoing++;
+		logger.info("A repeated task added");
+		
+		addToUndoList(LastCommand.ADD, newTask);
+	}
+
+	/**
+	 * This method adds a fixed (timed) task.
+	 * 
+	 * @param description  the description of the task.
+	 * @param startTime    the start time of the task.
+	 * @param endTime      the deadline of the task.
+	 * @throws TaskInvalidDateException    if the start time is after the end time.
+	 */
+	public void addToList(String description, Date startTime, Date endTime)
+			throws TaskInvalidDateException {
+		Task newTask = new FixedTask(description, startTime, endTime);
+
+		if (!startTime.before(endTime)) {
+			throw new TaskInvalidDateException(
+					"Invalid: Start date/time cannot be after end date/time.");
+
+		} else {
+
+			((SortedArrayList<Task>) this.tasksTimed).addOrder(newTask);
+			this.totalTasksOngoing++;
+			logger.info("A fixed task added");
+			
+			addToUndoList(LastCommand.ADD, newTask);
+		}
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	public List<Task> getFinishedTasks() {
+		this.isShowingDone = true;
+		return this.tasksFinished;
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method searches for tasks by a given keyword.
+	 * This method will find the keyword in a task's description as well as tags.
+	 * 
+	 * @param keyword  The keyword for searching.
+	 * @return         A list of results.
+	 */
+	public List<Task> searchTaskByKeyword(String keyword) {
+		keyword = keyword.toLowerCase();
+		List<Task> result = new ArrayList<Task>();
+		if (isShowingDone) {
+			for (Task task : tasksFinished) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
+					}
+				}
+			}
+		} else {
+			// search task in timed list, search description and tags
+			for (Task task : tasksTimed) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
+					}
+				}
+			}
+
+			// search task in untimed list, search description and tags
+			for (Task task : tasksUntimed) {
+				if (task.getDescription().toLowerCase().indexOf(keyword) != -1) {
+					result.add(task);
+					continue; // find one
+				} else {
+					for (String tag : task.getTags()) {
+						if (tag.toLowerCase().indexOf(keyword) != -1) {
+							result.add(task);
+							break; // find one
+						}
+					}
+				}
+			}
+			isDisplay = true;
+		}
+
+		tasksToDisplay = result;
+		return tasksToDisplay;
+	}
+	
+	/**
+	 * This method will return the tasks if the deadline is within the given range. 
+	 * For displaying purpose, all the floating tasks will be added as well.
+	 * 
+	 * @param showDate The input time range.
+	 * @return         A list of tasks that satisfies the range.
+	 * @throws TaskInvalidDateException    if the dates are invalid.
+	 */
+	public List<Task> getDateRangeTask(List<Date> showDate) throws TaskInvalidDateException {
+		assert(showDate.size() == 2);
+		
+		SortedArrayList<Task> output = new SortedArrayList<Task>(new DeadlineComparator());
+		Date startTime = showDate.get(0);
+		Date endTime = showDate.get(1);
+		
+		// shows overdue tasks at the top
+		List<Task> overdue = getOverdueTask();
+		output.addAllUnordered(overdue);
+
+		// find task within the date range
+		for (Task task : tasksTimed) {
+			if (task instanceof RepeatedTask) {
+		        // repeated tasks are checked separately
+		    } else if ((task.getDeadline().after(startTime) || task.getDeadline().equals(startTime)) && 
+					(task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
+
+				output.addUnique(task);
+			}
+		}
+		
+		Calendar taskTimeCal = Calendar.getInstance();
+		Calendar searchTimeStartCal = Calendar.getInstance();
+		Calendar searchTimeEndCal = Calendar.getInstance();
+		
+		searchTimeStartCal.setTime(startTime);
+		searchTimeEndCal.setTime(endTime);
+		
+		// search if repeat task is in date range
+		for (Task task : tasksRepeated) {
+		    RepeatedTask repeatedTask = (RepeatedTask) task;
+		    taskTimeCal.setTime(task.getDeadline());		    
+		    String periodString = repeatedTask.getRepeatPeriod();
+		    
+		    if (periodString.equals("daily")) {
+		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		           (task.getDeadline().before(endTime) || task.getDeadline().equals(endTime))) {
+		            
+		            output.addUnique(repeatedTask);
+		        }
+
+		    } else if (periodString.split(" ")[0].equals("every")) {
+
+		        if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		            sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+		            task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
+		            
+		            output.addUnique(repeatedTask);
+		        }
+
+            } else if (periodString.split(" ")[0].equals("day")) {
+                
+                if (sameHour(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    sameWeekday(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    sameMonthDay(taskTimeCal, searchTimeStartCal, searchTimeEndCal) &&
+                    task.getDeadline().before(endTime) || task.getDeadline().equals(endTime)) {
+
+                    output.addUnique(repeatedTask);
+                }
+            } 
+		}
+		
+		// add all floating task
+		output.addAllUnordered(tasksUntimed);
+		isDisplay = true;
+		tasksToDisplay = output;
+		return output;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+    /**
+	 * This methods will find out the tasks that are overdue.
+	 * 
+	 * @return A list of overdue tasks.
+	 */
+	public List<Task> getOverdueTask() {
+		List<Task> output = new ArrayList<Task>();
+		for (Task task : this.tasksTimed) {
+			try {
+				task.checkOverdue();
+				if (task.isOverdue) {
+					output.add(task);
+				}
+			} catch (TaskInvalidDateException e) {
+				logger.warning(
+						"Invalid Deadline when checking Overdue!");
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * This method returns a list of tasks containing the given tag.
+	 * 
+	 * @param tag  The given tag to check.
+	 * @return     A list of tasks with that tag.
+	 * @throws TaskNoSuchTagException  if the given tag is not found.
+	 */
+	public List<Task> prepareDisplayList(String tag)
+			throws TaskNoSuchTagException {
+		
+		if (tags.containsKey(tag.toLowerCase())) {
+			checkOverdue(this.tasksTimed);
+			tasksToDisplay = new ArrayList<Task>(tags.get(tag.toLowerCase()));
+
+			isDisplay = true;
+			
+			return tasksToDisplay;
+		} else {
+			throw new TaskNoSuchTagException();
+		}
+	}
+	
+	/**
+	 * This method will prepare a list for displaying, the order is decide by the boolean 
+	 * value isDisplayedByAddTime. 
+	 * If isDisplayedByAddTime is true, the result will be ordered by added time;
+	 * if isDisplayedByAddTime is false, the result will be ordered by deadline.
+	 * 
+	 * @param isDisplayedByAddTime Boolean to decide ordering (by added time or otherwise).
+	 * @return                     The list of ordered tasks.
+	 */
+	public List<Task> prepareDisplayList(boolean isDisplayedByAddTime) {
+		List<Task> output;
+		// check overdue for each task
+		checkOverdue(this.tasksTimed);
+
+		if (isDisplayedByAddTime) {
+			// using comparator AddedDateComparator
+			output = new SortedArrayList<Task>(this.count(),
+					                           new AddedDateComparator());
+			((SortedArrayList<Task>) output).addAllOrdered(tasksTimed);
+			((SortedArrayList<Task>) output).addAllOrdered(tasksUntimed);
+			isDisplay = true;
+			tasksToDisplay = output;
+
+		} else {
+			output = new ArrayList<Task>(this.tasksTimed);
+			for (int i = 0; i < tasksUntimed.size(); i++) {
+				output.add(tasksUntimed.get(i));
+			}
+			isDisplay = false;
+		}
+
+		// add all tasks from Timed task list and Untimed task list to the
+		// output list
+		return output;
+	}
+	
+	/**
+	 * This method will let tasks in listToCheck check if 
+	 * they are overdue, and update their properties.
+	 * 
+	 * @param listToCheck the list to be checked
+	 */
+	private void checkOverdue(List<Task> listToCheck) {
+		for (Task task : listToCheck) {
+			try {
+				task.checkOverdue();
+			} catch (TaskInvalidDateException e) {
+				logger.warning(
+						"Invalid Deadline when checking Overdue!");
+			}
+		}
+	}
+	
+	public void checkOverdue() {
+		this.checkOverdue(tasksTimed);
+	}
+
+	public boolean isShowingDone() {
+		return this.isShowingDone;
+	}
+
+	public void setNotShowingDone() {
+		this.isShowingDone = false;
+	}
+	
+	public void export() {
+		Storage.export(tasksTimed, tasksUntimed, tasksFinished);
+	}
+	
+	/**
+	 * This method checks if the given task index is valid.
+	 * 
+	 * @param taskIndex    The task index to check.
+	 * @return             true if task index is valid, false otherwise.
+	 */
+	public boolean isInvalidIndex(int taskIndex) {
+	    if (isDisplay) {
+	        return (taskIndex > this.tasksToDisplay.size()) || (taskIndex <= 0);
+	    } else if (isShowingDone) {
+	        return (taskIndex > this.tasksFinished.size() || (taskIndex <= 0));
+	    } else {
+	        return (taskIndex > this.countUndone()) || (taskIndex <= 0);
+	    }
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+    /**
+     * This method returns the number of ongoing tasks.
+     * 
+     * @return  the number of ongoing tasks.
+     */
+	public int count() {
+		return this.totalTasksOngoing;
+	}
+	
+	/**
+	 * This method returns the number of undone tasks.
+	 * 
+	 * @return the number of undone tasks.
+	 */
+	public int countUndone() {
+		return this.countTimedTask() + this.countUntimedTask();
+	}
+
+    /**
+     * This method returns the number of ongoing timed tasks.
+     * 
+     * @return the number of ongoing timed tasks.
+     */
+	public int countTimedTask() {
+		return this.tasksTimed.size();
+	}
+
+    /**
+     * This method returns the number of ongoing untimed tasks.
+     * 
+     * @return the number of ongoing untimed tasks.
+     */
+	public int countUntimedTask() {
+		return this.tasksUntimed.size();
+	}
+	
+    /**
+     * This method returns the number of finished tasks.
+     * 
+     * @return the number of finished tasks.
+     */
+	public int countFinished() {
+		return this.totalFinished;
+	}
+	
+	/**
+	 * This method finds out the separation index between non-floating task and
+	 * floating task.
+	 * If not found, return -1;
+	 * 
+	 * @param taskList The task list to find the separation index of.
+	 * @return         The separation index found, or -1 otherwise.
+	 */
+	public int indexOfFirstFloatingTask(List<Task> taskList) {
+		for (int i = 0; i < taskList.size(); i++) {
+			Task task = taskList.get(i);
+			if (task instanceof FloatingTask) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This Comparator class is used in outputting task list order by deadline.
+	 * 
+	 */
+	static class DeadlineComparator implements Comparator<Task> {
+	
+		@Override
+		public int compare(Task o1, Task o2) {
+			try {
+				return o1.getDeadline().compareTo(o2.getDeadline());
+			} catch (TaskInvalidDateException e) {
+				logger.warning("Error comparing deadline.");
+			}
+			return 0;
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This Comparator is used in outputting task list order by added time.
+	 * 
+	 */
+	static class AddedDateComparator implements Comparator<Task> {
+	
+		@Override
+		public int compare(Task o1, Task o2) {
+			return o1.getAddedTime().compareTo(o2.getAddedTime());
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\StorageTest.java
+	 */
+
+public class StorageTest {
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		
+	}
+
+	@Test
+	public void testEmpty() {
+		Storage store = new Storage("test.xml");
+		TaskList tasks = new TaskList();
+		store.save(tasks, "test.xml");
+		TaskList listFromFile = store.load();
+		assertEquals(0, listFromFile.count());
+	}
+	
+	@Test
+	public void testMultipleTypesTask() throws TaskInvalidDateException {
+		Storage store = new Storage("test.xml");
+		TaskList tasks = new TaskList();
+        for (int i = 0; i < 100; i++) {
+			tasks.addToList("No. "+i);
+		}
+		store.save(tasks, "test.xml");
+		
+		TaskList listFromFile = store.load();
+		assertEquals(100, listFromFile.count());
+		store.close();
+		
+		store = new Storage("test.xml");
+        for (int i = 0; i < 50; i++) {
+            tasks.addToList("test" + i, new Date(10), new Date(100));
+		}
+		store.save(tasks, "test.xml");
+		listFromFile = store.load();
+		assertEquals(150, listFromFile.count());
+		
+		store.close();
+		
+		store = new Storage("test.xml");
+        for (int i = 0; i < 60; i++) {
+            tasks.addToList("test" + i, new Date());
+		}
+        store.save(tasks, "test.xml");
+		listFromFile = store.load();
+		assertEquals(210, listFromFile.count());
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\StorageTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testEmptyList() {
+		TaskList tasks = new TaskList();
+		assertEquals(0, tasks.count());
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testIsValidIndex() {
+		TaskList tasks = new TaskList();
+		assertTrue(tasks.isInvalidIndex(0));
+		assertTrue(tasks.isInvalidIndex(-1));
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("No." + i);
+		}
+
+		/* This is a boundary case for the ‘below valid index’ partition */
+		assertTrue(tasks.isInvalidIndex(0));
+		/* This is a boundary case for the ‘valid’ partition */
+		assertFalse(tasks.isInvalidIndex(27));
+		/* This is a boundary case for the ‘valid’ partition */
+		assertFalse(tasks.isInvalidIndex(50));
+		/* This is a boundary case for the ‘above valid index’ partition */
+		assertTrue(tasks.isInvalidIndex(51));
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testIndexOfFirstFloatingTask() {
+		TaskList tasks = new TaskList();
+		
+		// test for unfound case
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("Non-floating task", new Date(i));
+		}
+		
+		List<Task> listOfTask = tasks.prepareDisplayList(false);
+		assertEquals(50, listOfTask.size());
+		
+		assertEquals(-1, tasks.indexOfFirstFloatingTask(listOfTask));
+		
+		// test for found case
+		tasks = new TaskList();
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("Non-floating task", new Date(i));
+		}
+		
+		for (int i = 0; i < 10; i++) {
+			tasks.addToList("Floating task");
+		}
+		
+		listOfTask = tasks.prepareDisplayList(false);
+		assertEquals(60, listOfTask.size());
+		
+		assertEquals(50, tasks.indexOfFirstFloatingTask(listOfTask));
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testAddingTask() {
+		TaskList tasks = new TaskList();
+		// generates 50 dummy tasks and adds them
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("No." + i);
+		}
+		assertEquals(50, tasks.count());
+
+		// test the adding of different types of tasks
+		tasks = getTasks(controlTaskList);
+		assertEquals(4, tasks.count());
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testDeletingTask() {
+		TaskList tasks = new TaskList();
+		// generate 50 dummy task and add them
+		for (int i = 0; i < 50; i++) {
+			tasks.addToList("No." + i);
+		}
+		assertEquals(50, tasks.count());
+
+		// delete single task
+		List<Integer> toDelete = new ArrayList<Integer>();
+		toDelete.add(1);
+		try {
+			tasks.deleteFromList(toDelete);
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println(e.getMessage());
+		}
+		assertEquals(49, tasks.count());
+
+		// delete multiple task
+		toDelete = new ArrayList<Integer>();
+		for (int i = 1; i <= 25; i++) {
+			toDelete.add(i);
+		}
+		try {
+			tasks.deleteFromList(toDelete);
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println(e.getMessage());
+		}
+		assertEquals(24, tasks.count());
+
+		/* This is a boundary case for the ‘valid’ partition */
+		toDelete = new ArrayList<Integer>();
+		toDelete.add(24);
+		try {
+			tasks.deleteFromList(toDelete);
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println(e.getMessage());
+		}
+		assertEquals(23, tasks.count());
+
+		/* This is a boundary case for the ‘above valid’ partition */
+		/* IndexOutOfBoundsException is expected */
+		toDelete = new ArrayList<Integer>();
+		toDelete.add(24);
+		try {
+			tasks.deleteFromList(toDelete);
+		} catch (IndexOutOfBoundsException e) {
+			assertTrue(e instanceof IndexOutOfBoundsException);
+		}
+
+		/* This is a boundary case for the ‘below valid’ partition */
+		/* IndexOutOfBoundsException is expected */
+		toDelete = new ArrayList<Integer>();
+		toDelete.add(-1);
+		try {
+			tasks.deleteFromList(toDelete);
+		} catch (IndexOutOfBoundsException e) {
+			assertTrue(e instanceof IndexOutOfBoundsException);
+		}
+
+		// clear tasks
+		tasks.clearList();
+		assertEquals(0, tasks.count());
+
+		// test the deleting of different types of tasks
+		tasks = getTasks(controlTaskList);
+		toDelete.clear();
+		toDelete.add(1);
+		for (int i = 3; i >= 0; i--) {
+			tasks.deleteFromList(toDelete);
+			assertEquals(tasks.count(), i);
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testEditingTask() throws TaskInvalidDateException {
+		TaskList tasks = new TaskList();
+		/* This is a boundary case for the ‘invalid editing’ partition */
+		try {
+			tasks.editTaskDescriptionOnly(0, "UPPERCASE");
+		} catch (TaskInvalidIdException e) {
+			assertTrue(e instanceof TaskInvalidIdException);
+		}
+
+		// editing floating task
+		tasks.addToList("lowercase");
+		tasks.editTaskDescriptionOnly(1, "UPPERCASE");
+		assertEquals("UPPERCASE", tasks.getTask(0).getDescription());
+
+		tasks.clearList();
+		// editing floating task
+		Date dateA = new Date(100);
+		Date dateB = new Date(200);
+		Date dateC = new Date(300);
+		tasks.addToList("lowercase", dateA, dateB);
+		tasks.editTaskDeadlineOnly(1, dateC);
+		assertEquals(dateC, tasks.getTask(0).getDeadline());
+
+		// add tasks to edit
+		tasks.clearList();
+		tasks = getTasks(controlTaskList);
+
+		// edit task descriptions
+		assertEquals(tasks.getTask(0).getDescription(), "repeated task one");
+		assertEquals(tasks.getTask(1).getDescription(), "deadline task one");
+		assertEquals(tasks.getTask(2).getDescription(), "fixed task one");
+		assertEquals(tasks.getTask(3).getDescription(), "floating task one");
+
+		tasks.editTaskDescriptionOnly(1, "repeated task");
+		tasks.editTaskDescriptionOnly(2, "deadline task");
+		tasks.editTaskDescriptionOnly(3, "fixed task");
+		tasks.editTaskDescriptionOnly(4, "floating task");
+
+		assertEquals(tasks.getTask(0).getDescription(), "repeated task");
+		assertEquals(tasks.getTask(1).getDescription(), "deadline task");
+		assertEquals(tasks.getTask(2).getDescription(), "fixed task");
+		assertEquals(tasks.getTask(3).getDescription(), "floating task");
+
+		// edit task deadline (order: repeated, deadline, fixed)
+		assertEquals(tasks.getTask(0).getDeadline(), yesterday);
+		assertEquals(tasks.getTask(1).getDeadline(), today);
+		assertEquals(tasks.getTask(2).getDeadline(), tomorrow);
+
+		cal.add(Calendar.DAY_OF_MONTH, 3);
+		Date daysAfter2 = cal.getTime();
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		Date daysAfter3 = cal.getTime();
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		Date daysAfter4 = cal.getTime();
+
+		tasks.editTaskDeadlineOnly(3, daysAfter4);
+		tasks.editTaskDeadlineOnly(2, daysAfter3);
+		tasks.editTaskDeadlineOnly(1, daysAfter2);
+
+		assertEquals(tasks.getTask(0).getDeadline(), daysAfter2);
+		assertEquals(tasks.getTask(1).getDeadline(), daysAfter3);
+		assertEquals(tasks.getTask(2).getDeadline(), daysAfter4);
+
+		// edit fixed task dates: after edit, repeated, fixed, deadline
+		assertEquals(((FixedTask) tasks.getTask(2)).getStartTime(), today);
+		tasks.editTaskTimes(3, daysAfter2, daysAfter3);
+
+		assertEquals(((FixedTask) tasks.getTask(1)).getStartTime(), daysAfter2);
+		assertEquals(((FixedTask) tasks.getTask(1)).getDeadline(), daysAfter3);
+
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testMarkingDoneTask() throws TaskInvalidIdException,
+			TaskDoneException {
+		TaskList tasks = new TaskList();
+		List<Integer> toDone = new ArrayList<Integer>();
+		toDone.add(1);
+		/* Testing invalid index */
+		try {
+			tasks.markTaskDone(toDone);
+		} catch (TaskInvalidIdException e) {
+			assertTrue(e instanceof TaskInvalidIdException);
+		} catch (TaskDoneException e) {
+
+		}
+
+		/* Testing done single task */
+		for (int i = 0; i < 10; i++) {
+			tasks.addToList("No." + i);
+			pause(10);
+		}
+		toDone = new ArrayList<Integer>();
+		toDone.add(1);
+		tasks.markTaskDone(toDone);
+		assertTrue(tasks.getFinishedTasks().get(0).getIsDone());
+		
+		/* Testing done multiple tasks */
+		tasks = new TaskList();
+		toDone = new ArrayList<Integer>();
+		for (int i = 0; i < 10; i++) {
+			tasks.addToList("No." + i);
+			pause(10);
+		}
+		for (int i = 2; i < 8; i++) {
+			toDone.add(i);
+		}
+		tasks.markTaskDone(toDone);
+		List<Task> finished = tasks.getFinishedTasks();
+		for (int i = 0; i < 5; i++) {
+			assertTrue(finished.get(i).getIsDone());
+		}
+		tasks.setNotShowingDone();
+
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testPrepareDisplayList() throws TaskInvalidDateException {
+
+		TaskList tasks = new TaskList();
+		tasks.addToList("Late", new Date(100), new Date(1000));
+		pause(200); // wait for 0.2s to add the next one
+		tasks.addToList("Early", new Date(200));
+		pause(200); // wait for 0.2s to add the next one
+		tasks.addToList("Middle", new Date(500));
+
+		// Test order by addedTime
+		List<Task> result = tasks.prepareDisplayList(true);
+
+		assertEquals("Late", result.get(0).getDescription());
+		assertEquals("Early", result.get(1).getDescription());
+		assertEquals("Middle", result.get(2).getDescription());
+
+		// Test order by addedTime
+		result = tasks.prepareDisplayList(false);
+		assertEquals("Early", result.get(0).getDescription());
+		assertEquals("Middle", result.get(1).getDescription());
+		assertEquals("Late", result.get(2).getDescription());
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	void pause(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskTest.java
+	 */
+
+
+public class TaskTest {
+	static Date today;
+	static Date tomorrow;
+	static Date theDayAfterTomorrow;
+	static Date nextWeekOfTomorrow;
+	static Date nextMonthOfTomorrow;
+	
+	@BeforeClass
+	public static void setUpTime() {
+		today = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(today);
+		cal.add(Calendar.DATE, 1);
+		tomorrow = cal.getTime();
+		cal.add(Calendar.DATE, 1);
+		theDayAfterTomorrow = cal.getTime();
+		
+		cal.setTime(tomorrow);
+		cal.add(Calendar.DATE, 7);
+		nextWeekOfTomorrow = cal.getTime();
+		cal.setTime(tomorrow);
+		cal.add(Calendar.MONTH, 1);
+		nextMonthOfTomorrow = cal.getTime();
+	}
+	
+	
+	@Test
+	public void testFloatingTask() throws TaskTagDuplicateException {
+		FloatingTask task = new FloatingTask("This is a floating task");
+		assertEquals(Type.FLOAT ,task.getType());
+		assertEquals("This is a floating task", task.getDescription());
+		assertFalse(task.getIsDone());
+		
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		// test tagging
+		// add tag
+		task.addTag("Tag1");
+		task.addTag("Tag2");
+		task.addTag("Tag3");
+		
+		// test existing tags
+		assertTrue(task.getTags().contains("tag1"));
+		assertTrue(task.getTags().contains("tag2"));
+		assertTrue(task.getTags().contains("tag3"));
+		
+		// test non-existing tags
+		assertFalse(task.getTags().contains("tag4"));
+		assertFalse(task.getTags().contains("tag5"));
+		
+		// test adding same tag
+		try {
+			task.addTag("Tag1");
+		} catch (TaskTagDuplicateException e) {
+			assertTrue(e instanceof TaskTagDuplicateException);
+		}
+	}
+
+	@Test
+	public void testFixedTask() throws TaskTagDuplicateException {
+		FixedTask task = new FixedTask("This is a Fixed task", today, tomorrow);
+		assertEquals(Type.FIXED ,task.getType());
+		assertEquals("This is a Fixed task", task.getDescription());
+		assertFalse(task.getIsDone());
+				
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		assertEquals(today, task.getStartTime());
+		assertEquals(tomorrow, task.getDeadline());
+		
+		// test remaining days
+		assertEquals(1, task.getReminingDays());
+		
+		task.setStartTime(tomorrow);
+		assertEquals(tomorrow, task.getStartTime());
+		task.setDeadline(theDayAfterTomorrow);
+		assertEquals(theDayAfterTomorrow, task.getDeadline());
+		
+		
+		// test remaining days
+		assertEquals(2, task.getReminingDays());
+		
+		// test tagging
+		// add tag
+		task.addTag("Tag1");
+		task.addTag("Tag2");
+		task.addTag("Tag3");
+		
+		// test existing tags
+		assertTrue(task.getTags().contains("tag1"));
+		assertTrue(task.getTags().contains("tag2"));
+		assertTrue(task.getTags().contains("tag3"));
+		
+		// test non-existing tags
+		assertFalse(task.getTags().contains("tag4"));
+		assertFalse(task.getTags().contains("tag5"));
+		
+		// test adding same tag
+		try {
+			task.addTag("Tag1");
+		} catch (TaskTagDuplicateException e) {
+			assertTrue(e instanceof TaskTagDuplicateException);
+		}
+	}
+	
+	@Test
+	public void testDeadlineTask() throws TaskTagDuplicateException {
+		DeadlineTask task = new DeadlineTask("This is a Deadline task", tomorrow);
+		assertEquals(Type.DEADLINE ,task.getType());
+		assertEquals("This is a Deadline task", task.getDescription());
+		assertFalse(task.getIsDone());
+		
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		assertEquals(tomorrow, task.getDeadline());
+		
+		// test remaining days
+		assertEquals(1, task.getReminingDays());
+		
+		// test edit time
+		task.setDeadline(theDayAfterTomorrow);
+		assertEquals(theDayAfterTomorrow, task.getDeadline());
+		
+		// test remaining days after changing time
+		assertEquals(2, task.getReminingDays());
+				
+		// test tagging
+		// add tag
+		task.addTag("Tag1");
+		task.addTag("Tag2");
+		task.addTag("Tag3");
+		
+		// test existing tags
+		assertTrue(task.getTags().contains("tag1"));
+		assertTrue(task.getTags().contains("tag2"));
+		assertTrue(task.getTags().contains("tag3"));
+		
+		// test non-existing tags
+		assertFalse(task.getTags().contains("tag4"));
+		assertFalse(task.getTags().contains("tag5"));
+		
+		// test adding same tag
+		try {
+			task.addTag("Tag1");
+		} catch (TaskTagDuplicateException e) {
+			assertTrue(e instanceof TaskTagDuplicateException);
+		}
+	}
+	
+	@Test
+	public void testRepeatedTask() throws TaskDoneException {	
+		// DAILY task
+		
+		// set deadline to be tomorrow
+		RepeatedTask task = new RepeatedTask("This is a Repeated task", tomorrow, RepeatDate.DAILY);
+		assertEquals(Type.REPEATED ,task.getType());
+		assertEquals("This is a Repeated task", task.getDescription());
+		assertFalse(task.getIsDone());
+		
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		assertEquals(tomorrow, task.getDeadline());
+		
+		// test remaining days
+		assertEquals(1, task.getReminingDays());
+		
+		// check occurrence
+		
+		// done this task, check if it return a new task for the next repeat period
+		RepeatedTask nextTask = (RepeatedTask) task.markDone();
+		assertEquals(theDayAfterTomorrow, nextTask.getDeadline());
+		
+		// Weekly task
+		
+		// set deadline to be tomorrow
+		task = new RepeatedTask("This is a Repeated task", tomorrow, RepeatDate.WEEKLY);
+		assertEquals(Type.REPEATED ,task.getType());
+		assertEquals("This is a Repeated task", task.getDescription());
+		assertFalse(task.getIsDone());
+		
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		assertEquals(tomorrow, task.getDeadline());
+		
+		// test remaining days
+		assertEquals(1, task.getReminingDays());
+		
+		// check occurrence
+		
+		// done this task, check if it return a new task for the next repeat period
+		nextTask = (RepeatedTask) task.markDone();
+		assertEquals(nextWeekOfTomorrow, nextTask.getDeadline());
+		
+		// Weekly task
+		
+		// set deadline to be tomorrow
+		task = new RepeatedTask("This is a Repeated task", tomorrow, RepeatDate.MONTHLY);
+		assertEquals(Type.REPEATED ,task.getType());
+		assertEquals("This is a Repeated task", task.getDescription());
+		assertFalse(task.getIsDone());
+		
+		// test edit description
+		task.setDescription("Description edited");
+		assertEquals("Description edited", task.getDescription());
+		
+		assertEquals(tomorrow, task.getDeadline());
+		
+		// test remaining days
+		assertEquals(1, task.getReminingDays());
+		
+		// check occurrence
+		
+		// done this task, check if it return a new task for the next repeat period
+		nextTask = (RepeatedTask) task.markDone();
+		assertEquals(nextMonthOfTomorrow, nextTask.getDeadline());
+		
+		
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\view\MainViewController.java
+	 */
+
+	/**
+	 * Set the proper text to display for Status label
+	 * 
+	 * @param status		The label for displaying
+	 * @param task			Task to display, including all the task information. 
+	 * @throws TaskInvalidDateException
+	 */
+	private void determineStatusText(Label status, Task task) {
+		if (task.getType().equals(Type.FLOAT)) {
+			if (task.getIsDone()) {
+				status.setText("DONE");
+				status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
+			} else {
+				status.setText("ONGOING");
+				status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
+			}
+		} else {
+			try {
+				task.checkOverdue();
+			} catch (TaskInvalidDateException e) {
+				
+			}
+			int remainDays = task.getReminingDays();
+			if (task.getIsDone()) {
+				status.setText("DONE");
+				status.setStyle("-fx-background-color: #4CAF50;-fx-background-radius: 0 2px 2px 0;");
+			} else {
+				if (task.getIsOverdue()) {
+					status.setText("OVERDUE");
+					status.setStyle("-fx-background-color: #F44336;-fx-background-radius: 0 2px 2px 0;");
+				} else {
+					if (remainDays == 0) {
+						status.setText("Due Today");
+					} else if (remainDays == 1) {
+						status.setText("1 Day Left");
+					} else {
+						status.setText(remainDays + " Days Left");
+					}
+					status.setStyle("-fx-background-color: #29b6f6;-fx-background-radius: 0 2px 2px 0;");
+				}
+			}
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\view\MainViewController.java
+
+
+
+
+

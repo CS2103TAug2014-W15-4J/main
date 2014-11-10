@@ -1,0 +1,3727 @@
+//@author: a0115384h
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\LastState.java
+	 */
+
+/**
+ * The class that stores the state of the task list before and after a change.
+ * This class is mainly used to support the undo/redo commands.
+ */
+public class LastState {
+    public enum LastCommand {
+        ADD, DELETE, EDIT, DONE, TAG, UNTAG, CLEAR
+    }
+    
+    LastCommand lastCommand; 
+    List<Task> previousTaskStateList;
+    List<Task> currentTaskStateList;
+    List<Task> newRepeatTaskList;
+    Task previousTaskState;
+    Task currentTaskState;
+    String tag;
+    
+    /**
+     * This constructor creates a new LastState object, 
+     * setting values that support the undo functionality for the 'add' command.
+     * 
+     * @param cmd           The command type of the last command.
+     * @param taskAdded     The task that was last added.
+     */
+    public LastState(LastCommand cmd, Task taskAdded) {
+        lastCommand = cmd;
+        previousTaskState = taskAdded;
+    }    
+
+    /**
+     * This constructor creates a new LastState object, 
+     * setting values that support the undo functionality for the 'edit' command.
+     * 
+     * @param cmd           The command type of the last command.
+     * @param taskPrev      The state of the task before editing.
+     * @param taskNext      The state of the task after editing.
+     */
+    public LastState(LastCommand cmd, Task taskPrev, Task taskNext) {
+        lastCommand = cmd;
+        previousTaskState = taskPrev;
+        currentTaskState = taskNext;
+    }
+    
+    /**
+     * This constructor creates a new LastState object, 
+     * setting values that support the undo functionality for the 'delete' command.
+     * 
+     * @param cmd           The command type of the last command.
+     * @param taskListPrev  The state of the list of tasks before the deletion.
+     */
+    public LastState(LastCommand cmd, List<Task> taskListPrev) {
+        lastCommand = cmd;
+        previousTaskStateList = taskListPrev;
+    }
+    
+    /**
+     * This constructor creates a new LastState object, 
+     * setting values that support the undo functionality for the '(un)tag' command.
+     * 
+     * @param cmd          The command type of the last command.
+     * @param taskPrev     The state of the task before the (un)tagging.
+     * @param taskCurrent  The state of the task after the (un)tagging.
+     * @param givenTag     The tag that was (un)tagged.
+     */
+    public LastState(LastCommand cmd, Task taskPrev,
+                     Task taskCurrent, String givenTag) {
+        lastCommand = cmd;
+        previousTaskState = taskPrev;
+        currentTaskState = taskCurrent;
+        tag = givenTag;
+    }
+    
+    /**
+     * This constructor creates a new LastState object, 
+     * setting values that support the undo functionality for the 'done' command.
+     * 
+     * @param cmd               The command type of the last command.
+     * @param taskListPrev      The state of the list of tasks before the marking done.
+     * @param taskListCurrent   The state of the list of tasks after the marking done.
+     * @param repeatTaskList    The tasks marked done that were RepeatTasks.
+     */
+    public LastState(LastCommand cmd, List<Task> taskListPrev,
+                     List<Task> taskListCurrent, List<Task> repeatTaskList) {
+        lastCommand = cmd;
+        previousTaskStateList = taskListPrev;
+        currentTaskStateList = taskListCurrent;
+        newRepeatTaskList = repeatTaskList;
+    }
+
+    /**
+     * This method returns the command of the LastState object.
+     * 
+     * @return the LastCommand enum type representing the various commands.
+     */
+    public LastCommand getLastCommand() {
+        return lastCommand;
+    }
+    
+    /**
+     * This method returns the last state of the task, prior to the change.
+     * 
+     * @return the previous state of the task.
+     */
+ 
+    public Task getPreviousTaskState() {
+        return previousTaskState;
+    }
+    
+    /**
+     * This method returns the newer state of the task, prior to the change.
+     * 
+     * @return the current state of the task.
+     */
+    public Task getCurrentTaskState() {
+        return currentTaskState;
+    }
+
+    /** 
+     * This method returns the previous state of the list of tasks, prior to the change.
+     * 
+     * @return the previous state of the list of tasks.
+     */
+    public List<Task> getPreviousTaskStateList() {
+        return previousTaskStateList;
+    }
+
+    /** 
+     * This method returns the newer state of the list of tasks, after the change.
+     * 
+     * @return the newer state of the list of tasks.
+     */
+    public List<Task> getCurrentTaskStateList() {
+        return currentTaskStateList;
+    }
+
+    /** 
+     * This method returns the list of repeated tasks, when marking tasks done.
+     * 
+     * @return the list of repeated tasks, when marking tasks done.
+     */
+    public List<Task> getRepeatTaskList() {
+        return newRepeatTaskList;
+    }
+    
+    /**
+     * This method returns the tag that was (un)tagged, for the tag/untag functionality.
+     * 
+     * @return the tag that was (un)tagged.
+     */
+    public String getTag() {
+        return tag;
+    }
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\LastState.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+/**
+ * The class that manages the TaskList, corresponding to the controls input by the user.
+ */
+
+public class Logic {
+	
+	static Scanner scanner = new Scanner(System.in);
+	static TaskList listOfTasks;
+	
+	private static final String PROMOT_INPUT = "Enter command: ";
+	private static final String TIME_FORMAT = "EEE, MMM d HH:mm";
+	private static final String CMD_OVERDUE = "overdue";
+	private static final String CMD_DONE = "done";
+	private static final String CMD_ADDED = "added";
+	private static final String CMD_ALL = "all";
+	private static final String NEW_LINE = "\n\n";
+	
+	private static final String MESSAGE_TASK_ADDED = "\"%s\" is added to your list.";
+	private static final String MESSAGE_TASK_EDITED_DESCRITPION = "Task \"%s\" is renamed as \"%s\"";
+	private static final String MESSAGE_TASK_EDITED_DEADLINE = "The deadline is changed to \"%s\"";
+	private static final String MESSAGE_TASK_EDITED_ALL = "Task is renamed as \"%s\". New deadline: \"%s\"";
+	private static final String MESSAGE_TASK_DELETED = "Task(s) deleted successfully.";
+	private static final String MESSAGE_TASK_CLEARED = "Task list cleared successfully.";
+	private static final String MESSAGE_TASK_MARKED_DONE = "Task(s) marked done successfully.";
+	private static final String MESSAGE_TASK_TAGGED = "Task tagged successfully.";
+	private static final String MESSAGE_TASK_UNTAGGED = "Task untagged successfully.";
+	private static final String MESSAGE_TASK_EXPORT = "Export successfully.";
+	private static final String MESSAGE_TASKTAG_RETURNED = "Tasks with tag %1$s\n%2$s";
+
+	private static final String MESSAGE_PARSING_END = "Done parsing. Executing command..";
+	private static final String MESSAGE_PARSING_START = "Processing user input: start parsing.";
+	
+	private static final String MESSAGE_PROGRAM_REDO = "redo successful.";
+	private static final String MESSAGE_PROGRAM_UNDO = "undo successful.";
+	private static final String MESSAGE_PROGRAM_EXIT = "Program terminated successfully.";
+
+	private static final String MESSAGE_EMPTY_TASK_LIST = "Your task list is empty.";
+	private static final String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
+
+	private static final String MESSAGE_INVALID_EDIT = "Invalid edit.";
+	private static final String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
+
+	private static final String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
+	private static final String MESSAGE_INVALID_TAG_DUPLICATE = "Task already contains this tag.";
+	private static final String MESSAGE_INVALID_TAG_NONEXISTENT = "No such tag";
+
+	private static final String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+	private static final String MESSAGE_INVALID_REDO = "No next operation to redo.";
+
+	private static final String MESSAGE_INVALID_COMMAND = "Invalid command. Type 'help' to see the list of available commands.";
+	private static final String MESSAGE_INVALID_DESCRIPTION = "Invalid description.";
+	private static final String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+	private static final String MESSAGE_INVALID_DATE = "Invalid date(s).";
+	private static final String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
+
+	private static final String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
+
+
+	static Storage storage = new Storage();
+
+	static ULogger log = ULogger.getLogger();
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method gets the userInput from the UI, calls the parser for processing, 
+	 * and executes the command given, returning the feedback string at the end.
+	 * 
+	 * @param userInput        The input from the user.
+	 * @return                 The feedback string regard the success of the command.
+	 */
+	public static String readAndExecuteCommands(String userInput) {
+
+		log.info(MESSAGE_PARSING_START);
+		// parse and execute command
+		Parser parser = new Parser();
+		UserInput userCommand = parser.parse(userInput);
+
+		log.info(MESSAGE_PARSING_END);
+
+		return executeCommand(userCommand);
+	}
+
+	/**
+	 * This method reads the UserInput object and executes the command given;
+	 * the commands include to add/ edit/ delete a task, to undo/ redo an operation.
+	 * 
+	 * @param userCommand      the UserInput object from parsing the user input.
+	 * @return                 the feedback string regarding the success of the command.
+	 */
+	private static String executeCommand(UserInput userCommand) {
+
+		if (userCommand.getCommand() == UserInput.CMD.ADD) {
+			String desc = userCommand.getDescription();
+			List<Date> dateList = userCommand.getDate();
+			listOfTasks.setShowDisplayListToFalse();
+
+			assert (desc != null);
+
+			if (desc.isEmpty()) {
+				return MESSAGE_INVALID_DESCRIPTION;
+
+			} else {
+				if (userCommand.isFloat()) {
+					return addTask(desc);
+
+				} else if (userCommand.isDeadline()) {
+					if (dateList.size() == 1) {
+						Date date = dateList.get(0);
+						return addTask(desc, date);
+
+					} else {
+						return MESSAGE_INVALID_DATE_NUMBER;
+					}
+				} else if (userCommand.isRepeated()) {
+
+					if (dateList.size() == 1) {
+						Date date = dateList.get(0);
+						RepeatDate repeatDate = userCommand.repeatDate();
+
+						return addTask(desc, date, repeatDate);
+
+					} else {
+						return MESSAGE_INVALID_DATE_NUMBER;
+					}
+
+				} else {
+					// is fixed task
+					if (dateList.size() == 2) {
+						Date startDate = dateList.get(0);
+						Date endDate = dateList.get(1);
+						return addTask(desc, startDate, endDate);
+
+					} else {
+						return MESSAGE_INVALID_DATE_NUMBER;
+					}
+				}
+			}
+
+		} else if (userCommand.getCommand() == UserInput.CMD.EDIT) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
+			int editID = userCommand.getEditID();
+			String desc = userCommand.getDescription();
+			String editCommand = userCommand.getEditCommand();
+			List<Date> dateList = userCommand.getDate();
+
+			Task taskToEdit = listOfTasks.getTask(editID - 1);
+			Task.Type taskType = taskToEdit.getType();
+			// listOfTasks.setShowDisplayListToFalse();
+
+			assert (desc != null);
+
+			if (editCommand != null) {
+				// additional functions
+				// editCommand --> no-repeat / no-time
+				return null;
+
+			} else if (taskType == Task.Type.FLOAT) {
+				if (desc.isEmpty()) {
+					return MESSAGE_INVALID_DESCRIPTION;
+
+				} else {
+					return editTask(editID, desc);
+				}
+
+			} else if (taskType == Task.Type.DEADLINE) {
+
+				if ((dateList.size() == 1) && (!desc.isEmpty())) {
+					Date date = dateList.get(0);
+					return editTask(editID, desc, date);
+
+				} else if (!desc.isEmpty()) {
+					return editTask(editID, desc);
+
+				} else if (dateList.size() == 1) {
+					Date date = dateList.get(0);
+					return editTask(editID, date);
+
+				} else {
+					return MESSAGE_INVALID_DATE_NUMBER;
+				}
+
+			} else if (taskType == Task.Type.REPEATED) {
+
+				if ((dateList.size() == 1) && (!desc.isEmpty())) {
+					Date date = dateList.get(0);
+					return editTask(editID, desc, date);
+
+				} else if (!desc.isEmpty()) {
+					return editTask(editID, desc);
+
+				} else if (dateList.size() == 1) {
+					Date date = dateList.get(0);
+					return editTask(editID, date);
+
+				} else {
+					return MESSAGE_INVALID_DATE_NUMBER;
+				}
+
+			} else if (taskType == Task.Type.FIXED) {
+
+				if ((dateList.size() == 2) && (!desc.isEmpty())) {
+					Date dateStart = dateList.get(0);
+					Date dateEnd = dateList.get(1);
+					return editTask(editID, desc, dateStart, dateEnd);
+
+				} else if (dateList.size() == 2) {
+					Date dateStart = dateList.get(0);
+					Date dateEnd = dateList.get(1);
+					return editTask(editID, dateStart, dateEnd);
+
+				} else if (!desc.isEmpty()) {
+					return editTask(editID, desc);
+
+				} else {
+					return MESSAGE_INVALID_DATE_NUMBER;
+				}
+
+			} else {
+				// other types of edits here
+				return MESSAGE_INVALID_EDIT;
+			}
+
+		} else if (userCommand.getCommand() == UserInput.CMD.DELETE) {
+			// listOfTasks.setShowDisplayListToFalse();
+			return deleteTask(userCommand.getDeleteID());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.SHOW) {
+			String showCommand = userCommand.getShowCommand();
+			List<Date> showDate = userCommand.getDate();
+			return display(showCommand, showDate);
+
+		} else if (userCommand.getCommand() == UserInput.CMD.CLEAR) {
+			listOfTasks.setShowDisplayListToFalse();
+			return clearTaskList();
+
+		} else if (userCommand.getCommand() == UserInput.CMD.DONE) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
+			return markDone(userCommand.getDoneID());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.TAG) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
+			return tagTask(userCommand.getTagID(), userCommand.getDescription());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.UNTAG) {
+			if (listOfTasks.isShowingDone()) {
+				return MESSAGE_COMMAND_NOT_ALLOW;
+			}
+			return untagTask(userCommand.getTagID(),
+					userCommand.getDescription());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.SEARCH) {
+			return searchTask(userCommand.getDescription());
+
+		} else if (userCommand.getCommand() == UserInput.CMD.UNDO) {
+		    return undo();
+		    
+		} else if (userCommand.getCommand() == UserInput.CMD.REDO) {
+		    return redo();
+
+		} else if (userCommand.getCommand() == UserInput.CMD.EXPORT) {
+			return exportTasks();
+
+		} else if (userCommand.getCommand() == UserInput.CMD.EXIT) {
+			listOfTasks.setShowDisplayListToFalse();
+			storage.save(listOfTasks);
+			storage.close();
+			System.exit(0);
+			return MESSAGE_PROGRAM_EXIT;
+
+		} else {
+			// other functions here
+
+			return MESSAGE_INVALID_COMMAND;
+		}
+
+	}
+
+	/**
+	 * This method adds a floating task to the file, with the specified description.
+	 * 
+	 * @param description  Description of task to be added.
+	 * @return             the feedback string regarding the success of the command.
+	 */
+	private static String addTask(String description) {
+		listOfTasks.addToList(description);
+		return String.format(MESSAGE_TASK_ADDED, description);
+	}
+
+	/**
+     * This method adds a deadline task to the file, with the specified description and time.
+     * 
+     * @param description   Description of task to be added.
+     * @param time          Time for task to be done by. 
+     * @return              The feedback string regarding the success of the command.
+     */
+	private static String addTask(String description, Date time) {
+		listOfTasks.addToList(description, time);
+		return String.format(MESSAGE_TASK_ADDED, description);
+	}
+
+    /**
+     * This method adds a repeated task to the file, with the specified description and time.
+     * along with the repeat period.
+     * 
+     * @param description   Description of task to be added.
+     * @param time          Time for task to be done by.
+     * @param repeatDate    The RepeatDate object representing the period to repeat.     
+     * @return              The feedback string regarding the success of the command.
+     */
+	private static String addTask(String description, Date time,
+	                              RepeatDate repeatDate) {
+		listOfTasks.addToList(description, time, repeatDate);
+		return String.format(MESSAGE_TASK_ADDED, description);
+	}
+
+	/**
+	 * This method adds a fixed task to the file, with the specified description and times.
+	 * 
+	 * @param description  Description of task to be added.
+	 * @param startTime    Time for the task to start.
+	 * @param endTime      Time for the task to end.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String addTask(String description, Date startTime,
+	                              Date endTime) {
+		try {
+			listOfTasks.addToList(description, startTime, endTime);
+			return String.format(MESSAGE_TASK_ADDED, description);
+		} catch (TaskInvalidDateException e) {
+			return e.getMessage();
+		}
+	}
+
+	/**
+	 * This method edits the description of a task in the file.
+	 *  
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param description  The new description to be entered.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, String description) {
+		try {
+			String oldDescription = listOfTasks.editTaskDescriptionOnly(taskIndex, description);
+			return String.format(MESSAGE_TASK_EDITED_DESCRITPION, oldDescription, description);
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+		}
+	}
+
+	/**
+	 * This method edits the time of a task in the file (non-fixed/floating tasks).
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param time         The new time to be entered.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, Date time) {
+		try {
+			listOfTasks.editTaskDeadlineOnly(taskIndex, time);
+			String timeString = formatTime(time);
+			return String.format(MESSAGE_TASK_EDITED_DEADLINE, timeString);
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskInvalidDateException e) {
+			return MESSAGE_INVALID_DATE;
+		}
+	}
+
+	/**
+	 * This method edits both the time and description of a task in the file (non-fixed/floating tasks).
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param desc         The new description to be entered.
+	 * @param time         The new time to be entered.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, String desc, Date time) {
+		try {
+		    listOfTasks.editTaskDescriptionDeadline(taskIndex, desc, time);
+		    String timeString = formatTime(time);
+			return String.format(MESSAGE_TASK_EDITED_ALL, desc, timeString);
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskInvalidDateException e) {
+			return MESSAGE_INVALID_DATE;
+		}
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method edits the times of a fixed task.
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param startDate    The new start time of the task.
+	 * @param endDate      The new end time of the task.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, Date startDate, Date endDate) {
+
+		try {
+		    listOfTasks.editTaskTimes(taskIndex, startDate, endDate);
+		    String timeString = formatTime(endDate);
+			return String.format(MESSAGE_TASK_EDITED_DEADLINE, timeString);
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskInvalidDateException e) {
+			return MESSAGE_INVALID_DATE;
+		}
+	}
+
+	/**
+	 * This method edits both the description and times of a fixed task.
+	 * 
+	 * @param taskIndex    The task index of the task to be edited.
+	 * @param desc         The new description to be entered.
+	 * @param startDate    The new start time of the task.
+	 * @param endDate      The new end time of the task.
+	 * @return             The feedback string regarding the success of the command.
+	 */
+	private static String editTask(int taskIndex, String desc, 
+	                               Date startDate,Date endDate) {
+		try {
+		    listOfTasks.editTaskDescriptionTimes(taskIndex, desc, startDate, endDate);
+		    String timeString = formatTime(endDate);
+			return String.format(MESSAGE_TASK_EDITED_ALL, desc, timeString);
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskInvalidDateException e) {
+			return MESSAGE_INVALID_DATE;
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method deletes the specified tasks from the file.
+	 * 
+	 * @param taskIndexList    The list of task indices of tasks to be deleted.
+	 * @return                 The feedback string regarding the success of the command.
+	 */
+	private static String deleteTask(List<Integer> taskIndexList) {
+		// listOfTasks.setShowDisplayListToFalse();
+		try {
+			listOfTasks.deleteFromList(taskIndexList);
+			return MESSAGE_TASK_DELETED;
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		}
+	}
+
+	/**
+	 * This method clears the task list of all tasks.
+	 * 
+	 * @return     The feedback string regarding the success of the command.
+	 */
+	private static String clearTaskList() {
+		listOfTasks.clearList();
+		return MESSAGE_TASK_CLEARED;
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method marks done the specified tasks from the file.
+	 * 
+	 * @param taskIndexList    The list of task indices of tasks to be marked done.
+	 * @return                 The feedback string regarding the success of the command.
+	 */
+	private static String markDone(List<Integer> taskIndexList) {
+		try {
+			listOfTasks.markTaskDone(taskIndexList);
+			return MESSAGE_TASK_MARKED_DONE;
+
+		} catch (TaskDoneException e) {
+			return MESSAGE_INVALID_MARKED_DONE;
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+		}
+	}
+
+	/**
+	 * This method assigns the tag (non case-sensitive) to a specified task.
+	 * 
+	 * @param taskIndexToTag   The task index of the task to be tagged.
+	 * @param tag              The tag to be assigned.
+	 * @return                 The feedback string regarding the success of the command.
+	 */
+	private static String tagTask(int taskIndexToTag, String tag) {
+		try {
+			listOfTasks.tagTask(taskIndexToTag, tag);
+			return MESSAGE_TASK_TAGGED;
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskTagDuplicateException e) {
+			return MESSAGE_INVALID_TAG_DUPLICATE;
+		}
+	}
+
+    /**
+     * This method removes the tag (non case-sensitive) from a specified task.
+     * 
+     * @param taskIndexToTag   The task index of the task to be untagged.
+     * @param tag              The tag to be removed.
+     * @return                 The feedback string regarding the success of the command.
+     */
+	private static String untagTask(int taskIndexToUntag, String tag) {
+		try {
+			listOfTasks.untagTask(taskIndexToUntag, tag);
+			return MESSAGE_TASK_UNTAGGED;
+
+		} catch (TaskInvalidIdException e) {
+			return MESSAGE_INVALID_TASKID;
+
+		} catch (TaskTagException e) {
+			return MESSAGE_INVALID_TAG_DELETE;
+		}
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+	 */
+
+	/**
+	 * This method reverts any changes done by the last operation.
+	 * This change can be re-obtained by using the redo method.
+	 *  
+	 * @return The feedback string regarding the success of the command.
+	 */
+	private static String undo() {
+	    try {
+	        listOfTasks.undo();
+			return MESSAGE_PROGRAM_UNDO;
+	        
+	    } catch (UndoException e) {
+	        return MESSAGE_INVALID_UNDO;
+		}
+	}
+
+	/**
+	 * This method re-does the last operation undo-ed.
+	 * 
+	 * @return The feedback string regarding the success of the command.
+	 */
+	private static String redo() {
+	    try {
+	        listOfTasks.redo();
+			return MESSAGE_PROGRAM_REDO;
+	        
+	    } catch (RedoException e) {
+	        return MESSAGE_INVALID_REDO;
+		}
+	}
+	
+
+	/**
+	 * This method reads the user input from the command line and returns it as a string.
+	 */
+	public static String getUserInput() {
+		System.out.print(PROMOT_INPUT);
+		String userInput = scanner.nextLine();
+		return userInput;
+	}
+
+	/**
+	 * This method creates an empty task list for operations to be done on.
+	 * This method is for testing purposes only.
+	 */
+	public static void setEmptyTaskList() {
+		listOfTasks = new TaskList();
+	}
+
+	/**
+	 * This method returns the Task of the given task id.
+	 * This method is for testing purposes only.
+	 * 
+	 * @param taskId   The taskId of the task to be found.
+	 * @return         The task with the specified taskId.
+	 */
+	public static Task getTask(int taskId) {
+		return listOfTasks.getTask(taskId);
+	}
+	
+	/**
+	 * This method empties the undoStack and redoStack. 
+	 * This method is for testing purposes only.
+	 */
+	public static void emptyUndoRedoStack() {
+	    listOfTasks.clearUndoRedoStack();
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Logic.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+	 */
+
+/**
+ * This class models a deadline task: tasks to be done by a specified time.
+ */
+public class DeadlineTask extends Task {
+	@XStreamAlias("Deadline")
+	private Date deadline;
+
+	/**
+	 * This constructor creates a new DeadlineTask object, 
+	 * with the specified description and deadline.
+	 *  
+	 * @param description  The description of the deadline task.
+	 * @param dl           The due date of the deadline task.
+	 */
+	public DeadlineTask(String description, Date dl) {
+		super(description);
+		deadline = dl;
+		this.taskType = Type.DEADLINE;
+	}
+	
+	/**
+	 * This method returns the due date of the deadline task.
+	 * 
+	 * @return The Date object representing the due date of the task.
+	 */
+	@Override
+	public Date getDeadline() {
+		return deadline;
+	}
+	
+	/**
+	 * This method sets a new due date for the deadline task.
+	 * 
+     * @param time The Date object representing the new due date.
+	 */
+	@Override
+    public void setDeadline(Date dl) {
+		deadline = dl;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+	 */
+
+	/**
+	 * This method creates a copy of the DeadlineTask object 
+	 * (same values for fields, but different references).
+	 * This method supports the undo/redo functionality.
+	 * 
+	 * @return The DeadlineTask object newly created.
+	 */
+	@Override
+    public Task clone() {
+	    DeadlineTask newTask = new DeadlineTask(this.description, this.deadline);
+	    newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+	    newTask.isDone = this.isDone;
+	    
+	    return newTask;
+	}	
+	
+    /**
+     * This method checks if two deadline tasks are equal.
+     * Two deadline tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline, Tags
+     * 
+     * @param task The deadline task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
+    }
+
+	@Override
+	public int getReminingDays() {
+		return getDateDiff(new Date(), deadline);
+	}
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+	 */
+
+/**
+ * This class models a fixed task: tasks to be done within an interval.
+ */
+public class FixedTask extends Task {
+	
+	@XStreamAlias("StartTime")
+	private Date startTime;
+	@XStreamAlias("EndTime")
+	private Date endTime;
+	
+	/**
+	 * This constructor creates a new FixedTask object,
+	 * with the specified description and times.
+	 * 
+	 * @param description  The description of the fixed task.
+	 * @param startTime    The start time/date of the fixed task.
+	 * @param endTime      The end time/date of the fixed task.
+	 */
+	public FixedTask(String description, Date startTime, Date endTime) {
+		super(description);
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.taskType = Type.FIXED;
+	}
+
+	/**
+	 * This method returns the start time of the fixed task.
+	 * 
+	 * @return The Date object representing the start time of the fixed task.
+	 */
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * This method sets a new start time for the fixed task.
+	 * 
+     * @param time The Date object representing the new start time.
+	 */
+	@Override
+    public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * This method returns the due date of the fixed task.
+	 * 
+	 * @return The Date object representing the due date of the task.
+	 */
+	@Override
+    public Date getDeadline() {
+		return endTime;
+	}
+	
+	/**
+	 * This method sets a new end time for the fixed task.
+	 * 
+     * @param time The Date object representing the new end time.
+	 */
+	@Override
+    public void setDeadline(Date endtime) {
+		this.endTime = endtime;
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+	 */
+
+    /**
+     * This method creates a copy of the FixedTask object 
+     * (same values for fields, but different references).
+     * This method supports the undo/redo functionality.
+     * 
+     * @return The FixedTask object newly created.
+     */
+	@Override
+    public Task clone() {
+        
+        FixedTask newTask = new FixedTask(this.description, startTime, endTime);
+        newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+        newTask.isDone = this.isDone;
+        
+        return newTask;
+    }   
+	
+    /**
+     * This method checks if two fixed tasks are equal.
+     * Two fixed tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline, Start time, Tags
+     * 
+     * @param task The fixed task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline()) &&
+                      this.getStartTime().equals(((FixedTask) task).getStartTime());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
+    }
+	
+	@Override
+	public int getReminingDays() {
+		return getDateDiff(new Date(), endTime);
+	}
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\FixedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\FloatingTask.java
+	 */
+
+/**
+ * This class models a floating task: tasks that can be done at any time.
+ */
+public class FloatingTask extends Task {
+
+    /**
+     * This constructor creates a new Floating Task object,
+     * with the specified description.
+     * 
+     * @param description   The description of the floating task.
+     */
+	public FloatingTask(String description) {
+		super(description);
+		this.taskType = Type.FLOAT;
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\FloatingTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+	 */
+
+/**
+ * This class models a repeated task: tasks that recur after a period of time.
+ * 
+ */
+public class RepeatedTask extends Task {
+	@XStreamAlias("Deadline")
+	private Date deadline;
+	@XStreamAlias("Next")
+	private Date next;
+	@XStreamAlias("RepeatDate")
+	private RepeatDate repeatPeriod;
+	@XStreamAlias("Period")
+	private String period;
+
+	public static String[] namesOfDays =  {"DUMMY", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
+
+	/**
+	 * This method updates the string representation of the repeatPeriod -- period. 
+	 */
+	private void updatePeriodString() {
+	    
+	    Date time = deadline;
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(time);
+	    
+	    if (repeatPeriod == RepeatDate.DAILY) {
+	    	cal.add(Calendar.DATE, 1);
+	    	next = cal.getTime();
+	        period = "daily";
+	    } else if (repeatPeriod == RepeatDate.WEEKLY) {
+	        period = "every " + namesOfDays[cal.get(Calendar.DAY_OF_WEEK)];
+	        cal.add(Calendar.DATE, 7);
+	    	next = cal.getTime();
+	    } else if (repeatPeriod == RepeatDate.MONTHLY) {
+	        period = "day " + cal.get(Calendar.DAY_OF_MONTH) + " of each month";
+	        cal.add(Calendar.MONTH, 1);
+	    	next = cal.getTime();
+	    }
+	}
+
+	/**
+	 * This constructor creates a new RepeatedTask object,
+	 * with the specified description, time, and repeat period.
+	 * 
+	 * @param description  The description of the repeated task.
+	 * @param time         The due date of the repeated task.
+	 * @param repeatDate   The period after which the task repeats.
+	 */
+	public RepeatedTask(String description, Date time, RepeatDate repeatDate) {
+	    super(description);
+	    deadline = time;
+	    repeatPeriod = repeatDate;
+	    taskType = Task.Type.REPEATED;
+	    
+	    updatePeriodString();
+    }
+
+    /**
+     * This method returns the due date of the repeated task.
+     * 
+     * @return The Date object representing the due date of the task.
+     */
+	@Override
+    public Date getDeadline() {
+		return deadline;
+	}
+	
+	/**
+	 * This method returns the repeat period of the repeated task.
+	 * 
+	 * @return The String representation of the repeat period.
+	 */
+	public String getRepeatPeriod() {
+		return period;
+	}
+	
+	/**
+	 * This method returns the next due date occurrence of the repeated task.
+	 * 
+	 * @return The Date object representing the next due date of the repeated task.
+	 */
+	public Date getNext() {
+	    return next;
+	}
+	
+    /**
+     * This method sets a new due date for the repeated task.
+     * 
+     * @param time The Date object representing the new due date.
+     */
+	@Override
+    public void setDeadline(Date dl) {
+		deadline = dl;
+		updatePeriodString();
+	}
+	
+    /**
+     * This method sets a new repeat period for the repeated task.
+     * 
+     * @param repeatP   The RepeatDate object representing the new repeat period.
+     */
+	public void setRepeatPeriod(RepeatDate repeatP) {
+		repeatPeriod = repeatP;
+		updatePeriodString();
+	}
+	
+	/**
+	 * This method marks done the current task, 
+	 * and creates a new repeated task for the next occurrence.
+	 * 
+	 * @return The RepeatedTask object newly created.
+	 * @throws TaskDoneException   if task is already done.
+	 */
+	@Override
+    public Task markDone() throws TaskDoneException {
+		if (!this.getIsDone()) {
+            Task taskToRepeat = new RepeatedTask(this.description,
+                                                 this.next,
+                                                 this.repeatPeriod);
+		    super.markDone();
+		    return taskToRepeat;
+		    
+		} else {
+			throw new TaskDoneException();
+		}
+    }
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+	 */
+
+    /**
+     * This method creates a copy of the RepeatedTask object 
+     * (same values for fields, but different references).
+     * This method supports the undo/redo functionality.
+     * 
+     * @return The RepeatedTask object newly created.
+     */
+    @Override
+    public Task clone() {
+        RepeatedTask newTask = new RepeatedTask(this.description, this.deadline, this.repeatPeriod);
+        newTask.addedTime = this.addedTime;
+        newTask.tags = new ArrayList<String>(this.tags);
+        newTask.isDone = this.isDone;
+        newTask.next = this.next;
+        
+        return newTask;
+    }   
+    
+    /**
+     * This method compares two RepeatedTask objects, and determines if one comes after another.
+     * 
+     * @param rt2   The RepeatedTask object to be compared to.
+     * @return      true if both RepeatedTask objects occurs consecutively.
+     */
+    public boolean isConsecutiveTasks(RepeatedTask rt2) {
+        
+        boolean isConsecutive = (this.getRepeatPeriod().equals(rt2.getRepeatPeriod())) &&
+                                ((this.getDeadline() == rt2.getNext()) || (this.getNext() == rt2.getDeadline())) &&
+                                (this.getDescription().equals(rt2.getDescription())) &&
+                                (this.getTags().equals(rt2.getTags())) &&
+                                (this.getAddedTime() != rt2.getAddedTime());
+        return isConsecutive;
+
+        
+    }
+    
+    /**
+     * This method checks if two repeated tasks are equal.
+     * Two repeated tasks are equal if they have the same value for different properties:
+     * Added time, Description, Class, Deadline, Repeat period, Tags
+     * 
+     * @param task The repeated task to be compared to.
+     * @return     true if the tasks are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Task task) {
+        boolean isEqual = true;
+        try {
+            isEqual = super.equals(task) &&
+                      this.getDeadline().equals(task.getDeadline()) &&
+                      this.getRepeatPeriod().equals(((RepeatedTask) task).getRepeatPeriod());
+        } catch (TaskInvalidDateException e) {
+            return false;
+        }
+        return isEqual;
+    }
+    
+    @Override
+    public int getReminingDays() {
+    	return this.getDateDiff(new Date(), deadline);
+    }
+
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\RepeatedTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\SortedArrayList.java
+	 */
+
+/**
+ * This class models an array list that is sorted using a comparator.
+ * 
+ * @param <T>   The generalised class a SortedArrayList contains.
+ */
+public class SortedArrayList<T> extends ArrayList<T> {
+
+    @XStreamAlias("Comparator")
+    Comparator<T> comparator;
+    
+    /**
+     * This constructor creates a new SortedArrayList, and assigns the specified comparator.
+     * 
+     * @param comparator The comparator that is assigned to this SortedArrayList instance. 
+     */
+    public SortedArrayList(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
+    
+    /**
+     * This constructor creates a new SortedArrayList with the specified size, 
+     * and assigns the specified comparator.
+     * 
+     * @param initialCount  The initial size of the SortedArrayList.
+     * @param comparator    The comparator that is assigned to this SortedArrayList instance.
+     */
+    public SortedArrayList(int initialCount, Comparator<T> comparator) {
+        super(initialCount);
+        this.comparator = comparator;
+    }
+    
+    /**
+     * This method adds the object only if the list does not already contain this object.
+     * If the list does not contain the object, it is added into the list sorted.
+     *  
+     * @param <T> element   The element to be added.
+     * @return              true if the element is added, false otherwise.
+     */
+    public boolean addUnique(T element) {
+        if (this.contains(element)) {
+            return false;
+        } else {
+            this.addOrder(element);
+            return true;
+        }
+    }
+    
+    /**
+     * This method adds the element into the list in its sorted position.
+     *  
+     * @param <T> element   The element to be added.
+     * @return              true if the element is added successfully.
+     */
+    public boolean addOrder(T element) {
+        if (this.size() == 0) {
+            super.add(0, element);
+        } else {
+            int index = Collections.binarySearch(this, element, this.comparator);
+            if (index < 0) {
+                index = -(index + 1);
+            }
+            super.add(index, element);
+        }
+        return true;
+    }
+    
+    /**
+     * This method adds all elements in the given collection into the list, ordered.
+     * 
+     * @param collection    The collection of items to be added.
+     * @return              true after all the elements are added successfully.
+     */
+    public boolean addAllOrdered(Collection<? extends T> collection) {
+        Iterator<? extends T> i = collection.iterator();
+        while (i.hasNext()) {
+            addOrder(i.next());
+        }
+        return true;
+    }
+    
+    /**
+     * This method adds all elements in the given collection at the end of the list, unordered.
+     * 
+     * @param collection    The collection of items to be added.
+     * @return              true after all the elements are added successfully.
+     */
+    public boolean addAllUnordered(Collection<? extends T> collection) {
+        return super.addAll(collection);
+    }
+    
+    /** 
+     * This method re-orders the task edited.
+     * This method is called when the deadline of that task has been changed.
+     * 
+     * @param index of task that has been edited
+     */
+    public void updateListOrder(int index) {
+        assert ((index < this.size()) && (index >= 0));
+        
+        T task = this.remove(index);
+        this.addOrder(task);
+    }
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\SortedArrayList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+	/**
+	 * This constructor creates a new Task object, with the specified description.
+	 * 
+	 * @param description  The description of the task.
+	 */
+	public Task(String description) {
+		this.description = description;
+		this.isDone = false;
+		this.tags = new ArrayList<String>();
+		this.addedTime = new Date(System.currentTimeMillis());
+	}
+	
+	/**
+	 * This method sets a new description for the task.
+	 * 
+	 * @param desc The new description of the task.
+	 */
+	public void setDescription(String desc) {
+		this.description = desc;
+	}
+
+	/**
+	 * This method returns the description of the task.
+	 * 
+	 * @return The String object representing the description of the task.
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
+	/**
+	 * This method returns the list of tags of the task.
+	 * 
+	 * @return The List<String> object representing the list of tags of the task. 
+	 */
+	public List<String> getTags() {
+		return tags;
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+	/**
+	 * This method adds a tag to a task.
+	 * 
+	 * @param tag  The tag to be added to a task.
+	 * @throws TaskTagDuplicateException   If task already has the specified tag.
+	 */
+	public void addTag(String tag) throws TaskTagDuplicateException {
+	    if (tags.contains(tag.toLowerCase())) {
+	        throw new TaskTagDuplicateException();
+	        
+	    } else {
+	        tags.add(tag.toLowerCase());
+	    }
+	}
+	
+	/**
+	 * This method removes a tag from a task.
+	 * 
+	 * @param tag  The tag to be removed from a task.
+	 * @throws TaskTagException    If task does not have the specified tag.
+	 */
+	public void deleteTag(String tag) throws TaskTagException {
+	    if (tags.contains(tag.toLowerCase())) {
+	        tags.remove(tag.toLowerCase());
+	        
+	    } else {
+	        throw new TaskTagException();
+	    }
+	}
+	
+	/**
+	 * This method marks a task as done.
+	 * 
+	 * @return The newly created RepeatedTask if the task is a repeated task, null otherwise.
+	 * @throws TaskDoneException   If task is already done.
+	 */
+	public Task markDone() throws TaskDoneException {
+	    if (!isDone) {
+    		isDone = true;
+    	    doneDate = new Date(System.currentTimeMillis());
+    		return null;
+	    } else {
+	        throw new TaskDoneException();
+	    }
+	}
+	
+	/**
+	 * This method marks a task as done.
+	 * This method supports the undo/redo functionality.
+	 */
+	public void markRedone() {
+	    if (isDone) {
+	        assert false;
+	    } else {
+	        isDone = true;
+	    }
+	}
+	
+    /**
+     * This method marks a task as undone.
+     * This method supports the undo/redo functionality.
+     */
+	public void markUndone() {
+	    if (!isDone) {
+	        assert false;
+	    } else {
+	        isDone = false;
+	    }
+	}
+	
+	/**
+	 * This method checks if a task is done.
+	 * 
+	 * @return true if the task is done, false otherwise.
+	 */
+	public boolean getIsDone() {
+		return this.isDone;
+	}
+
+	/**
+	 * This method sets a new due date for the task.
+	 * 
+	 * @param time The Date object representing the new due date.
+	 * @throws TaskInvalidDateException    If a floating task tries to call this method.
+	 */
+	public void setDeadline(Date time) throws TaskInvalidDateException {
+	    // sub class override for repeated / fixed / deadline tasks
+	    // else trying to add date to otherwise non date task, error
+	    
+	    throw new TaskInvalidDateException();
+    }
+
+	/**
+	 * This method returns the due date of the task.
+	 * 
+	 * @return The Date object representing the due date of the task.
+	 * @throws TaskInvalidDateException    If a floating task tries to call this method.
+	 */
+	public Date getDeadline() throws TaskInvalidDateException {
+	    // sub class override, 
+	    // else exception
+	    
+	    throw new TaskInvalidDateException(); 
+    }	
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+    /**
+     * This method sets a new start time for the (fixed) task.
+     * 
+     * @param time The Date object representing the new start time.
+     */
+	public void setStartTime(Date startDate) {
+	    
+    }
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\Task.java
+	 */
+
+    /**
+     * This abstract method creates a copy of the task object 
+     * (same values for fields, but different references).
+     * This method supports the undo/redo functionality.
+     * 
+     * @return The task object newly created.
+     */
+	@Override
+    public abstract Task clone();
+	
+	/**
+	 * This method checks if two tasks are equal.
+	 * Two tasks are equal if they have the same value for different properties:
+	 * Added time, Description, Class, Tags, ..
+	 * Subclass override for subclasses with more properties.
+	 * 
+	 * @param task The task to be compared to.
+	 * @return     true if the tasks are equal, false otherwise.
+	 */
+	public boolean equals(Task task) {
+	    boolean isEqual = this.getAddedTime().equals(task.getAddedTime()) &&
+	                      this.getClass() == task.getClass() &&
+	                      this.getDescription().equals(task.getDescription()) &&
+	                      this.getTags().equals(task.getTags());	    
+	    return isEqual;
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	static Stack<LastState> undoStack = new Stack<LastState>();
+	static Stack<LastState> redoStack = new Stack<LastState>();
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method returns the Task with the specified task index.
+	 * 
+	 * @param taskIndex    The task index of the task to get.
+	 * @return             The Task with the specified task index.
+	 */
+	public Task getTask(int taskIndex) {
+		if (isDisplay) {
+			if ((taskIndex >= tasksToDisplay.size()) || (taskIndex < 0)) {
+				throw new TaskInvalidIdException("Error index for editing!");
+			} else {
+				return tasksToDisplay.get(taskIndex);
+			}
+		} else {
+			if ((taskIndex >= totalTasksOngoing) || (taskIndex < 0)) {
+				throw new TaskInvalidIdException("Error index for editing!");
+			} else {
+				// get edit id from timed/ untimed list
+				if (taskIndex < tasksTimed.size()) {
+					return tasksTimed.get(taskIndex);
+				} else {
+					return tasksUntimed.get(taskIndex - tasksTimed.size());
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method returns task index of the specified Task.
+	 * 
+	 * @param task     The specified Task to get the task index of.
+	 * @return         The task index of the task. 
+	 */
+	public int getTaskIndex(Task task) {
+	    if (tasksTimed.contains(task)) {
+	        return tasksTimed.indexOf(task);
+	        
+	    } else if (tasksUntimed.contains(task)) {
+	        return tasksUntimed.indexOf(task) + tasksTimed.size();
+	        
+	    } else {
+	        
+	        for (int i = 0; i < tasksTimed.size(); i++) {
+	            Task timedTask = tasksTimed.get(i);
+	            if (task.equals(timedTask)) {
+	                return i;
+	            }
+	        }
+	        
+	        for (int j = 0; j < tasksUntimed.size(); j++) {
+	            Task untimedTask = tasksUntimed.get(j);
+	            if (task.equals(untimedTask)) {
+	                return j;
+	            }
+	        }
+	        
+	        assert false;
+	        return -1;
+	    }
+	    
+	    
+	}
+	/**
+	 * This method adds a task to the corresponding lists in its position.
+	 * This method is called by markTaskDone, if task is a repeat task;
+	 * This method is called by undo, to revert the deleting of tasks.
+	 * 
+     * @param task      The task to be added.
+     */
+	private void addToList(Task task) {
+	    
+	    if (task.getIsDone()) {
+	        ((SortedArrayList<Task>) this.tasksFinished).addOrder(task);
+	        this.totalFinished++;
+	        
+	    } else {
+    		if (task instanceof FloatingTask) {
+    			((SortedArrayList<Task>) this.tasksUntimed).addOrder(task);
+    
+    		} else {
+    			((SortedArrayList<Task>) this.tasksTimed).addOrder(task);
+    			addToTaskRepeated(task);
+    		}
+    		this.totalTasksOngoing++;
+	    }
+	    
+	    logger.info("task added");
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+    /**
+     * This method edits the description of a task in the file.
+     *  
+     * @param taskIndex    The task index of the task to be edited.
+     * @param description  The new description to be entered.
+     * @return the original description
+	 */
+	public String editTaskDescriptionOnly(int taskIndex, String description) {
+
+        if (isInvalidIndex(taskIndex)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToEdit = getTask(taskIndex - 1);
+            String oldDescription = taskToEdit.getDescription();
+            
+            Task clonedTaskBefore = taskToEdit.clone();
+            editTaskDescription(taskToEdit, description);
+            addToUndoList(LastCommand.EDIT, clonedTaskBefore, taskToEdit.clone());
+
+            logger.info("Task description edited");            
+            return oldDescription;
+        }
+	}
+	
+	/**
+     * This method edits the time of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param time         The new time to be entered.
+	 * @throws TaskInvalidIdException      if the task index entered is invalid.
+	 * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
+    public void editTaskDeadlineOnly(int taskIndex, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
+        if (isInvalidIndex(taskIndex)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToEdit = getTask(taskIndex - 1);
+            Task clonedTaskBefore = taskToEdit.clone();
+            editTaskDeadline(taskToEdit, time);
+            addToUndoList(LastCommand.EDIT, clonedTaskBefore, taskToEdit.clone());
+            logger.info("Task deadline edited");
+        }
+	}
+	
+    /**
+     * This method edits both the time and description of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param desc         The new description to be entered.
+     * @param time         The new time to be entered.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+     */
+	public void editTaskDescriptionDeadline(int taskIndex, String desc, Date time) throws TaskInvalidIdException, TaskInvalidDateException {
+        if (isInvalidIndex(taskIndex)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToEdit = getTask(taskIndex - 1);
+            Task clonedTaskBefore = taskToEdit.clone();
+            editTaskDescription(taskToEdit, desc);
+            editTaskDeadline(taskToEdit, time);
+            addToUndoList(LastCommand.EDIT, clonedTaskBefore, taskToEdit.clone());
+            logger.info("Task description and deadline edited");
+        }
+	}
+	
+	/**
+     * This method edits the times of a fixed task.
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param startDate    The new start time of the task.
+     * @param endDate      The new end time of the task.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
+	public void editTaskTimes(int taskIndex, Date startDate, Date endDate) throws TaskInvalidIdException, TaskInvalidDateException {
+        if (isInvalidIndex(taskIndex)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToEdit = getTask(taskIndex - 1);
+            Task clonedTaskBefore = taskToEdit.clone();
+            editTaskStartDate(taskToEdit, startDate);
+            editTaskDeadline(taskToEdit, endDate);
+            addToUndoList(LastCommand.EDIT, clonedTaskBefore, taskToEdit.clone());
+            logger.info("Task start/end times edited");
+        }
+	}
+	
+	/**
+     * This method edits both the description and times of a fixed task.
+     * 
+     * @param taskIndex    The task index of the task to be edited.
+     * @param desc         The new description to be entered.
+     * @param startDate    The new start time of the task.
+     * @param endDate      The new end time of the task.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
+	public void editTaskDescriptionTimes(int taskIndex, String desc, Date startDate, Date endDate) throws TaskInvalidIdException, TaskInvalidDateException {
+        if (isInvalidIndex(taskIndex)) {
+            throw new TaskInvalidIdException();
+            
+        } else {
+            Task taskToEdit = getTask(taskIndex - 1);
+            Task clonedTaskBefore = taskToEdit.clone();
+            editTaskDescription(taskToEdit, desc);
+            editTaskStartDate(taskToEdit, startDate);
+            editTaskDeadline(taskToEdit, endDate);
+            addToUndoList(LastCommand.EDIT, clonedTaskBefore, taskToEdit.clone());
+            logger.info("Task description and start/end times edited");
+        }
+	}
+	
+	/**
+     * This method edits the description of a task in the file.
+     *  
+	 * @param taskToEdit   The task object to be edited.
+     * @param description  The new description to be entered.
+	 */
+	public void editTaskDescription(Task taskToEdit, String description) {
+
+	    taskToEdit.setDescription(description);
+	}
+
+	/**
+     * This method edits the time of a task in the file (non-fixed/floating tasks).
+     * 
+     * @param taskToEdit    The task object to be edited.
+     * @param time          The new time to be entered.
+     * @throws TaskInvalidIdException      if the task index entered is invalid.
+     * @throws TaskInvalidDateException    if the date entered is invalid.
+	 */
+	public void editTaskDeadline(Task taskToEdit, Date time)
+			throws TaskInvalidDateException {
+
+	    int indexToEdit = getTaskIndex(taskToEdit);
+	    taskToEdit.setDeadline(time);
+	    
+	    ((SortedArrayList<Task>) this.tasksTimed).updateListOrder(indexToEdit);
+	    
+	}
+
+	/**
+	 * This method edits the start time of a task in the file.
+	 * 
+	 * @param taskToEdit   The task object to be edited.
+	 * @param startDate    The new start date to be entered.
+	 * @throws TaskInvalidIdException  if the task index entered is invalid.
+	 */
+	public void editTaskStartDate(Task taskToEdit, Date startDate)
+			throws TaskInvalidIdException {
+
+	    taskToEdit.setStartTime(startDate);
+	}
+	
+	/**
+	 * This method is called by undo, to revert the adding of tasks.
+	 * 
+	 * @param task     The task that was added and is to be deleted. 
+	 */
+	private void deleteFromList(Task task) {
+	    for (int i = 0; i < this.count(); i++) {
+	        Task taskI = getTask(i);
+	        if (taskI.equals(task)) {
+	            if (i < this.tasksTimed.size()) {
+	                tasksTimed.remove(taskI);
+	                deleteFromTasksRepeated(taskI);
+	            } else {
+	                tasksUntimed.remove(taskI);
+	            }
+	            this.totalTasksOngoing--;
+	            logger.info("Deleted a task");
+	        }
+	    }
+	}
+
+	/**
+	 * This method deletes the specified tasks from the file.
+	 * 
+	 * @param taskIndexList    The list of task indices of tasks to be deleted.
+	 * @throws TaskInvalidIdException  if the task index entered is invalid. 
+	 */
+	public void deleteFromList(List<Integer> taskIndexList)
+			throws TaskInvalidIdException {
+		if (taskIndexList.isEmpty()) {
+			throw new TaskInvalidIdException("Nothing to delete");
+		} else {
+
+		    Collections.sort(taskIndexList);
+		    Collections.reverse(taskIndexList);
+		    ArrayList<Integer> taskIndicesToDelete = new ArrayList<Integer>();
+		    
+		    // check beforehand if there are any invalid indices
+		    for (int i = 0; i < taskIndexList.size(); i++) {
+		        int indexToDelete = taskIndexList.get(i);
+		        if (isInvalidIndex(indexToDelete)) {
+		            throw new TaskInvalidIdException("Invalid index for deleting!");
+		        }
+		        taskIndicesToDelete.add(indexToDelete);
+		    }
+		    
+		    ArrayList<Task> tasksRemoved = new ArrayList<Task>();
+		    
+		    for (int i = 0; i < taskIndicesToDelete.size(); i++) {
+		        int indexToRemove = taskIndicesToDelete.get(i);
+		        if (isShowingDone) {
+		            Task taskRemoved = this.tasksFinished.remove(indexToRemove - 1);
+		            deleteFromTasksRepeated(taskRemoved);
+		            tasksRemoved.add(taskRemoved);
+		            
+		        } else {
+                    Task taskToRemove = getTask(indexToRemove - 1);
+                    deleteFromTasksRepeated(taskToRemove);
+                    tasksRemoved.add(taskToRemove);
+                    
+                    // if the index comes from a list used for displaying, use time to find
+                    boolean isFound = false;
+                    
+                    // trace the task by added time.
+                    for (Task task : this.tasksTimed) {
+                        if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+                            this.tasksTimed.remove(task);
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if (!isFound) {
+                        for (Task task : this.tasksUntimed) {
+                            if (task.getAddedTime().equals(taskToRemove.getAddedTime())) {
+                                this.tasksUntimed.remove(task);
+                                break;
+                            }
+                        }
+                    }
+		        }
+		        
+		        this.totalTasksOngoing--;
+		    }
+		    addToUndoList(LastCommand.DELETE, tasksRemoved);
+		}
+	}
+	
+	/**
+	 * This method deletes the specified task from tasksRepeat list,
+	 * if the list contains the task and the task is a RepeatedTask.
+	 *  
+	 * @param taskToRemove The task to be removed from tasksRepeat.
+	 */
+	private void deleteFromTasksRepeated(Task taskToRemove) {
+	    if (taskToRemove instanceof RepeatedTask) {
+	        Task taskInRepeatedList = getTaskContainedInList(this.tasksRepeated, taskToRemove);
+	        if (taskInRepeatedList != null) {
+	            tasksRepeated.remove(taskInRepeatedList);
+                logger.info("deleted a task from the repeated list.");
+	        }
+	    }
+	}
+	
+	/**
+	 * This method adds the specified task to tasksRepeat list,
+	 * if the list does not contain the task and the task is a RepeatedTask.
+	 * 
+	 * @param taskToAdd    The task to be added to tasksRepeat.
+	 */
+	private void addToTaskRepeated(Task taskToAdd) {
+	    if (taskToAdd instanceof RepeatedTask) {
+	        if (!tasksRepeated.contains(taskToAdd)) {
+	            tasksRepeated.add(taskToAdd);
+	            logger.info("added a task to the repeated list.");
+	        }
+	    }
+	}
+
+	/**
+	 * This method clears the TaskList, and all its tasks as well.
+	 * 
+	 */
+    public void clearList() {
+        ArrayList<Task> tasksRemoved = new ArrayList<Task>();
+        tasksRemoved.addAll(tasksUntimed);
+        tasksRemoved.addAll(tasksTimed);
+        tasksRemoved.addAll(tasksFinished);
+        addToUndoList(LastCommand.CLEAR, tasksRemoved);
+        
+		this.isDisplay = false;
+		this.tasksUntimed.clear();
+		this.tasksTimed.clear();
+		this.tasksFinished.clear();
+		this.tasksRepeated.clear();
+		this.tags.clear();
+		this.totalTasksOngoing = 0;
+		this.totalFinished = 0;
+		
+		logger.info("Task list cleared");
+	}
+
+    /**
+     * This method marks done the specified tasks from the file.
+     * 
+     * @param taskIndexList     The list of task indices of tasks to be marked done.
+     * @throws TaskDoneException        if the task is already done.
+     * @throws TaskInvalidIdException   if the task index given is invalid.
+     */
+	public void markTaskDone(List<Integer> taskIndexList)
+			throws TaskDoneException, TaskInvalidIdException {
+
+		if (taskIndexList.isEmpty()) {
+			throw new TaskInvalidIdException("Error index input.");
+  
+		} else {
+
+		    List<Task> tasksToMarkDone = new ArrayList<Task>();
+		    List<Task> tasksAfterMarkingDone = new ArrayList<Task>();
+		    List<Task> tasksBeforeMarkingDone = new ArrayList<Task>();
+		    List<Task> newRepeatTaskList = new ArrayList<Task>();
+		    
+		    // checking for validity before performing operations
+		    for (int i = 0; i < taskIndexList.size(); i++) {
+		        int taskIdToMarkDone = taskIndexList.get(i);
+		        if (isInvalidIndex(taskIdToMarkDone)) {
+		            throw new TaskInvalidIdException("Error index input.");
+		        } else {
+		            Task task = getTask(taskIdToMarkDone - 1);
+		            if (task.getIsDone()) {
+		                throw new TaskDoneException();
+		            }
+		            tasksToMarkDone.add(task);
+		        }
+		    }
+
+		    for (Task target : tasksToMarkDone) {
+		        
+		        tasksBeforeMarkingDone.add(target.clone());
+		        Task newRepeatTask = null;
+		        
+		        if (this.tasksUntimed.contains(target)) {
+		            newRepeatTask = target.markDone();
+		            this.tasksUntimed.remove(target);
+		            this.tasksFinished.add(target);
+		            tasksAfterMarkingDone.add(target.clone());
+		            
+		        } else if (this.tasksTimed.contains(target)) {
+                    newRepeatTask = target.markDone();
+                    this.tasksTimed.remove(target);
+                    this.tasksFinished.add(target);
+                    tasksAfterMarkingDone.add(target.clone());
+		        }
+		        
+		        this.totalFinished++;
+		        this.totalTasksOngoing--;
+		        if (newRepeatTask != null) {
+		            this.addToList((RepeatedTask) newRepeatTask);
+		            newRepeatTaskList.add(newRepeatTask);
+		            deleteFromTasksRepeated(target);
+		        }
+		    }
+		    
+		    addToUndoList(LastCommand.DONE, tasksBeforeMarkingDone, tasksAfterMarkingDone, newRepeatTaskList);
+		    logger.info("Tasks marked done");
+		}
+	}
+	
+	/**
+	 * This method is called by redo, to revert the undo on marking tasks done.
+	 * 
+	 * @param task     The task that is to be re-marked done .
+	 */
+	private void markTaskRedone(Task task) {
+	    task.markRedone();
+	    logger.info("task has been marked redone.");
+	}
+	
+	/**
+	 * This method is called by undo, to revert the marking done of tasks.
+	 * 
+	 * @param task     The task that is to be marked un-done.
+	 */
+	private void markTaskUndone(Task task) {
+	    task.markUndone();
+	       logger.info("task has been marked undone.");
+	}
+
+	/**
+	 * This method assigns the tag (non case-sensitive) to a specified task.
+	 * 
+	 * @param taskIndexToTag   The task index of the task to be tagged.
+     * @param tag              The tag to be assigned.
+     * @throws TaskInvalidIdException      if the task index given is invalid.
+	 * @throws TaskTagDuplicateException   if the task already contains the specified tag.
+	 */
+	public void tagTask(int taskIndexToTag, String tag)
+			throws TaskInvalidIdException, TaskTagDuplicateException {
+	    
+	    if (isInvalidIndex(taskIndexToTag)) {
+	        throw new TaskInvalidIdException();
+	        
+	    } else if (tag.equals(null)) {
+	        assert false;
+	       
+	    } else if (tag.isEmpty()) {
+	        assert false;
+	        
+	    } else {
+	        Task givenTaskToTag = getTask(taskIndexToTag - 1);
+	        Task clonedTaskBefore = givenTaskToTag.clone();
+	        tagGivenTask(givenTaskToTag, tag);
+	        
+	        addToUndoList(LastCommand.TAG, clonedTaskBefore, givenTaskToTag.clone(), tag);
+	        logger.info("Task tagged.");
+	    }
+	}
+	
+	/**
+	 * This method attaches a tag to the task.
+	 * This method is called by tagTask, when tagging a task;
+	 * This method is called by undo, when reverting the untag operation;
+	 * and is called by redo, when reverting the undo of the tag operation.
+	 * 
+	 * @param taskToTag    The task that is to be tagged.
+	 * @param tag          The tag to be attached to the task.
+	 * @throws TaskTagDuplicateException   if the task already has the tag.
+	 */
+    private void tagGivenTask(Task taskToTag, String tag) throws TaskTagDuplicateException {
+	    taskToTag.addTag(tag);
+	    
+	    if (!tags.containsKey(tag.toLowerCase())) {
+	        List<Task> tagTaskList = new ArrayList<Task>();
+	        tagTaskList.add(taskToTag);
+	        tags.put(tag.toLowerCase(), tagTaskList);
+	        
+	    } else {
+	        List<Task> tagTaskList = tags.remove(tag.toLowerCase());
+	        tagTaskList.add(taskToTag);
+	        tags.put(tag.toLowerCase(), tagTaskList);
+	    }
+	}
+
+    /**
+     * This method removes a tag from the task.
+     * 
+     * @param taskIndexToTag   The task index of the task to be tagged.
+     * @param tag              The tag to be assigned.
+     * @throws TaskInvalidIdException   if the task index given is invalid. 
+     * @throws TaskTagException         if the task does not have the tag to remove.
+     */
+	public void untagTask(int taskIndexToUntag, String tag)
+			throws TaskInvalidIdException, TaskTagException {
+	    if (isInvalidIndex(taskIndexToUntag)) {
+	        throw new TaskInvalidIdException();
+	        
+        } else if (tag.equals(null)) {
+            assert false;
+            
+        } else if (tag.isEmpty()) { 
+            assert false;
+            
+        } else {
+	        Task givenTaskToUntag = getTask(taskIndexToUntag - 1);
+	        Task clonedTaskBefore = givenTaskToUntag.clone();
+	        untagGivenTask(givenTaskToUntag, tag);
+	        
+            addToUndoList(LastCommand.UNTAG, clonedTaskBefore, givenTaskToUntag.clone(), tag);
+            logger.info("Task untagged");
+	    }
+	}
+	
+	/**
+	 * This method removes a tag from the task. 
+	 * If no tag is given, all tags from the given task are removed.
+	 *  
+	 * @param taskToUntag  The task that is to be untagged.
+	 * @param tag          The tag to be removed from the task.
+	 * @throws TaskTagException    if the task does not have the tag to remove.
+	 */
+    private void untagGivenTask(Task taskToUntag, String tag) throws TaskTagException {
+	    if (tag.isEmpty()) {
+	        untagTaskAll(taskToUntag);
+	        
+	    } else {
+	        taskToUntag.deleteTag(tag);
+	        
+	        if (tags.get(tag.toLowerCase()).size() == 1) {
+	            tags.remove(tag.toLowerCase());
+	            
+	        } else {
+	            List<Task> tagTaskList = tags.remove(tag.toLowerCase());
+	            tagTaskList.remove(taskToUntag);
+	            tags.put(tag.toLowerCase(), tagTaskList);
+	        }
+	    }
+	}
+
+    /**
+     * This method removes all tags from the task.
+     * This method is called by untagGivenTask.
+     * 
+     * @param taskToUntag   The task that is to be untagged.
+     * @throws TaskTagException     if the task does not have any tags to remove.
+     */
+	private void untagTaskAll(Task taskToUntag) throws TaskTagException {
+		List<String> taskTags = taskToUntag.getTags();
+
+		if (taskTags.isEmpty()) {
+			throw new TaskTagException("No tags to remove");
+		}
+
+		while (!taskTags.isEmpty()) {
+			String tag = taskTags.remove(0);
+
+			assert tags.get(tag.toLowerCase()).contains(taskToUntag);
+
+			tags.get(tag.toLowerCase()).remove(taskToUntag);
+			taskToUntag.deleteTag(tag);
+		}
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method returns a list of tasks that contain the specified tag.
+	 * 
+	 * @param tag  The specified tag.
+	 * @return     The list of tasks with the tag.
+	 * @throws TaskNoSuchTagException  if the TaskList does not contain this tag.
+	 */
+	public List<Task> getTasksWithTag(String tag) throws TaskNoSuchTagException {
+		if (tags.containsKey(tag.toLowerCase())) {
+			List<Task> taskListOfTag = tags.get(tag.toLowerCase());
+			return taskListOfTag;
+		} else {
+			throw new TaskNoSuchTagException();
+		}
+	}
+	
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method checks if the time of the task is between the times of the two calendars
+	 * 
+	 * @param taskTimeCal          Calendar representing the time of the task
+	 * @param searchTimeStartCal   Calendar representing the start time being searched
+	 * @param searchTimeEndCal     Calendar representing the end time being searched
+	 * @return true if the time of the task being checked is between the other two times
+	 */
+	private boolean sameHour(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                             Calendar searchTimeEndCal) {
+	    return (taskTimeCal.get(Calendar.HOUR_OF_DAY) >= searchTimeStartCal.get(Calendar.HOUR_OF_DAY) &&
+                taskTimeCal.get(Calendar.HOUR_OF_DAY) <= searchTimeEndCal.get(Calendar.HOUR_OF_DAY));
+    }
+
+	 /**
+     * This method checks if the day of the task is within the days of the two calendars
+     * 
+     * @param taskTimeCal          Calendar representing the day of the task
+     * @param searchTimeStartCal   Calendar representing the start day being searched
+     * @param searchTimeEndCal     Calendar representing the end day being searched
+     * @return true if the day of the task being checked is between the other two days
+     */
+    private boolean sameWeekday(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                                Calendar searchTimeEndCal) {
+        int startDay = searchTimeStartCal.get(Calendar.DAY_OF_WEEK);
+        int endDay = searchTimeEndCal.get(Calendar.DAY_OF_WEEK);
+        int taskDay = taskTimeCal.get(Calendar.DAY_OF_WEEK);
+        
+        if (startDay == 1) {
+            startDay = 7;
+        }
+        if (endDay == 1) {
+            endDay = 7;
+        }
+        if (taskDay == 1) {
+            taskDay = 7;
+        }
+        
+        return ((taskDay >= startDay) &&
+                (taskDay <= endDay));
+    }	
+
+    /**
+     * This method checks if the day of the task is between the days of the two calendars
+     * 
+     * @param taskTimeCal          Calendar representing the day of the task
+     * @param searchTimeStartCal   Calendar representing the start day being searched
+     * @param searchTimeEndCal     Calendar representing the end day being searched
+     * @return true if the day of the task being checked is between the other two days
+     */
+    private boolean sameMonthDay(Calendar taskTimeCal, Calendar searchTimeStartCal,
+                                 Calendar searchTimeEndCal) {
+        return (taskTimeCal.get(Calendar.DAY_OF_MONTH) >= searchTimeStartCal.get(Calendar.DAY_OF_MONTH) &&
+                taskTimeCal.get(Calendar.DAY_OF_MONTH) <= searchTimeEndCal.get(Calendar.DAY_OF_MONTH));
+    }
+    
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method reverts the last operation that changed the TaskList.
+	 * 
+	 * @throws UndoException   if there is no operation to undo 
+	 */
+	public void undo() throws UndoException {
+	    if (undoStack.isEmpty()) {
+	        throw new UndoException();
+	    } else {
+	        
+	        setShowDisplayListToFalse();
+	        LastState lastState = undoStack.pop();
+	        redoStack.push(lastState);
+	        
+	        if (lastState.getLastCommand() == LastCommand.ADD) {
+	            Task taskToUnadd = lastState.getPreviousTaskState();
+	            this.deleteFromList(taskToUnadd);
+	            
+	            logger.info("Operation undone: add");
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.DELETE) {
+	            List<Task> tasksToUndelete = lastState.getPreviousTaskStateList();
+	            for (Task task : tasksToUndelete) {
+	                this.addToList(task);
+	            }
+	            
+                logger.info("Operation undone: delete");
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+	            List<Task> tasksToReadd = lastState.getPreviousTaskStateList();
+	            for (Task task : tasksToReadd) {
+	                this.addToList(task);
+	            }
+	            
+	            updateTagsHash(tasksToReadd);
+	            logger.info("Operation undone: clear");
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.DONE) {
+	            List<Task> tasksAfterDone = lastState.getCurrentTaskStateList();
+	            List<Task> repeatTaskList = lastState.getRepeatTaskList();
+	            
+	            for (Task doneTask : tasksAfterDone) {
+	                
+	                Task taskToBeUndone = getTaskContainedInList(this.tasksFinished, doneTask);
+	                this.markTaskUndone(taskToBeUndone);
+	                this.markTaskUndone(doneTask);
+	                this.tasksFinished.remove(taskToBeUndone);
+	                this.totalFinished--;
+	                this.addToList(taskToBeUndone);
+	            }
+	            
+	            for (Task newRepeatTask : repeatTaskList) {
+	                this.tasksTimed.remove(newRepeatTask);
+	                this.totalTasksOngoing--;
+	            }
+	            
+	            logger.info("Operation undone: mark done");
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.TAG) {
+	            Task currentTaskState = lastState.getCurrentTaskState();
+	            Task previousTaskState = lastState.getPreviousTaskState();
+	            String tag = lastState.getTag();
+	            
+	            List<String> currentTagsState = currentTaskState.getTags();
+	            List<String> previousTagsState = previousTaskState.getTags();
+	            
+	            
+	            List<Task> listToSearch = null;
+	            if (isContainedInList(this.tasksTimed, currentTaskState)) {
+	                listToSearch = this.tasksTimed;
+	                
+	            } else if (isContainedInList(this.tasksUntimed, currentTaskState)) {
+	                listToSearch = this.tasksUntimed; 
+	                
+	            } else if (isContainedInList(this.tasksFinished, currentTaskState)) {
+	                listToSearch = this.tasksFinished;
+	                
+	            } else {
+	                assert false;
+	            }
+
+	            
+                Task taskTagged = getTaskContainedInList(listToSearch, currentTaskState);
+                try {
+                    for (String tagNameToDelete : currentTagsState) {
+                        taskTagged.deleteTag(tagNameToDelete);
+                    }
+                    
+                    for (String tagNameToAdd : previousTagsState) {
+                        taskTagged.addTag(tagNameToAdd);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                    
+                } catch (TaskTagDuplicateException e) {
+                    assert false;
+                }
+                
+                updateTaskTagsHash(previousTaskState, tag);
+	            
+	            logger.info("Operation undone: tag");
+	            
+	        } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
+	            Task currentTaskState = lastState.getCurrentTaskState();
+	            Task previousTaskState = lastState.getPreviousTaskState();
+	            String tag = lastState.getTag();
+	            
+	            List<String> currentTagsState = currentTaskState.getTags();
+	            List<String> previousTagsState = previousTaskState.getTags();
+	            
+	            
+                List<Task> listToSearch = null;
+                if (isContainedInList(this.tasksTimed, currentTaskState)) {
+                    listToSearch = this.tasksTimed;
+                    
+                } else if (isContainedInList(this.tasksUntimed, currentTaskState)) {
+                    listToSearch = this.tasksUntimed; 
+                    
+                } else if (isContainedInList(this.tasksFinished, currentTaskState)) {
+                    listToSearch = this.tasksFinished;
+                    
+                } else {
+                    assert false;
+                }
+
+                
+                Task taskUntagged = getTaskContainedInList(listToSearch, currentTaskState);
+                try {
+                    for (String tagNameToDelete : currentTagsState) {
+                        taskUntagged.deleteTag(tagNameToDelete);
+                    }
+                    
+                    for (String tagNameToAdd : previousTagsState) {
+                        taskUntagged.addTag(tagNameToAdd);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                    
+                } catch (TaskTagDuplicateException e) {
+                    assert false;
+                }
+                
+                updateTaskTagsHash(previousTaskState, tag);
+
+	            	            
+	            logger.info("Operation undone: untag");
+
+	        } else if (lastState.getLastCommand() == LastCommand.EDIT) {
+	            Task currentTaskState = lastState.getCurrentTaskState();
+	            Task previousTaskState = lastState.getPreviousTaskState();
+	            
+	            for (int i = 0; i < this.totalTasksOngoing; i++) {
+	                Task task = this.getTask(i);
+	                if (task.equals(currentTaskState)) {
+	                    deleteFromList(task);
+	                    addToList(previousTaskState);
+	                    break;
+	                }
+	            }
+	            
+	            logger.info("Operation undone: edit");
+	            
+	        } else {
+	            // add on other undo operations with a new else if statement,
+	            // should not actually reach here
+	            assert false;
+	        }
+	    }
+	}
+	
+	/**
+	 * This method updates the <tags: tasks> pairs in the tags HashMap.
+	 * This method is only called by undo to revert the clear command.
+	 * 
+	 * @param tasksToReadd List of tasks that are re-added after the clear command
+	 */
+	private void updateTagsHash(List<Task> tasksToReadd) {
+        for (Task task : tasksToReadd) {
+            List<String> taskTags = task.getTags();
+            for (String tag : taskTags) {
+                if (tags.containsKey(tag)) {
+                    tags.get(tag).add(task);
+                    
+                } else {
+                    List<Task> taskWithTag = new ArrayList<Task>();
+                    taskWithTag.add(task);
+                    tags.put(tag, taskWithTag);
+                }
+            }
+        }
+        
+        logger.info("updating the tags hashmap");
+    }
+	
+	/**
+	 * This method updates the tags HashMap for the specified task and tag last updated.
+	 * This method is only called by undo/redo for tagging.
+	 * 
+	 * @param task The task with the tag untagged/retagged.
+	 * @param tag  The tag that was added/removed.
+	 */
+	private void updateTaskTagsHash(Task task, String tag) {
+	    List<String> taskTags = task.getTags();
+	    
+	    if (taskTags.contains(tag)) {
+	        // tag was added
+	        List<Task> tasksWithTag = tags.get(tag);
+	        
+	        if (tasksWithTag == null) {
+	            List<Task> listOfTasksWithTag = new ArrayList<Task>();
+	            listOfTasksWithTag.add(task);
+	            tags.put(tag, listOfTasksWithTag);
+	            
+	        } else {
+	            List<Task> listOfTasksWithTag = tags.get(tag);
+	            if (listOfTasksWithTag.contains(task)) {
+	                assert false;
+	                
+	            } else {
+	                listOfTasksWithTag.add(task);
+	            }
+	        }	        
+	        
+	    } else {
+	        // tag was removed
+	        List<Task> tasksWithTag = tags.get(tag);
+	        
+	        if (tasksWithTag == null) {
+	            List<Task> listOfTasksWithTag = new ArrayList<Task>();
+	            listOfTasksWithTag.add(task);
+	            
+	        } else {
+	            List<Task> listOfTasksWithTag = tags.get(tag);
+	            if (isContainedInList(listOfTasksWithTag, task)) {
+	                Task taskInList = getTaskContainedInList(listOfTasksWithTag, task);
+	                listOfTasksWithTag.remove(taskInList);
+	                
+	            } else {
+	                assert false;
+	            }
+	        }
+	    }
+	}
+
+    /**
+	 * This method reverts the undo operation done.
+	 * 
+	 * @throws RedoException   if there is no operation undid
+	 */
+    public void redo() throws RedoException{
+        if (redoStack.isEmpty()) {
+            throw new RedoException();
+        } else {
+            
+            setShowDisplayListToFalse();
+            LastState lastState = redoStack.pop();
+            undoStack.push(lastState);
+            
+            if (lastState.getLastCommand() == LastCommand.ADD) {
+                Task taskToReadd = lastState.getPreviousTaskState();
+                this.addToList(taskToReadd);
+                
+                logger.info("Operation redone: add");
+                
+            } else if (lastState.getLastCommand() == LastCommand.DELETE) {
+                List<Task> tasksToRedelete = lastState.getPreviousTaskStateList();
+                for (Task task : tasksToRedelete) {
+                    this.deleteFromList(task);
+                }
+                
+                logger.info("Operation redone: delete");
+                
+            } else if (lastState.getLastCommand() == LastCommand.CLEAR) {
+                List<Task> tasksToRedelete = lastState.getPreviousTaskStateList();
+                for (Task task : tasksToRedelete) {
+                    this.deleteFromList(task);
+                }                
+                
+                logger.info("Operation redone: clear");
+                
+            } else if (lastState.getLastCommand() == LastCommand.DONE) {
+                List<Task> tasksAfterUndone = lastState.getCurrentTaskStateList();
+                List<Task> repeatTaskList = lastState.getRepeatTaskList();
+
+                for (Task doneTask : tasksAfterUndone) {
+                    if (isContainedInList(this.tasksTimed, doneTask)) {
+                        Task taskToBeRedone = getTaskContainedInList(this.tasksTimed, doneTask);
+                        this.markTaskRedone(taskToBeRedone);
+                        this.markTaskRedone(doneTask);
+                        
+                        this.tasksTimed.remove(taskToBeRedone);
+                        this.totalTasksOngoing--;
+                        ((SortedArrayList<Task>) this.tasksFinished).addOrder(taskToBeRedone);
+                    
+                    } else if (isContainedInList(this.tasksUntimed, doneTask)) {
+                        Task taskToBeRedone = getTaskContainedInList(this.tasksUntimed, doneTask);
+                        this.markTaskRedone(taskToBeRedone);
+                        this.markTaskRedone(doneTask);
+
+                        this.tasksUntimed.remove(taskToBeRedone);
+                        this.totalTasksOngoing--;
+                        ((SortedArrayList<Task>) this.tasksFinished).addOrder(taskToBeRedone);
+                        
+                    } else {
+                        assert false;
+                    }
+
+                    this.deleteFromList(doneTask);
+                    this.totalFinished++;
+                }
+                
+                for (Task newRepeatTask : repeatTaskList) {
+                    this.addToList(newRepeatTask);
+                }
+                
+                logger.info("Operation redone: done");
+                
+            } else if (lastState.getLastCommand() == LastCommand.TAG) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                String tag = lastState.getTag();
+                
+                if (tag.isEmpty()) {
+                    assert false;
+                    
+                } else {
+                    try {
+                        tagGivenTask(currentTaskState, tag);
+                        
+                    } catch (TaskTagDuplicateException e) {
+                        assert false;
+                    }
+                }
+                
+                logger.info("Operation redone: tag");
+                
+            } else if (lastState.getLastCommand() == LastCommand.UNTAG) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                String tag = lastState.getTag();
+                
+                try {
+                    if (tag.isEmpty()) {
+                        List<String> tagsToUntag = currentTaskState.getTags();
+                        for (String tagToUntag : tagsToUntag) {
+                            untagGivenTask(currentTaskState, tagToUntag);
+                        }
+                    } else {
+                        untagGivenTask(currentTaskState, tag);
+                    }
+                } catch (TaskTagException e) {
+                    assert false;
+                }
+                
+                logger.info("Operation redone: untag");
+                
+            } else if (lastState.getLastCommand() == LastCommand.EDIT) {
+                Task currentTaskState = lastState.getCurrentTaskState();
+                Task prevTaskState = lastState.getPreviousTaskState();
+                
+                for (int i = 0; i < this.totalTasksOngoing; i++) {
+                    Task task = this.getTask(i);
+                    if (task.equals(prevTaskState)) {
+                        deleteFromList(task);
+                        addToList(currentTaskState);
+                        break;
+                    }
+                }
+                
+                logger.info("Operation redone: edit");
+                
+            } else {
+                // add on other redo operations with a new else if statement,
+                // should not actually reach here
+                assert false;
+            }            
+        }
+    }
+	
+    /**
+     * This method returns the first consecutive repeated task found, given one repeated task.
+     * Due to the ordering of tasks, the first consecutive repeated task found will always 
+     * come after a second consecutive repeated task (if any). 
+     * 
+     * @param repeatedTask  The repeated task given, to search for consecutive repeated tasks.
+     * @return              The consecutive repeated task if found, null otherwise.
+     */
+	public RepeatedTask getLatestConsecutiveRepeatedTask(RepeatedTask repeatedTask) {
+	    RepeatedTask consecutiveTask = null;
+	    for (int j = this.tasksTimed.size() - 1; j >= 0; j--) {
+	        Task timedTask = this.tasksTimed.get(j);
+	        if (timedTask instanceof RepeatedTask) {
+	            if (((RepeatedTask) timedTask).isConsecutiveTasks(repeatedTask)) {
+	                consecutiveTask = (RepeatedTask) timedTask;
+	                break;
+	            }
+	        }
+	    }
+	    if (consecutiveTask == null) {
+	        assert false;
+	    } 
+	    return consecutiveTask;
+	}
+
+	/**
+	 * This method creates a LastState object to undo for add command.
+	 * 
+	 * @param cmd  The command type.
+	 * @param task The task state to store.
+	 */
+	private void addToUndoList(LastCommand cmd, Task task) {
+	    LastState currentTaskState = new LastState(cmd, task);
+	    undoStack.push(currentTaskState);
+	}
+
+	/**
+	 * This method creates a LastState object to undo for edit / tagging command.
+	 * 
+	 * @param cmd      The command type.
+	 * @param taskPrev The previous task state to store.
+	 * @param taskNext The current task state to store.
+	 */
+    private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext) {
+        LastState currentTaskState = new LastState(cmd, taskPrev, taskNext);
+        undoStack.push(currentTaskState);        
+    }
+
+    /**
+     * This method creates a LastState object to undo for delete command.
+     * 
+     * @param cmd           The command type.
+     * @param taskListPrev  The previous task list state to store.
+     */
+    private void addToUndoList(LastCommand cmd, List<Task> taskListPrev) {
+        LastState currentTaskState = new LastState(cmd, taskListPrev);
+        undoStack.push(currentTaskState);
+    }
+
+    /**
+     * This method creates a LastState object to undo for mark done command.
+     * 
+     * @param cmd               The command type.
+     * @param taskListPrev      The previous task list state to store.
+     * @param taskListNext      The current task list state to store.
+     * @param repeatTaskList    The repeatedTaskList to store, if any.
+     */
+    private void addToUndoList(LastCommand cmd, List<Task> taskListPrev, 
+                               List<Task> taskListNext, List<Task> repeatTaskList) {
+        LastState currentTaskState = new LastState(cmd, taskListPrev, taskListNext, repeatTaskList);
+        undoStack.push(currentTaskState);
+    }
+
+    /**
+     * This method creates a LastState object to undo for tagging commands.
+     * 
+     * @param cmd       The command type.
+     * @param taskPrev  The previous task state to store.
+     * @param taskNext  The current task state to store.
+     * @param tag       The specified tag to (un)tag.
+     */
+    private void addToUndoList(LastCommand cmd, Task taskPrev, Task taskNext, String tag) {
+        LastState currentTaskState = new LastState(cmd, taskPrev, taskNext, tag);
+        undoStack.push(currentTaskState);        
+    }
+    
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This method checks if a task is contained inside a list of tasks.
+	 * A task is contained in a list if task1.equals(task) == true and task1 
+	 * is in the list.
+	 * 
+	 * @param listOfTasks  The list of tasks to check.
+	 * @param task         The task to be searching for.
+	 * @return             true if the task is contained in the list, false otherwise.
+	 */
+	private boolean isContainedInList(List<Task> listOfTasks, Task task) {
+	    for (int i = 0; i < listOfTasks.size(); i++) {
+	        Task taskInList = listOfTasks.get(i);
+	        if (taskInList.equals(task)) {
+	            return true;
+	            
+	        }
+	    }
+	    
+	    return false;
+	}
+	
+	/**
+	 * This method returns the corresponding task contained inside a list of tasks.
+	 * Similar to the method isContainedInList, only that it returns that task if
+	 * found, instead of a boolean value.
+	 * 
+	 * @param listOfTasks  The list of tasks to check.
+	 * @param task         The task to be searching for.
+	 * @return             The task if found, null otherwise.
+	 */
+	private Task getTaskContainedInList(List<Task> listOfTasks, Task task) {
+	    for (int i = 0; i < listOfTasks.size(); i++) {
+            Task taskInList = listOfTasks.get(i);
+            if (taskInList.equals(task)) {
+                return taskInList;
+                
+            }
+        }
+	    
+        return null;
+	}
+	
+	/**
+	 * This method compares two TaskLists, 
+	 * and returns true if all tasks in both task lists are equal.
+	 * This method is used for testing purposes.
+	 *  
+	 * @param t2   The TaskList to compare with.
+	 * @return     true if the tasklists are equal, false otherwise.
+	 */
+	public boolean isEqual(TaskList t2) {
+	    boolean isEqual = true;
+	    isEqual = isEqual && 
+	              (this.countFinished() == t2.countFinished()) &&
+	              (this.countTimedTask() == t2.countTimedTask()) &&
+	              (this.countUntimedTask() == t2.countUntimedTask());
+	    
+	    int i = 0;
+	    int j = 0;
+	    while (isEqual && (i < this.count())) {
+	        Task thisTask = this.getTask(i);
+	        Task thatTask = t2.getTask(i);
+
+	        isEqual = thisTask.equals(thatTask);
+	        i++;
+	    }
+	    
+	    while (isEqual && (j < this.countFinished())) {
+	        Task thisFinishedTask = this.getFinishedTasks().get(j);
+	        Task thatFinishedTask = t2.getFinishedTasks().get(j);
+	        isEqual = thisFinishedTask.equals(thatFinishedTask) &&
+	                  thisFinishedTask.getDoneDate().equals(thatFinishedTask.getDoneDate());
+	        j++;
+	    }
+	    	    
+	    return isEqual;
+	}
+
+	/**
+	 * This method clears both the undoStack and the redoStack
+	 * This method is used for testing purposes
+	 */
+	public void clearUndoRedoStack() {
+	    undoStack.clear();
+	    redoStack.clear();
+	}
+	
+	/**
+	 * This method adds a task to the task list, given the task.
+	 * This method is used for testing purposes
+	 * 
+	 * @param task     Task to be added to the list 
+	 */
+	public void addTaskToTaskList(Task task) {
+	    addToList(task);
+	}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+	 */
+
+	/**
+	 * This Comparator is used in outputting task list order by done time.
+	 * 
+	 */
+	static class DoneDateComparator implements Comparator<Task> {
+	    
+	    @Override
+	    public int compare(Task o1, Task o2) {
+	        return o1.getDoneDate().compareTo(o2.getDoneDate());
+	    }
+	}
+}
+
+
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\model\TaskList.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\LogicTest.java
+	 */
+
+/**
+ * This class is for testing the functionalities of the Logic class.
+ * 
+ */
+public class LogicTest {
+	/** Following are default test input */
+    final String MESSAGE_ADD_SUCCESS = "Task added successfully.";
+    final String MESSAGE_EDIT_DESCRIPTION = "Task \"%s\" is renamed as \"%s\"";
+    final String MESSAGE_EDIT_DEADLINE = "The deadline is changed to \"%s\"";
+    final String MESSAGE_EDIT_DESCRIPTION_DEADLINE = "Task is renamed as \"%s\". New deadline: \"%s\"";
+    final String MESSAGE_DELETE_SUCCESS = "Task(s) deleted successfully.";
+    final String MESSAGE_DONE_SUCCESS = "Task(s) marked done successfully.";
+    final String MESSAGE_INVALID_REPEAT_TAG = "Task already contains this tag.";
+    final String MESSAGE_TAG_SUCCESS = "Task tagged successfully.";    
+    final String MESSAGE_UNTAG_SUCCESS = "Task untagged successfully.";
+    final String MESSAGE_UNDO_SUCCESS = "undo successful.";
+    final String MESSAGE_REDO_SUCCESS = "redo successful.";
+    final String MESSAGE_FAIL = "Invalid command. Type 'help' to see the list of available commands.";
+    final String MESSAGE_EMPTY = "Your task list is empty.";
+    final String MESSAGE_INVALID_TASKID = "Invalid taskid(s).";
+    final String MESSAGE_INVALID_DONE = "Error: task(s) already marked done.";
+    final String MESSAGE_INVALID_UNDO = "No previous operation to undo.";
+    final String MESSAGE_INVALID_REDO = "No next operation to redo.";
+    final String MESSAGE_INVALID_UNTAG = "No such tag to remove.";
+    
+    final String COMMAND_SHOW = "show";
+    final String COMMAND_CLEAR = "clear";
+    final String COMMAND_UNDO = "undo";
+    final String COMMAND_REDO = "redo";
+
+    String feedback;
+    String show;
+    Calendar cal = Calendar.getInstance();
+    Date startTime;
+    Date endTime;
+    Date deadline;
+    
+    @BeforeClass
+    public static void reset() {
+        // initialise an empty task list
+        Logic.setEmptyTaskList();
+    }
+    
+    @Test
+    public void testAdd() throws TaskInvalidDateException {
+
+        // clears the task list and undo/redo stacks
+        Logic.readAndExecuteCommands(COMMAND_CLEAR);
+        Logic.emptyUndoRedoStack();
+
+        // order after adding: deadline, repeating, fixed, floating
+        addTasks();
+
+        // testing add for an empty message
+        feedback = Logic.readAndExecuteCommands("add");
+        assertEquals(feedback, MESSAGE_FAIL);
+
+        for (int i = 0; i < 4; i++) {
+            Task task = Logic.getTask(i);
+            
+            if (task instanceof FloatingTask) {
+                // check the adding of a floating task (only description given) is successful
+                assertEquals(task.getDescription(), "testing floatingtask");
+                
+            } else if (task instanceof DeadlineTask) {
+                // check the adding of a deadline task (description and one date given) is successful
+                assertEquals(task.getDescription(), "testing");
+                assertEquals(task.getDeadline(), deadline);
+                
+            } else if (task instanceof FixedTask) {
+                // check the adding of a fixed task (description and two dates given) is successful
+                assertEquals(((FixedTask) task).getDescription(), "meeting");
+                assertEquals(((FixedTask) task).getStartTime(), startTime);
+                assertEquals(((FixedTask) task).getDeadline(), endTime);
+                
+            } else if (task instanceof RepeatedTask) {
+                // check the adding of a repeated task (description, date and repeat period given) is successful
+                assertEquals(((RepeatedTask) task).getDescription(), "repeatingtask test");
+                assertEquals(((RepeatedTask) task).getDeadline(), endTime);
+                assertEquals(((RepeatedTask) task).getRepeatPeriod(), "every MONDAY");
+                
+            } else {
+                assert false;
+            }
+        }
+    }
+    
+    @Test
+    public void testEdit() throws TaskInvalidDateException {
+
+        // clears the task list
+        Logic.readAndExecuteCommands(COMMAND_CLEAR);
+        
+        // order after adding: deadline, repeating, fixed, floating
+        addTasks();
+        
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
+
+        // trying to edit an invalid task id on boundaries <= 0, >=5
+        try {
+            Logic.readAndExecuteCommands("edit 0 lalala");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+        try {
+            Logic.readAndExecuteCommands("edit 5 lalala");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+
+        // test the editing of floating task (only description)
+        feedback = Logic.readAndExecuteCommands("edit 4 edited description");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DESCRIPTION, "testing floatingtask", "edited description"));
+        
+        Task floatingTask = Logic.getTask(3);
+        assertEquals(floatingTask.getDescription(), "edited description");
+
+
+        // test the editing of deadline task (only time)
+        feedback = Logic.readAndExecuteCommands("edit 1 by 8 October 2013 3pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DEADLINE, "Tue, Oct 8 15:00"));
+
+        cal.set(Calendar.YEAR, 2013);
+        cal.set(Calendar.MONTH, 9);
+        cal.set(Calendar.DAY_OF_MONTH, 8);
+        cal.set(Calendar.HOUR_OF_DAY, 15);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        deadline = cal.getTime();
+
+        Task deadlineTask = Logic.getTask(0);
+        assertEquals(deadlineTask.getDescription(), "testing");
+        assertEquals(deadlineTask.getDeadline(), deadline);
+
+
+        // test the editing of time for repeat tasks
+        // after the edit, the order is changed: repeated, deadline, fixed, floated
+        feedback = Logic.readAndExecuteCommands("edit 2 by 8 october 2013 3pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DEADLINE, "Tue, Oct 8 15:00"));
+
+        RepeatedTask repeatedTask = (RepeatedTask) Logic.getTask(0);
+        assertEquals(repeatedTask.getRepeatPeriod(), "every TUESDAY");
+        assertEquals(repeatedTask.getDeadline(), deadline);
+
+
+        // test the editing of fixed task (both description and time)
+        feedback = Logic.readAndExecuteCommands("edit 3 lalala from 3pm 8 oct 2013 to 13 oct 2014 5pm");
+        assertEquals(feedback, String.format(MESSAGE_EDIT_DESCRIPTION_DEADLINE, "lalala", "Mon, Oct 13 17:00"));
+
+        FixedTask fixedTask = (FixedTask) Logic.getTask(2); 
+
+        assertEquals(fixedTask.getDescription(), "lalala");
+        assertEquals(fixedTask.getDeadline(), endTime);
+        assertEquals(fixedTask.getStartTime(), deadline);
+    }
+    
+    @Test
+    public void testDelete() {
+
+        // clears the task list
+        Logic.readAndExecuteCommands(COMMAND_CLEAR);
+
+        // order after adding: deadline, repeating, fixed, floating
+        addTasks();
+        
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
+
+        // trying to edit an invalid task id on boundaries <= 0, >=5
+        try {
+            Logic.readAndExecuteCommands("delete 0");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+        try {
+            Logic.readAndExecuteCommands("delete 5");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+
+        // testing of delete for one task
+        Task task = Logic.getTask(1);
+        feedback = Logic.readAndExecuteCommands("delete 2");
+        assertEquals(feedback, MESSAGE_DELETE_SUCCESS);
+        assertNotEquals(task, Logic.getTask(1));
+
+
+        // testing of delete for multiple tasks
+        Task task1 = Logic.getTask(0);
+        Task task2 = Logic.getTask(1);
+        feedback = Logic.readAndExecuteCommands("delete 1 2");
+        assertEquals(feedback, MESSAGE_DELETE_SUCCESS);
+        assertNotEquals(task1, Logic.getTask(0));
+        assertNotEquals(task2, Logic.getTask(0));
+
+    }
+    
+    @Test
+    public void testMarkDone() {
+        
+        // clears the task list
+        Logic.readAndExecuteCommands(COMMAND_CLEAR);
+        
+        // add some tasks for marking done
+        addTasks();
+        
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
+
+        // trying to mark done an invalid task id on boundaries <= 0, >=5
+        try {
+            Logic.readAndExecuteCommands("done 0");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+        try {
+            Logic.readAndExecuteCommands("done 5");
+            assert false;
+        } catch (TaskInvalidIdException e) {
+            assert true;
+        }
+
+
+        // ensure the tasks are non-marked done
+        Task task1 = Logic.getTask(0);
+        Task task2 = Logic.getTask(1);
+        Task task3 = Logic.getTask(2);
+        Task task4 = Logic.getTask(3);
+
+        assert !task1.getIsDone();
+        assert !task2.getIsDone();
+        assert !task3.getIsDone();
+        assert !task4.getIsDone();
+
+
+        // testing of marking done for one task
+        feedback = Logic.readAndExecuteCommands("done 2");
+        assertEquals(feedback, MESSAGE_DONE_SUCCESS);
+        assert task1.getIsDone();
+
+
+        // testing of marking done for multiple tasks
+        feedback = Logic.readAndExecuteCommands("done 1 3");
+        assertEquals(feedback, MESSAGE_DONE_SUCCESS);
+        assert task1.getIsDone();
+        assert task3.getIsDone();
+    }
+    
+    @Test
+    public void testTagging() {
+        
+        // clears the task list
+        Logic.readAndExecuteCommands(COMMAND_CLEAR);
+
+        // add some tasks for tagging
+        addTasks();
+        Task task = Logic.getTask(1);
+
+        // empty undo/redo stacks
+        Logic.emptyUndoRedoStack();
+
+        // testing to add an empty tag
+        feedback = Logic.readAndExecuteCommands("tag 2");
+        assertEquals(feedback, MESSAGE_FAIL);
+
+
+        // testing to add a tag
+        feedback = Logic.readAndExecuteCommands("tag 2 thiss");
+        assertEquals(feedback, MESSAGE_TAG_SUCCESS);
+        assert task.getTags().contains("thiss".toLowerCase());
+
+
+        // testing to add another tag
+        feedback = Logic.readAndExecuteCommands("tag 2 third eye");
+        assertEquals(feedback, MESSAGE_TAG_SUCCESS);
+        assert task.getTags().contains("third eye".toLowerCase());
+
+
+        // testing to add an invalid repeated tag (shows non-case sensitive as well)
+        feedback = Logic.readAndExecuteCommands("tag 2 THIRD EYE");
+        assertEquals(feedback, MESSAGE_INVALID_REPEAT_TAG);
+        
+        // testing to remove a non-existent tag
+        feedback = Logic.readAndExecuteCommands("untag 2 lalala");
+        assertEquals(feedback, MESSAGE_INVALID_UNTAG);
+        
+        // testing to remove a valid tag
+        feedback = Logic.readAndExecuteCommands("untag 2 THIRD EYE");
+        assertEquals(feedback, MESSAGE_UNTAG_SUCCESS);
+        assertFalse(task.getTags().contains("third eye"));
+    }
+    
+    @Test
+    public void testUndoRedo() throws TaskInvalidDateException {
+   
+        // resets the task list and the undo/redo stacks
+        Logic.emptyUndoRedoStack();
+        Logic.setEmptyTaskList();
+       
+        
+        // testing the invalid undo/redo of a new tasklist
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+
+        // testing the undo/redo functionalities of add
+        testAdd();
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: repeated task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: fixed task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: deadline task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo add: floating task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+       
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
+        
+        // testing the undo/redo functionalities of edit
+        testEdit();
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: fixed task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: repeat task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: deadline task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo edit: floating task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+       
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+        
+        // testing the undo/redo functionalities of delete
+        testDelete();
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo delete: multiple tasks
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo delete: one task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
+        
+        // testing the undo/redo functionalities of mark done
+        testMarkDone();
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo mark done: multiple tasks
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo mark done: one task
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+        
+        
+        // testing the undo/redo functionalities of tagging
+        testTagging();
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo untagging from task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo a second tag on a task
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO); // undo a first tag on a task 
+        assertEquals(feedback, MESSAGE_UNDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_UNDO);
+        assertEquals(feedback, MESSAGE_INVALID_UNDO);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_REDO_SUCCESS);
+        
+        feedback = Logic.readAndExecuteCommands(COMMAND_REDO);
+        assertEquals(feedback, MESSAGE_INVALID_REDO);
+
+    }
+    
+    /**
+     * this method adds one of each type of task into the task list.
+     */
+    private void addTasks() {
+        // add the tasks
+        // order after adding: deadline, repeating, fixed, floating
+        Logic.readAndExecuteCommands("add testing floatingtask");
+        Logic.readAndExecuteCommands("add testing by 13 Oct 2014 4pm");
+        Logic.readAndExecuteCommands("add meeting from 4pm 13 Oct 2014 to 5pm 13 Oct 2014");
+        Logic.readAndExecuteCommands("add repeatingtask test every 5pm oct 13 weekly");
+
+        // set the date values.
+        cal.set(Calendar.YEAR, 2014);
+        cal.set(Calendar.MONTH, 9);
+        cal.set(Calendar.DAY_OF_MONTH, 13);
+        cal.set(Calendar.HOUR_OF_DAY, 16);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        deadline = cal.getTime();
+        
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        
+        startTime = deadline;
+        endTime = cal.getTime(); 
+    }
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\LogicTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testTagging() {
+	    
+	    TaskList tasks = new TaskList();
+	    tasks.addToList("floating one");
+	    tasks.addToList("floating two");
+	    tasks.addToList("floating three");
+	    
+	    /* tests for adding a tag */
+	    // test tagging an invalid tag (null input)
+	    try {
+            tasks.tagTask(1, null);
+            assert false;
+
+        } catch (TaskTagDuplicateException e) {
+            assert false;
+        } catch (NullPointerException e) {
+            assert true;
+        }
+	    
+	    /* invalid empty input not tested since there would be an assertion error */
+	    
+	    // test tagging a valid tag
+	    try {
+	        tasks.tagTask(1, "tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagDuplicateException e) {
+	        assert false;
+	    }
+	    
+	    // test invalid tagging of the same tag
+	    try {
+	        tasks.tagTask(1, "tagg");
+	        assert tasks.getTask(0).getTags().contains("tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagDuplicateException e) {
+	        assert true;
+	    }
+	    
+	    // test tagging a task >1 time
+	    try {
+	        tasks.tagTask(1, "tag again");
+	        assert tasks.getTask(0).getTags().contains("tag again");
+	        
+        } catch (TaskInvalidIdException e) {
+            assert false;
+        } catch (TaskTagDuplicateException e) {
+            assert false;
+        }
+	    
+	    
+	    /* tests for removing a tag */
+	    // test untagging of invalid input (no such tag)
+	    try {
+	        tasks.untagTask(1, "la");
+	        assert false;
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagException e) {
+	        assert true;
+	    }
+	    
+	    // test untagging of valid input 
+	    try {
+	        tasks.untagTask(1, "tagg");
+	        assert !tasks.getTask(0).getTags().contains("tagg");
+	        
+	    } catch (TaskInvalidIdException e) {
+	        assert false;
+	    } catch (TaskTagException e) {
+	        assert false;
+	    }
+
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	@Test
+	public void testUndoRedo() throws TaskInvalidIdException, TaskInvalidDateException {
+	    TaskList tasks = new TaskList();
+	    tasks.clearUndoRedoStack();
+	    
+	    // testing for invalid undo
+	    try {
+            tasks.undo();
+            assert false;
+        } catch (UndoException e) {
+            assert true;
+        }
+	    
+	    // testing for invalid redo
+	    try {
+	        tasks.redo();
+	        assert false;
+        } catch (RedoException e) {
+            assert true;
+        }
+	    
+	    try {
+	        // test undo/redo for adding
+	        TaskList taskListAdd = new TaskList();
+	        TaskList controlListAdd = new TaskList();
+	        setTaskList(taskListAdd);
+	        
+	        for (int i = 0; i < taskListAdd.count(); i++) {
+	            Task task = taskListAdd.getTask(i);
+	            controlListAdd.addTaskToTaskList(task.clone());
+	        }
+	        assert (taskListAdd.isEqual(controlListAdd));
+	        assert (taskListAdd.count() == 4);
+	        
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        taskListAdd.undo();
+	        assert (taskListAdd.count() == 0);
+
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        taskListAdd.redo();
+	        assert (taskListAdd.count() == 4);
+            assert (taskListAdd.isEqual(controlListAdd));	        
+	        
+	        // test undo/redo for editing
+            tasks = getTasks(controlTaskList);
+            tasks.clearUndoRedoStack();
+	        tasks.editTaskDescriptionOnly(4, "task one");
+	        tasks.editTaskDeadlineOnly(2, tomorrow);
+	        tasks.editTaskDescriptionDeadline(1, "task two", today);
+	        tasks.editTaskDescriptionTimes(3, "task three", yesterday, today);
+            assert (!tasks.isEqual(controlTaskList));
+            
+            tasks.undo();
+            tasks.undo();
+            tasks.undo();
+            tasks.undo();
+            assert (tasks.isEqual(controlTaskList));
+
+            tasks.redo();
+            tasks.redo();
+            tasks.redo();
+            tasks.redo();
+            
+            assertEquals(tasks.getTask(0).getDescription(), "task three");
+            assertEquals(((FixedTask) tasks.getTask(0)).getStartTime(), yesterday);
+            assertEquals(tasks.getTask(1).getDeadline(), today);
+            assertEquals(tasks.getTask(2).getDeadline(), tomorrow);
+            assert (!tasks.isEqual(controlTaskList));
+            
+            
+            // test undo/redo for deleting tasks
+            tasks = getTasks(controlTaskList);
+            assert (tasks.isEqual(controlTaskList));
+            List<Integer> taskIndexList = new ArrayList<Integer>();
+            taskIndexList.add(2);
+            taskIndexList.add(4);
+            tasks.deleteFromList(taskIndexList);
+            assert (tasks.count() == 2);
+            
+            tasks.undo();
+            assert (tasks.isEqual(controlTaskList));
+            assert (tasks.count() == 4);
+            
+            
+            tasks.redo();
+            assert (tasks.count() == 2);
+            
+            tasks.clearList();
+            assert (tasks.count() == 0);
+
+            tasks.undo();
+            assert (tasks.count() == 2);
+            
+            tasks.redo();
+            assert (tasks.count() == 0);
+
+            
+            // test undo/redo for marking tasks done
+            tasks = getTasks(controlTaskList);
+            assert (tasks.isEqual(controlTaskList));
+            taskIndexList.add(1);
+            taskIndexList.add(3);
+            tasks.markTaskDone(taskIndexList);
+            assert (tasks.countFinished() == 4);
+            assert (tasks.count() == 1);
+            
+            tasks.undo();
+            assert (tasks.countFinished() == 0);
+            assert (tasks.count() == 4);
+            assert (tasks.isEqual(controlTaskList));
+            
+            tasks.redo();
+            assert (tasks.countFinished() == 4);
+            assert (tasks.count() == 1);
+            
+	    } catch (UndoException e) {
+	        assert false;
+	    } catch (RedoException e) {
+	        assert false;
+	    } catch (TaskDoneException e) {
+	        assert false;
+        }
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+	 */
+
+	/**
+	 * This method adds four tasks into the task list, 
+	 * with the final order: Repeated Task, Deadline Task, Fixed Task, Floating Task.
+	 *  
+	 * @return Tasklist with four tasks in the above specified order.
+	 */
+	private TaskList getTasks(TaskList taskList) {
+	    
+        TaskList tasks = new TaskList();	    
+	    for (int i = 0; i < 4; i++) {
+	        Task task = taskList.getTask(i);
+	        Task taskClone = task.clone();
+	        
+	        tasks.addTaskToTaskList(taskClone);
+	    }
+	    
+	    return tasks;
+	}
+	
+	public static void setDates() {
+		today = new Date();
+
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		tomorrow = cal.getTime();
+
+		cal.add(Calendar.DAY_OF_MONTH, -2);
+		yesterday = cal.getTime();
+	}
+	
+	public static void setTaskList(TaskList taskList) {
+	    
+        // add a floating task
+	    taskList.addToList("floating task one");
+
+        // add a deadline task
+	    taskList.addToList("deadline task one", today);
+
+        // add a fixed task
+        try {
+            taskList.addToList("fixed task one", today, tomorrow);
+        } catch (TaskInvalidDateException e) {
+            assert false;
+        }
+
+        // add a repeated task
+        taskList.addToList("repeated task one", yesterday,
+                                  UserInput.RepeatDate.WEEKLY);
+	}
+	
+    @BeforeClass
+    public static void initialise() {
+        setDates();
+        setTaskList(controlTaskList);
+    }
+
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\TaskListTest.java
+
+
+
+
+

@@ -1,0 +1,1454 @@
+//@author: a0119387u
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * this differs different kinds of command
+	 * @param input String given by Logic
+	 * @return UserInput after parsing
+	 *
+	 **/
+
+	public UserInput parse(String input) {
+
+		String[] inputSplit = input.split(" ", 2);
+		String command = inputSplit[0];
+		String content = null;
+		if (inputSplit.length == 2) {
+			content = inputSplit[1].trim();
+		}
+		log.info("parse main function");
+		
+		switch (parseCommand(command.toLowerCase())) {
+		  case CMD_EXIT :
+			return parseExit(content);
+			
+		  case CMD_HELP :
+			return parseHelp(content);
+			
+		  case CMD_ADD :
+			return parseAdd(content);
+			
+		  case CMD_DELETE :
+			return parseDelete(content);
+			
+		  case CMD_CLEAR :
+			return parseClear(content);
+			
+		  case CMD_SEARCH :
+			return parseSearch(content);
+			
+		  case CMD_EDIT :
+			return parseEdit(content);
+			
+		  case CMD_DONE :
+			return parseDone(content);
+			
+		  case CMD_COMPLETE :
+		 	return parseDone(content);
+		 	
+		  case CMD_FINISH :
+			return parseDone(content);
+			
+		  case CMD_SHOW :
+			return parseShow(content);
+			
+	      case CMD_TAG :
+			return parseTag(content);
+			
+		  case CMD_UNDO :
+			return parseUndo(content);
+			
+		  case CMD_REDO :
+			return parseRedo(content);
+			
+		  case CMD_UNTAG :
+			return parseUntag(content);
+			
+		  case CMD_EXPORT :
+			return parseExport(content);
+			
+		default :
+			return errorCommand();
+		}
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * give flexiable commands
+	 * @param command only command such as add delete.
+	 * @return parsed command
+	 */
+	private String parseCommand(String command) {
+		if (command.equals(CMD_EXIT)) {
+			return CMD_EXIT;
+		}
+		if (command.equals(CMD_HELP)) {
+			return CMD_HELP;
+		}
+		if (command.equals(CMD_ADD) || command.equals(CMD_ADD_SHORT)) {
+			return CMD_ADD;
+		}
+		if (command.equals(CMD_DELETE) || command.equals(CMD_DELETE_SHORT)) {
+		    return CMD_DELETE;
+		}
+		if (command.equals(CMD_CLEAR)) {
+		    return CMD_CLEAR;
+		}
+		if (command.equals(CMD_SEARCH)) {
+		    return CMD_SEARCH;
+		}
+		if (command.equals(CMD_EDIT)) {
+			return CMD_EDIT;
+		} 
+		if (command.equals(CMD_DONE)) {
+			return CMD_DONE;
+		} 
+		if (command.equals(CMD_SHOW)) {
+			return CMD_SHOW;
+		} 
+		if (command.equals(CMD_TAG)) {
+			return CMD_TAG;
+		}
+		if (command.equals(CMD_UNTAG)) {
+			return CMD_UNTAG;
+		}
+		if (command.equals(CMD_UNDO)) {
+			return CMD_UNDO;
+		}
+		if (command.equals(CMD_REDO)) {
+			return CMD_REDO;
+		}
+		if (command.equals(CMD_EXPORT)) {
+			return CMD_EXPORT;
+		}
+		return command;
+		
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * redo command parsing
+	 * 
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseRedo(String content) {
+		log.info("entering redo command");
+		if (content != null && !content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.REDO);
+		log.info("exit redo command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * undo command parsing
+	 * 
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseUndo(String content) {
+		log.info("entering undo command");
+		if (content != null && !content.equals("")) {
+
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.UNDO);
+		log.info("exit undo command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 
+	 * this is for entering exit command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseExit(String content) {
+		log.info("entering exit command");
+		if (content != null && !content.equals("")) {
+            return errorCommand();
+        }
+		UserInput input = new UserInput();
+		input.addCommand(CMD.EXIT);
+		log.info("exit exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *   for help command
+	 *
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 *       
+	 *
+	 *
+	 */
+
+	private UserInput parseHelp(String content) {
+		log.info("entering help command");
+		if (content != null && !content.equals("")) {
+
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.HELP);
+		log.info("exit help command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *  this is for entering add command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseAdd(String content) {
+		log.info("entering add command");
+		if (content == null || content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.ADD);
+		switch (taskType(content)) {
+		case DEADLINE :
+			return parseDeadline(input, content);
+			
+		case REPEAT :
+			return parseRepeated(input, content);
+			
+		case FLOAT :
+			return parseFloat(input, content);
+			
+		default :
+			return parseFixed(input, content);
+		}
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 
+	 *  this is for repeated task for add command or edit command
+	 *
+	 * @param input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseRepeated(UserInput input, String content) {
+		log.info("repeated task found");
+		ParseTime times = new ParseTime();
+		String description = null;
+		String repeatDate = null;
+		String tempContent = null;
+		try {
+			String[] contentSplit = content.split(" ");
+			repeatDate = contentSplit[contentSplit.length - 1];
+		} catch (NullPointerException e1) {
+			return parseFloat(input, content);
+		}
+		switch (repeatDate.trim().toLowerCase()) {
+			case "daily" : {
+				input.addRepeatDate(RepeatDate.DAILY);
+				tempContent = content.replaceAll(ADD_DAILY, "").trim();
+				break;
+				
+			}
+			case "weekly" : {
+				input.addRepeatDate(RepeatDate.WEEKLY);
+				tempContent = content.replaceAll(ADD_WEEKLY, "").trim();
+				break;
+				
+			}
+			case "monthly" : {
+				input.addRepeatDate(RepeatDate.MONTHLY);
+				tempContent = content.replaceAll(ADD_MONTHLY, "").trim();
+				break;
+				
+			}
+			default :
+				return parseFloat(input, content);
+		}
+		String[] contents = tempContent.split(ADD_EVERY,2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
+		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT)) {
+            return parseFloat(input, content);
+        }
+		List<Date> dates = times.getDates();
+		if (dates.size() != 1) {
+			return parseFloat(input, content);
+		} else {
+			input.add(description);
+			input.beRepeated();
+			input.addDate(dates);
+			return input;
+		}
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 
+	 *  this is for deadline task for add command or edit command
+	 *
+	 * @param input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 * @throws ParseException
+	 */
+
+	private UserInput parseDeadline(UserInput input, String content) {
+		log.info("dealine task found");
+		String description = null;
+		ParseTime times = new ParseTime();
+		String[] contents = content.split(ADD_BY,2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
+		if (input.getCommand() == CMD.ADD) {
+            if (description.equals("")) {
+				return parseFloat(input, content);
+			}
+        }
+		List<Date> dates = times.getDates();
+		if (dates.size() != 1) {
+			return parseFloat(input, content);
+		} else {
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
+			String timeRest = timeRestFormat.format(dates.get(0));
+			if (!timeRest.equals(DEADLINE_ONETIME)) {
+				SimpleDateFormat timeFormat1 = new SimpleDateFormat(TIME_FORMAT_DATE);
+				String dateTime = timeFormat1.format(dates.get(0));
+				SimpleDateFormat timeFormat2 = new SimpleDateFormat(
+						TIME_FORMAT_FULL);
+				Date realDate = null;
+				try {
+					realDate = timeFormat2.parse(dateTime + END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.clear();
+				dates.add(realDate);
+			}
+			input.add(description);
+			input.beDeadline();
+			input.addDate(dates);
+			return input;
+		}
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *
+	 *  this is for fixed tasks for parseAdd and parseEdit
+	 * @param input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *  
+	 */
+
+	private UserInput parseFixed(UserInput input, String content) {
+		log.info("fixed task found");
+		String description = null;
+		ParseTime times = new ParseTime();
+		String[] contents = content.split(ADD_FROM,2);
+		description = contents[0].trim();
+		times.parseTime(contents[1]);
+		if (input.getCommand() == CMD.ADD) {
+			if (description.equals("")) {
+				return parseFloat(input, content);
+			}
+		}
+		List<Date> dates = times.getDates();
+		if (dates.size() != 2) {
+			return parseFloat(input, content);
+		}
+		input.add(description);
+		input.addDate(dates);
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *
+	 *  this is for floating task for parseAdd or parseEdit
+	 * @param input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseFloat(UserInput input, String content) {
+		log.info("floating task found");
+		if (content != null && !content.equals("")) {
+			input.add(content);
+		}
+		input.beFloat();
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 
+	 *   this is for check what kind of command by keywords
+	 *
+	 * @param content String after command word
+	 * @return TaskType
+	 */
+
+	private TaskType taskType(String content) {
+		Pattern pattern = Pattern.compile(PATTERN_BY);
+		Matcher matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.DEADLINE;
+		}
+		pattern = Pattern.compile(PATTERN_FROM);
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.FIX;
+		}
+		pattern = Pattern.compile(PATTERN_EVERY_DAILY);
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.REPEAT;
+		}
+		pattern = Pattern.compile(PATTERN_EVERY_WEEKLY);
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.REPEAT;
+		}
+		pattern = Pattern.compile(PATTERN_EVERY_MONTHLY);
+		matcher = pattern.matcher(content);
+		if (matcher.matches()) {
+			return TaskType.REPEAT;
+		}
+		return TaskType.FLOAT;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * this is for entering delete command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseDelete(String content) {
+		log.info("entering delete command");
+		if (!trueNumberFormat(content)) {
+
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		String[] numberInString = content.split(" ");
+		int length = numberInString.length;
+		List<Integer> number = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			if (!numberInString[i].equals("")) {
+				number.add(Integer.valueOf(numberInString[i].trim()));
+			}
+		}
+		input.addCommand(CMD.DELETE);
+		input.add(null);
+		input.addDeleteID(number);
+		log.info("exit delete command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * this is for entering clearing command	
+	 * @param content String after command word
+	 * @return input UserInput which is already edited         
+	 */
+
+	private UserInput parseClear(String content) {
+		log.info("entering clear command");
+		if (content != null && !content.equals("")) {
+
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.CLEAR);
+		input.add(null);
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 	this is for entering edit command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 *
+	 */
+
+	private UserInput parseEdit(String content) {
+		log.info("entering edit command");
+		if (content == null || content.equals("")) {
+
+			return errorCommand();
+		}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
+			return errorCommand();
+		}
+		String IDString = contentSplit[0].trim();
+		content = contentSplit[1].trim();
+		UserInput input = new UserInput();
+		if (!trueNumberFormat(IDString)) {
+			return errorCommand();
+		} else {
+			input.addEditID(Integer.valueOf(IDString));
+			input.addCommand(CMD.EDIT);
+			input.add("");
+			input = parseEditTaskAndTime(input, content);
+		}
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * this is work for parsing edit
+	 * @param input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+	private UserInput parseEditTaskAndTime(UserInput input, String content) {
+		if (content == null || content.equals("")) {
+			return input;
+		}
+		switch (taskType(content)) {
+		case DEADLINE :
+			return parseDeadline(input, content);
+			
+		case REPEAT :
+			return parseRepeated(input, content);
+			
+		case FLOAT :
+			return parseFloat(input, content);
+			
+		default :
+			return parseFixed(input, content);
+		}
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *    this is for entering show command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseShow(String content) {
+		log.info("entering show command");
+		UserInput input = new UserInput();
+		input.addCommand(CMD.SHOW);
+		input.add(null);
+		if (content == null || content.trim().equals("")) {
+			input.addShow("all");
+			log.info("exit command");
+			return input;
+		}
+		input.addShow(content);
+		List<Date> dates = new ArrayList<Date>();
+		SimpleDateFormat timeFormat1 = new SimpleDateFormat(TIME_FORMAT_DATE);
+		SimpleDateFormat timeFormat2 = new SimpleDateFormat(TIME_FORMAT_FULL);
+		
+		Date today = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setFirstDayOfWeek(Calendar.MONDAY);
+		cal.setTime(today);
+		
+		if (content.toLowerCase().contains(SHOW_THIS_WEEK)) {
+			if (!content.toLowerCase().replaceAll(SHOW_THIS_WEEK, "").trim()
+					.equals("")) {
+				input.add(content);
+				log.info("exit command");
+				return input;
+			} else {
+				cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				Date beginDate = cal.getTime();
+				cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+				Date endDate = cal.getTime();
+				
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(beginDate
+							.getTime()) + BEGIN_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(endDate
+							.getTime()) + END_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+			}
+			input.addDate(dates);
+			log.info("exit command");
+			return input;
+		}
+		if (content.toLowerCase().contains(SHOW_NEXT_WEEK)) {
+			if (!content.toLowerCase().replaceAll(SHOW_NEXT_WEEK, "").trim()
+					.equals("")) {
+				input.add(content);
+				return input;
+			} else {
+				cal.add(Calendar.DATE, 7);
+				cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				Date beginDate = cal.getTime();
+				cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+				Date endDate = cal.getTime();
+				
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(beginDate
+							.getTime()) + BEGIN_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+				try {
+					dates.add(timeFormat2.parse(timeFormat1.format(endDate
+							.getTime()) + END_OF_DAY_TIME));
+				} catch (ParseException e) {
+				}
+			}
+			input.addDate(dates);
+			log.info("exit command");
+			return input;
+		}
+		ParseTime times = new ParseTime();
+		times.parseTime(content);
+		dates = times.getDates();
+		if (dates.size() > 2) {
+            return errorCommand();
+        }
+		if (dates.size() == 1) {
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
+			String timeRest = timeRestFormat.format(dates.get(0));
+			if (!timeRest.equals(DEADLINE_ONETIME)) {
+				String dateTime = timeFormat1.format(dates.get(0));
+				Date realDate = null;
+				try {
+					realDate = timeFormat2.parse(dateTime + BEGIN_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.clear();
+				dates.add(realDate);
+				try {
+					realDate = timeFormat2.parse(dateTime + END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+			}
+		}
+		if(dates.size()==2){
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
+			if (!(timeRestFormat.format(dates.get(0)).equals(DEADLINE_ONETIME)||
+					timeRestFormat.format(dates.get(1)).equals(DEADLINE_ONETIME))) {
+				String dateBeginTime = timeFormat1.format(dates.get(0));
+				String dateEndTime = timeFormat1.format(dates.get(1));
+				Date realDate = null;
+				dates.clear();
+				try {
+					realDate = timeFormat2.parse(dateBeginTime + BEGIN_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+				try {
+					realDate = timeFormat2.parse(dateEndTime + END_OF_DAY_TIME);
+				} catch (ParseException e) {
+					realDate = dates.get(0);
+				}
+				dates.add(realDate);
+			}
+		}
+		input.addDate(dates);
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *   this is for entering search command
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseSearch(String content) {
+		log.info("entering search command");
+		if (content == null || content.equals("")) {
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		input.addCommand(CMD.SEARCH);
+		input.add(content);
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *  this is for entering mark done command	 
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseDone(String content) {
+		log.info("entering done command");
+		if (!trueNumberFormat(content)) {
+
+			return errorCommand();
+		}
+		UserInput input = new UserInput();
+		String[] numberInString = content.split(" ");
+		int length = numberInString.length;
+		List<Integer> number = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			if (!numberInString[i].equals("")) {
+				number.add(Integer.valueOf(numberInString[i].trim()));
+			}
+		}
+		input.addCommand(CMD.DONE);
+		input.add(null);
+		input.addDoneID(number);
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * tag command parsing
+	 * 
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+	private UserInput parseTag(String content) {
+		log.info("entering tag command");
+		if (content == null || content.equals("")) {
+
+			return errorCommand();
+		}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
+			return errorCommand();
+		}
+		String IDString = contentSplit[0].trim();
+		String tag = contentSplit[1].trim();
+		UserInput input = new UserInput();
+		if (!trueNumberFormat(IDString)) {
+			return errorCommand();
+		} else {
+			input.addTagID(Integer.valueOf(IDString));
+			input.addCommand(CMD.TAG);
+			input.add(tag);
+		}
+		log.info("exit command");
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * Untag command parsing
+	 * 
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput parseUntag(String content) {
+		log.info("entering delete command");
+		if (content == null || content.equals("")) {
+
+			return errorCommand();
+		}
+		String[] contentSplit = content.split(" ", 2);
+		if (contentSplit.length != 2) {
+			return errorCommand();
+		}
+		String IDString = contentSplit[0].trim();
+		String contentString = contentSplit[1].trim();
+		UserInput input = new UserInput();
+		if (!trueNumberFormat(IDString)) {
+			return errorCommand();
+		} else {
+			input.addEditID(Integer.valueOf(IDString));
+			input.addCommand(CMD.UNTAG);
+			input.add(contentString);
+		}
+		log.info("exit command");
+		return input;
+	}
+
+	private UserInput parseExport(String content) {
+		log.info("entering export command");
+		UserInput input = new UserInput();
+		input.addCommand(CMD.EXPORT);
+		return input;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 * 	 this is for checking if the contents are only numbers in done and
+	 *  delete command
+	 * @param content String after command word
+	 * @return boolean whether the content contents numbers only
+	 *
+	 */
+
+	private boolean trueNumberFormat(String content) {
+		if (content == null || content.equals("")) {
+			return false;
+		}
+		for (char i : content.toCharArray()) {
+			if (!Character.isDigit(i) && i != ' ') {
+				return false;
+			}
+		}
+		return true;
+	}
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+	 */
+
+	/**
+	 *give the error command
+	 * @return input UserInput which is already edited
+	 */
+
+	private UserInput errorCommand() {
+		UserInput input = new UserInput();
+		input.unvalidation();
+		log.info("error command");
+		return input;
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\ParseTime.java
+	 */
+
+/**
+ * parse the times in the command
+ *
+ */
+public class ParseTime {
+	private List<Date> dateList = new ArrayList<Date>();
+    private	boolean isRecurreing = false;
+	private Date recursUntil = null;
+	private String time = null;
+	private static final String CMD_TMR_SHORT = " (?i)tmr ";
+	private static final String CMD_TMR = " tomorrow ";
+
+    /**	
+     * Get the dates parsed by class, and returns the result in a list
+     * @return List of parsed dates
+     */
+	public List<Date> getDates() {
+		return dateList;
+	}
+	/**
+	 * Check if the task is repeated, and returns the corresponding boolean value
+	 * @return if it is repeated
+	 */
+	public boolean isRepeated() {
+		return isRecurreing;
+	}
+	/**
+	 * Check if the task contains time object, and returns the corresponding boolean value
+	 * @return the recursive until date
+	 */
+	public Date recursUntil() {
+		return recursUntil;
+	}
+	/**
+	 * Get the time of the task
+	 * @return the time in format of string
+	 */
+	public String getTime() {
+		return time;
+	}
+	
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\ParseTime.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\ParseTime.java
+	 */
+
+	/**
+	 * this function is the main function to parse the time
+	 * @param input The time string given by parser
+	 */
+	public void parseTime(String input) {
+		input = input.replaceAll(CMD_TMR_SHORT, CMD_TMR).trim();
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(input);
+		for (DateGroup group : groups) {
+            List<Date> dates = group.getDates();
+            isRecurreing = group.isRecurring();
+            recursUntil = group.getRecursUntil();
+            dateList.addAll(dates);
+            time = group.getText();
+		}
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\ParseTime.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\controller\UserInput.java
+	 */
+
+/**
+ * This class is an object of parsed command for Logic
+ * 
+ *
+ */
+
+public class UserInput {
+	public enum CMD {
+		ADD, DELETE, EDIT, CLEAR, DONE, SEARCH, EXIT, SHOW, HELP,TAG,UNDO,REDO, UNTAG, EXPORT
+	};
+	public enum RepeatDate {
+		DAILY,WEEKLY,MONTHLY
+	};
+
+	private boolean valid = true;
+	private CMD command = null;
+
+	private List<Integer> ID = new ArrayList<Integer>();
+
+	private int callingID = 0;
+	private String afterCommand = null;
+	private RepeatDate repeatDate = null;
+
+	private String description = null;
+
+	private boolean floating = false;
+	private boolean repeated = false;
+	private boolean deadline = false;
+
+	private List<Date> dates = new ArrayList<Date>();
+    
+	/**
+    * Check if the command is valid, and returns the corresponding boolean value
+    * @return the validation of command
+    */
+	public boolean getValid() {
+		return valid;
+	}
+	/**
+	 * Check which type of command it is, and returns the corresponding command value
+	 * @return the command type
+	 */
+
+	public CMD getCommand() {
+		return command;
+	}
+	/**
+	 * Get the IDs of tasks to be deleted, and returns the result in a list
+	 * @return the result of tasks in a list
+	 */
+
+	public List<Integer> getDeleteID() {
+		return ID;
+	}
+	/**
+	 * Get the IDs of tasks to be marked as done, and returns the result in a list
+	 * @return the result of tasks in a list
+	 */
+
+	public List<Integer> getDoneID() {
+		return ID;
+	}
+	/**
+	 * Get the ID of the task to be edited
+	 * @return the ID of task
+	 */
+
+	public int getEditID() {
+		return callingID;
+	}
+	/**
+	 * Get the ID of the task to add a tag
+	 * @return the ID of task
+	 */
+	public int getTagID() {
+		return callingID;
+	}
+	/**
+	 * Get the dates to add or edit, and returns the result in a list
+	 * @return the results in a list
+	 */
+
+	public List<Date> getDate() {
+		return dates;
+	}
+	/**
+	 * Get the command for editing
+	 * @return edit command
+	 */
+
+	public String getEditCommand() {
+		return afterCommand;
+	}
+	/**
+	 * Get the command for showing
+	 * @return show command
+	 */
+
+	public String getShowCommand() {
+		return afterCommand;
+	}
+	/**
+	 * Get the description of task
+	 * @return description of task
+	 */
+
+	public String getDescription() {
+		return description;
+	}
+	/**
+	 * Get the period to repeat for repeated tasks
+	 * @return the repeat date
+	 */
+
+	public RepeatDate repeatDate() {
+		return repeatDate;
+	}
+	/**
+	 * Check whether the task to add(or edit) is a floating task, and returns the corresponding boolean value
+	 * @return if the task is floating
+	 */
+
+	public boolean isFloat() {
+		return floating;
+	}
+	/**
+	 * Check whether the task to add(or edit) is a repeated task, and returns the corresponding boolean value
+	 * @return if the task is repeated
+	 */
+
+	public boolean isRepeated() {
+		return repeated;
+	}
+	/**
+	 * Check whether the task to add(or edit) is a deadline task, and returns the corresponding boolean value
+	 * @return if the task is deadline
+	 */
+
+	public boolean isDeadline() {
+		return deadline;
+	}
+	/**
+	 * Mark the command as invalid
+	 */
+
+	public void unvalidation() {
+		valid = false;
+	}
+	/**
+	 * Add the type of command
+	 * @param userCommand given by Parser
+	 */
+	
+	public void addCommand(CMD userCommand) {
+		command = userCommand;		
+	}
+	/**
+	 * Add the description of task
+	 * @param userDescription given by Parser
+	 */
+
+	public void add(String userDescription) {
+		description = userDescription;
+	}
+	/**
+	 * Mark task as floating
+	 */
+	
+	public void beFloat() {
+		floating = true;
+	}
+	/**
+	 * Mark task as repeated
+	 */
+
+	public void beRepeated() {
+		repeated = true;
+	}
+	/**
+	 * Mark task as deadline
+	 */
+
+	public void beDeadline() {
+		deadline = true;
+	}
+	/**
+	 * Add the IDs of tasks to be deleted
+	 * @param numbers given by Parser
+	 */
+
+	public void addDeleteID(List<Integer> numbers) {
+		ID = numbers;
+	}
+	/**
+	 * Add the IDs of tasks to be marked as done
+	 * @param numbers given by Parser
+	 */
+
+	public void addDoneID(List<Integer> numbers) {
+		ID = numbers;
+	}
+	/**
+	 * Add the ID of the task to be edited
+	 * @param number given by Parser
+	 */
+
+	public void addEditID(int number) {
+		callingID = number;
+	}
+	/**
+	 * Add the ID of the task to add tag
+	 * @param number given by Parser
+	 */
+	
+	public void addTagID(int number) {
+		callingID = number;
+	}
+	/**
+	 * Add the specific editing command
+	 * @param command given by Parser
+	 */
+	
+	public void addEditCommand(String command) {
+		afterCommand = command;
+	}
+	/**
+	 * Add the specific showing command
+	 * @param command given by Parser
+	 */
+
+	public void addShow(String command) {
+		afterCommand = command;
+	}
+	/**
+	 * Add the period to repeat for repeated tasks
+	 * @param content given by Parser
+	 */
+
+	public void addRepeatDate(RepeatDate content) {
+		repeatDate = content;
+	}
+	/**
+	 * Add the dates for add(or edit) command
+	 * @param date given by Parser
+	 */
+
+	public void addDate(List<Date> date) {
+		dates = date;
+	}
+
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\controller\UserInput.java
+
+
+
+
+
+	/**
+	 * origin: D:\CS2103TProject-W15-4J\src\test\ParserTest.java
+	 */
+
+	@Test
+	public void taskTypeTest() {
+		// test add floating
+		Parser parser = new Parser();
+		String test1 = "add go to sleep";
+		UserInput input = parser.parse(test1);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.ADD, input.getCommand());
+		assertTrue(input.isFloat());
+		assertFalse(input.isDeadline());
+		// test add deadline
+		String test2 = "add go to sleep by tomorrow";
+		input = parser.parse(test2);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.ADD, input.getCommand());
+		assertTrue(input.isDeadline());
+		assertFalse(input.isFloat());
+		assertEquals(input.getDate().size(), 1);
+		// test add repeated
+		String test3 = "add go to sleep every 2pm daily";
+		input = parser.parse(test3);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.ADD, input.getCommand());
+		assertFalse(input.isDeadline());
+		assertFalse(input.isFloat());
+		assertTrue(input.isRepeated());
+		assertEquals(input.repeatDate(), RepeatDate.DAILY);
+		// test wrong form of edit
+		String test4 = "edit 2";
+		input = parser.parse(test4);
+		assertFalse(input.getValid());
+		// test edit
+		String test5 = "edit 2 going to school from 11pm to 6pm";
+		input = parser.parse(test5);
+		assertTrue(input.getValid());
+		assertEquals(2, input.getEditID());
+		assertEquals(UserInput.CMD.EDIT, input.getCommand());
+		assertEquals("going to school", input.getDescription());
+		// test delete
+		String test6 = "delete 1 2 3 4";
+		input = parser.parse(test6);
+		List<Integer> test = new ArrayList<Integer>();
+		test.add(1);
+		test.add(2);
+		test.add(3);
+		test.add(4);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.DELETE, input.getCommand());
+		assertEquals(test, input.getDeleteID());
+		// test done
+		String test7 = "done 1 2 3 4";
+		input = parser.parse(test7);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.DONE, input.getCommand());
+		assertEquals(test, input.getDoneID());
+		// test show
+		String test8 = "show";
+		input = parser.parse(test8);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.SHOW, input.getCommand());
+		// test tag
+		String test9 = "tag 1 tags";
+		input = parser.parse(test9);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.TAG, input.getCommand());
+		// test untag
+		String test11 = "untag 1 tags";
+		input = parser.parse(test11);
+		assertTrue(input.getValid());
+		assertEquals(UserInput.CMD.UNTAG, input.getCommand());
+		// test wrong input
+		String test10 = "";
+		input = parser.parse(test10);
+		assertFalse(input.getValid());
+	}
+}
+
+	// End of segment: D:\CS2103TProject-W15-4J\src\test\ParserTest.java
+
+
+
+
+
