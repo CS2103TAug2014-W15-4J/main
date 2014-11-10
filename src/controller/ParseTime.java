@@ -16,6 +16,8 @@ public class ParseTime {
     private	boolean isRecurreing = false;
 	private Date recursUntil = null;
 	private String time = null;
+	private static final String CMD_TMR_SHORT = " (?i)tmr ";
+	private static final String CMD_TMR = " tomorrow ";
 
     /**	
      * Get the dates parsed by class, and returns the result in a list
@@ -52,7 +54,7 @@ public class ParseTime {
 	 * @param input The time string given by parser
 	 */
 	public void parseTime(String input) {
-		input = input.replaceAll("(?i) tmr ", " tomorrow ").trim();
+		input = input.replaceAll(CMD_TMR_SHORT, CMD_TMR).trim();
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(input);
 		for (DateGroup group : groups) {

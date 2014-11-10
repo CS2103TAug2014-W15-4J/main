@@ -19,7 +19,9 @@ public class Parser {
 	};
 
 	private static final String CMD_ADD = "add";
+	private static final String CMD_ADD_SHORT = "+";
 	private static final String CMD_DELETE = "delete";
+	private static final String CMD_DELETE_SHORT = "-";
 	private static final String CMD_CLEAR = "clear";
 	private static final String CMD_SEARCH = "search";
 	private static final String CMD_EDIT = "edit";
@@ -36,12 +38,26 @@ public class Parser {
 	private static final String CMD_REDO = "redo";
 	private static final String CMD_EXPORT = "export";
 
-	private static final String EDIT_NOTIME = "no-time";
-	private static final String EDIT_NOREPEAT = "no-repeat";
 	private static final String DEADLINE_ONETIME = "00000";
 	private static final String END_OF_DAY_TIME = "235959999";
 	private static final String BEGIN_OF_DAY_TIME = "000000000";
 	private static final String SHOW_THIS_WEEK = "this week";
+	private static final String ADD_BY = "(?i)by ";
+	private static final String ADD_EVERY = "(?i)every ";
+	private static final String ADD_DAILY = "(?i)daily";
+	private static final String ADD_WEEKLY = "(?i)weekly";
+	private static final String ADD_MONTHLY = "(?i)monthly";
+	private static final String ADD_FROM = "(?i)from ";
+	private static final String PATTERN_BY = ".*(?i)by(?-i) .+";
+	private static final String PATTERN_FROM = ".*(?i)from(?-i) .+";
+	private static final String PATTERN_EVERY_DAILY = ".*(?i)every .+ daily(?-i)";
+	private static final String PATTERN_EVERY_WEEKLY = ".*(?i)every .+ weekly(?-i)";
+	private static final String PATTERN_EVERY_MONTHLY = ".*(?i)every .+ monthly(?-i)";
+	
+	private static final String TIME_FORMAT_SECOND = "ssSSS";
+	private static final String TIME_FORMAT_DATE = "yyyyMMdd";
+	private static final String TIME_FORMAT_FULL = "yyyyMMddHHmmssSSS";
+	
 	private static ULogger log = ULogger.getLogger();
 	
 	//@author A0119387U
@@ -122,33 +138,33 @@ public class Parser {
 	 * @return parsed command
 	 */
 	private String parseCommand(String command) {
-		if (command.equals(CMD_EXIT) || command.equals("e"))
+		if (command.equals(CMD_EXIT))
 			return CMD_EXIT;
-		if (command.equals(CMD_HELP) || command.equals("h"))
+		if (command.equals(CMD_HELP))
 			return CMD_HELP;
-		if (command.equals(CMD_ADD) || command.equals("+"))
+		if (command.equals(CMD_ADD) || command.equals(CMD_ADD_SHORT))
 			return CMD_ADD;
-		if (command.equals(CMD_DELETE) || command.equals("-"))
+		if (command.equals(CMD_DELETE) || command.equals(CMD_DELETE_SHORT))
 			return CMD_DELETE;
-		if (command.equals(CMD_CLEAR) || command.equals("--"))
+		if (command.equals(CMD_CLEAR))
 			return CMD_CLEAR;
 		if (command.equals(CMD_SEARCH))
 			return CMD_SEARCH;
-		if (command.equals(CMD_EDIT) || command.equals("<"))
+		if (command.equals(CMD_EDIT))
 			return CMD_EDIT;
-		if (command.equals(CMD_DONE) || command.equals("d"))
+		if (command.equals(CMD_DONE))
 			return CMD_DONE;
 		if (command.equals(CMD_SHOW))
 			return CMD_SHOW;
-		if (command.equals(CMD_TAG) || command.equals("t"))
+		if (command.equals(CMD_TAG))
 			return CMD_TAG;
-		if (command.equals(CMD_UNTAG) || command.equals("ut"))
+		if (command.equals(CMD_UNTAG))
 			return CMD_UNTAG;
-		if (command.equals(CMD_UNDO) || command.equals("u"))
+		if (command.equals(CMD_UNDO))
 			return CMD_UNDO;
-		if (command.equals(CMD_REDO) || command.equals("r"))
+		if (command.equals(CMD_REDO))
 			return CMD_REDO;
-		if (command.equals(CMD_EXPORT) || command.equals("ex"))
+		if (command.equals(CMD_EXPORT))
 			return CMD_EXPORT;
 		return command;
 	}
@@ -285,29 +301,27 @@ public class Parser {
 		switch (repeatDate.trim().toLowerCase()) {
 			case "daily" : {
 				input.addRepeatDate(RepeatDate.DAILY);
-				tempContent = content.replaceAll("(?i)daily", "").trim();
+				tempContent = content.replaceAll(ADD_DAILY, "").trim();
 				break;
 				
 			}
 			case "weekly" : {
 				input.addRepeatDate(RepeatDate.WEEKLY);
-				tempContent = content.replaceAll("(?i)weekly", "").trim();
+				tempContent = content.replaceAll(ADD_WEEKLY, "").trim();
 				break;
 				
 			}
 			case "monthly" : {
 				input.addRepeatDate(RepeatDate.MONTHLY);
-				tempContent = content.replaceAll("(?i)monthly", "").trim();
+				tempContent = content.replaceAll(ADD_MONTHLY, "").trim();
 				break;
 				
 			}
 			default :
 				return parseFloat(input, content);
 		}
-		System.out.println(tempContent);
-		String[] contents = tempContent.split("(?i)every ",2);
+		String[] contents = tempContent.split(ADD_EVERY,2);
 		description = contents[0].trim();
-		System.out.println(contents[1]);
 		times.parseTime(contents[1]);
 		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT))
 				return parseFloat(input, content);
@@ -336,7 +350,7 @@ public class Parser {
 		log.info("dealine task found");
 		String description = null;
 		ParseTime times = new ParseTime();
-		String[] contents = content.split("(?i)by ",2);
+		String[] contents = content.split(ADD_BY,2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
 		if (input.getCommand() == CMD.ADD)
@@ -347,13 +361,13 @@ public class Parser {
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
 		} else {
-			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
 			String timeRest = timeRestFormat.format(dates.get(0));
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
-				SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
+				SimpleDateFormat timeFormat1 = new SimpleDateFormat(TIME_FORMAT_DATE);
 				String dateTime = timeFormat1.format(dates.get(0));
 				SimpleDateFormat timeFormat2 = new SimpleDateFormat(
-						"yyyyMMddHHmmssSSS");
+						TIME_FORMAT_FULL);
 				Date realDate = null;
 				try {
 					realDate = timeFormat2.parse(dateTime + END_OF_DAY_TIME);
@@ -383,10 +397,9 @@ public class Parser {
 		log.info("fixed task found");
 		String description = null;
 		ParseTime times = new ParseTime();
-		String[] contents = content.split("(?i)from ",2);
+		String[] contents = content.split(ADD_FROM,2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		System.out.println(description+" "+contents[1]);
 		if (input.getCommand() == CMD.ADD) {
 			if (description.equals("")) {
 				return parseFloat(input, content);
@@ -428,27 +441,27 @@ public class Parser {
 	 */
 
 	private TaskType taskType(String content) {
-		Pattern pattern = Pattern.compile(".*(?i)by(?-i) .+");
+		Pattern pattern = Pattern.compile(PATTERN_BY);
 		Matcher matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.DEADLINE;
 		}
-		pattern = Pattern.compile(".*(?i)from(?-i) .+");
+		pattern = Pattern.compile(PATTERN_FROM);
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.FIX;
 		}
-		pattern = Pattern.compile(".*(?i)every .+ daily(?-i)");
+		pattern = Pattern.compile(PATTERN_EVERY_DAILY);
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
 		}
-		pattern = Pattern.compile(".*(?i)every .+ weekly(?-i)");
+		pattern = Pattern.compile(PATTERN_EVERY_WEEKLY);
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
 		}
-		pattern = Pattern.compile(".*(?i)every .+ monthly(?-i)");
+		pattern = Pattern.compile(PATTERN_EVERY_MONTHLY);
 		matcher = pattern.matcher(content);
 		if (matcher.matches()) {
 			return TaskType.REPEAT;
@@ -522,15 +535,13 @@ public class Parser {
 			return errorCommand();
 		}
 		String IDString = contentSplit[0].trim();
-		String contentString = contentSplit[1].trim();
+		content = contentSplit[1].trim();
 		UserInput input = new UserInput();
 		if (!trueNumberFormat(IDString)) {
 			return errorCommand();
 		} else {
 			input.addEditID(Integer.valueOf(IDString));
 			input.addCommand(CMD.EDIT);
-			input = parseEditCommand(input, contentString);
-			content = input.getDescription();
 			input.add("");
 			input = parseEditTaskAndTime(input, content);
 		}
@@ -564,26 +575,6 @@ public class Parser {
 	}
 	//@author A0119387U
 	/**
-	 * for parsing special commands in edit command
-	 * @param input UserInput
-	 * @param content String after command word
-	 * @return input UserInput which is already edited
-	 */
-	private UserInput parseEditCommand(UserInput input, String content) {
-		input.add(content);
-		if (content.toLowerCase().contains(EDIT_NOTIME)) {
-			input.addEditCommand(EDIT_NOTIME);
-			content = content.replaceAll("(?i)" + EDIT_NOTIME, "").trim();
-			input.add(content);
-		} else if (content.toLowerCase().contains(EDIT_NOREPEAT)) {
-			input.addEditCommand(EDIT_NOREPEAT);
-			content = content.replaceAll("(?i)" + EDIT_NOREPEAT, "").trim();
-			input.add(content);
-		}
-		return input;
-	}
-	//@author A0119387U
-	/**
 	 *    this is for entering show command
 	 * @param content String after command word
 	 * @return input UserInput which is already edited
@@ -601,8 +592,8 @@ public class Parser {
 		}
 		input.addShow(content);
 		List<Date> dates = new ArrayList<Date>();
-		SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat2 = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat timeFormat1 = new SimpleDateFormat(TIME_FORMAT_DATE);
+		SimpleDateFormat timeFormat2 = new SimpleDateFormat(TIME_FORMAT_FULL);
 		
 		Date today = new Date();
 		Calendar cal = Calendar.getInstance();
@@ -669,7 +660,7 @@ public class Parser {
 		if (dates.size() > 2)
 			return errorCommand();
 		if (dates.size() == 1) {
-			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
 			String timeRest = timeRestFormat.format(dates.get(0));
 			if (!timeRest.equals(DEADLINE_ONETIME)) {
 				String dateTime = timeFormat1.format(dates.get(0));
@@ -690,7 +681,7 @@ public class Parser {
 			}
 		}
 		if(dates.size()==2){
-			SimpleDateFormat timeRestFormat = new SimpleDateFormat("ssSSS");
+			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
 			if (!(timeRestFormat.format(dates.get(0)).equals(DEADLINE_ONETIME)||
 					timeRestFormat.format(dates.get(1)).equals(DEADLINE_ONETIME))) {
 				String dateBeginTime = timeFormat1.format(dates.get(0));
