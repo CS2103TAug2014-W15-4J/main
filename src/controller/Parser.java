@@ -47,7 +47,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this differs different kinds of command
-	 * @param input String
+	 * @param input String given by Logic
 	 * @return UserInput after parsing
 	 *
 	 **/
@@ -118,7 +118,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * give flexiable commands
-	 * @param command String
+	 * @param command only command such as add delete.
 	 * @return parsed command
 	 */
 	private String parseCommand(String command) {
@@ -156,8 +156,8 @@ public class Parser {
 	/**
 	 * redo command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseRedo(String content) {
@@ -174,8 +174,8 @@ public class Parser {
 	/**
 	 * undo command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseUndo(String content) {
@@ -193,8 +193,8 @@ public class Parser {
 	/**
 	 * 
 	 * this is for entering exit command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -211,8 +211,8 @@ public class Parser {
 	/**
 	 *   for help command
 	 *
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 *       
 	 *
@@ -233,8 +233,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *  this is for entering add command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -265,8 +265,8 @@ public class Parser {
 	 *  this is for repeated task for add command or edit command
 	 *
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -327,8 +327,8 @@ public class Parser {
 	 *  this is for deadline task for add command or edit command
 	 *
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 * @throws ParseException
 	 */
 
@@ -374,8 +374,8 @@ public class Parser {
 	 *
 	 *  this is for fixed tasks for parseAdd and parseEdit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *  
 	 */
 
@@ -405,8 +405,8 @@ public class Parser {
 	 *
 	 *  this is for floating task for parseAdd or parseEdit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -423,7 +423,7 @@ public class Parser {
 	 * 
 	 *   this is for check what kind of command by keywords
 	 *
-	 * @param content String
+	 * @param content String after command word
 	 * @return TaskType
 	 */
 
@@ -458,8 +458,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this is for entering delete command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -487,8 +487,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * this is for entering clearing command	
-	 * @param content String
-	 * @return input UserInput         
+	 * @param content String after command word
+	 * @return input UserInput which is already edited         
 	 */
 
 	private UserInput parseClear(String content) {
@@ -506,8 +506,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 * 	this is for entering edit command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 *
 	 */
 
@@ -541,8 +541,8 @@ public class Parser {
 	/**
 	 * this is work for parsing edit
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseEditTaskAndTime(UserInput input, String content) {
 		if (content == null || content.equals("")) {
@@ -566,8 +566,8 @@ public class Parser {
 	/**
 	 * for parsing special commands in edit command
 	 * @param input UserInput
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseEditCommand(UserInput input, String content) {
 		input.add(content);
@@ -585,8 +585,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *    this is for entering show command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseShow(String content) {
@@ -718,8 +718,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *   this is for entering search command
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseSearch(String content) {
@@ -736,8 +736,8 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *  this is for entering mark done command	 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseDone(String content) {
@@ -765,8 +765,8 @@ public class Parser {
 	/**
 	 * tag command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 	private UserInput parseTag(String content) {
 		log.info("entering tag command");
@@ -795,8 +795,8 @@ public class Parser {
 	/**
 	 * Untag command parsing
 	 * 
-	 * @param content String
-	 * @return input UserInput
+	 * @param content String after command word
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput parseUntag(String content) {
@@ -833,7 +833,7 @@ public class Parser {
 	/**
 	 * 	 this is for checking if the contents are only numbers in done and
 	 *  delete command
-	 * @param content String
+	 * @param content String after command word
 	 * @return boolean whether the content contents numbers only
 	 *
 	 */
@@ -852,7 +852,7 @@ public class Parser {
 	//@author A0119387U
 	/**
 	 *give the error command
-	 * @return input UserInput
+	 * @return input UserInput which is already edited
 	 */
 
 	private UserInput errorCommand() {
