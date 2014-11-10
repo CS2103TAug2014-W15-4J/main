@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+
 import log.ULogger;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -28,50 +29,6 @@ import exception.UndoException;
 
 public class TaskList {
 	
-	//@author A0119446B
-	/**
-	 * This Comparator class is used in outputting task list order by deadline.
-	 * 
-	 */
-	static class DeadlineComparator implements Comparator<Task> {
-
-		@Override
-		public int compare(Task o1, Task o2) {
-			try {
-				return o1.getDeadline().compareTo(o2.getDeadline());
-			} catch (TaskInvalidDateException e) {
-				logger.warning("Error comparing deadline.");
-			}
-			return 0;
-		}
-	}
-	
-	//@author A0119446B
-	/**
-	 * This Comparator is used in outputting task list order by added time.
-	 * 
-	 */
-	static class AddedDateComparator implements Comparator<Task> {
-
-		@Override
-		public int compare(Task o1, Task o2) {
-			return o1.getAddedTime().compareTo(o2.getAddedTime());
-		}
-	}
-	
-	//@author A0115384H
-	/**
-	 * This Comparator is used in outputting task list order by done time.
-	 * 
-	 */
-	static class DoneDateComparator implements Comparator<Task> {
-	    
-	    @Override
-	    public int compare(Task o1, Task o2) {
-	        return o1.getDoneDate().compareTo(o2.getDoneDate());
-	    }
-	}
-
 	//@author A0119446B
 	private static ULogger logger = ULogger.getLogger();
 
@@ -1809,6 +1766,50 @@ public class TaskList {
 	 */
 	public void addTaskToTaskList(Task task) {
 	    addToList(task);
+	}
+
+	//@author A0119446B
+	/**
+	 * This Comparator class is used in outputting task list order by deadline.
+	 * 
+	 */
+	static class DeadlineComparator implements Comparator<Task> {
+	
+		@Override
+		public int compare(Task o1, Task o2) {
+			try {
+				return o1.getDeadline().compareTo(o2.getDeadline());
+			} catch (TaskInvalidDateException e) {
+				logger.warning("Error comparing deadline.");
+			}
+			return 0;
+		}
+	}
+
+	//@author A0119446B
+	/**
+	 * This Comparator is used in outputting task list order by added time.
+	 * 
+	 */
+	static class AddedDateComparator implements Comparator<Task> {
+	
+		@Override
+		public int compare(Task o1, Task o2) {
+			return o1.getAddedTime().compareTo(o2.getAddedTime());
+		}
+	}
+
+	//@author A0115384H
+	/**
+	 * This Comparator is used in outputting task list order by done time.
+	 * 
+	 */
+	static class DoneDateComparator implements Comparator<Task> {
+	    
+	    @Override
+	    public int compare(Task o1, Task o2) {
+	        return o1.getDoneDate().compareTo(o2.getDoneDate());
+	    }
 	}
 }
 

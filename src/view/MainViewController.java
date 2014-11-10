@@ -60,7 +60,7 @@ import javafx.util.Duration;
  */
 public class MainViewController extends GridPane{
 	
-	final static String[] DEFAULT_TAG_COLORS = {
+	private static final String[] DEFAULT_TAG_COLORS = {
 		"#009688",
 		"#F44336",
 		"#E91E63",
@@ -75,7 +75,7 @@ public class MainViewController extends GridPane{
 		"#F44336"
 	};
 	
-	final static KeyCode[] F_KEYS = {
+	private static final KeyCode[] F_KEYS = {
 		KeyCode.F1,
 		KeyCode.F2,
 		KeyCode.F3,
@@ -86,7 +86,7 @@ public class MainViewController extends GridPane{
 		KeyCode.F8,
 	};
 	
-	final static CMD[] F_KEY_COMMAND = {
+	private static final CMD[] F_KEY_COMMAND = {
 		CMD.ADD,
 		CMD.DELETE,
 		CMD.DONE,
@@ -96,36 +96,36 @@ public class MainViewController extends GridPane{
 		CMD.TAG,
 	};
 	
-	final static String CSS_BACKGROUND_COLOR = "-fx-background-color: ";
-	final static String FX_COLOR_RGB = "rgb(%s, %s, %s)";
-	final static String FXML_FILE_NAME = "MainView.fxml";
-	final static String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
-	final static String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
-	final static String ALL_TASKS_DONE = "Good! All tasks are done!";
-	final static String ONE_OVERDUE_TASK = "Sigh! 1 task overdue";
-	final static String MANY_OVERDUE_TASKS = "Sigh! %s tasks overdue";
-	final static String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
+	private static final String CSS_BACKGROUND_COLOR = "-fx-background-color: ";
+	private static final String FX_COLOR_RGB = "rgb(%s, %s, %s)";
+	private static final String FXML_FILE_NAME = "MainView.fxml";
+	private static final String ONE_TASK_NOT_DONE = "Oops! 1 task should be done!";
+	private static final String MANY_TASKS_NOT_DONE = "Oops! %s tasks should be done!";
+	private static final String ALL_TASKS_DONE = "Good! All tasks are done!";
+	private static final String ONE_OVERDUE_TASK = "Sigh! 1 task overdue";
+	private static final String MANY_OVERDUE_TASKS = "Sigh! %s tasks overdue";
+	private static final String NO_OVERDUE_TASK = "Congratulations! No overdue task!";
 	
-	final static String TITLE_TODAY_TASKS = "Today";
-	final static String TITLE_PERIOD_TASKS = "Sometime";
-	final static String TITLE_ALL_TASKS = "All Task";
-	final static String TITLE_DONE_TASKS = "Done";
-	final static String TITLE_OVERDUE_TASKS = "Overdue";
-	final static String TITLE_TASKS_WITH_TAG = "Tag";
-	final static String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tag \'%s\"";
-	final static String TITLE_SEARCH_RESULT = "Search";
-	final static String TITLE_SHOW_SEARCH_RESULT = "Searching \"%s\"";
-	final static String TITLE_HELP_PAGE = "Help";
+	private static final String TITLE_TODAY_TASKS = "Today";
+	private static final String TITLE_PERIOD_TASKS = "Sometime";
+	private static final String TITLE_ALL_TASKS = "All Task";
+	private static final String TITLE_DONE_TASKS = "Done";
+	private static final String TITLE_OVERDUE_TASKS = "Overdue";
+	private static final String TITLE_TASKS_WITH_TAG = "Tag";
+	private static final String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tag \'%s\"";
+	private static final String TITLE_SEARCH_RESULT = "Search";
+	private static final String TITLE_SHOW_SEARCH_RESULT = "Searching \"%s\"";
+	private static final String TITLE_HELP_PAGE = "Help";
 	
-	final static int TOTAL_PAGE_NUM = 8;
-	final static int TODAY_TASKS_PAGE_INDEX = 0;
-	final static int PERIOD_TASKS_PAGE_INDEX = 1;
-	final static int UNDONE_TASKS_PAGE_INDEX = 2;
-	final static int DONE_TASKS_PAGE_INDEX = 3;
-	final static int OVERDUE_TASKS_PAGE_INDEX = 4;
-	final static int TASKS_WITH_TAG_PAGE_INDEX = 5;
-	final static int SEARCH_RESULT_PAGE_INDEX = 6;
-	final static int HELP_DOC_PAGE_INDEX = 7;
+	private static final int TOTAL_PAGE_NUM = 8;
+	private static final int TODAY_TASKS_PAGE_INDEX = 0;
+	private static final int PERIOD_TASKS_PAGE_INDEX = 1;
+	private static final int UNDONE_TASKS_PAGE_INDEX = 2;
+	private static final int DONE_TASKS_PAGE_INDEX = 3;
+	private static final int OVERDUE_TASKS_PAGE_INDEX = 4;
+	private static final int TASKS_WITH_TAG_PAGE_INDEX = 5;
+	private static final int SEARCH_RESULT_PAGE_INDEX = 6;
+	private static final int HELP_DOC_PAGE_INDEX = 7;
 	
 	@FXML
 	private Label date;
