@@ -138,35 +138,50 @@ public class Parser {
 	 * @return parsed command
 	 */
 	private String parseCommand(String command) {
-		if (command.equals(CMD_EXIT))
+		if (command.equals(CMD_EXIT)) {
 			return CMD_EXIT;
-		if (command.equals(CMD_HELP))
+		}
+		if (command.equals(CMD_HELP)) {
 			return CMD_HELP;
-		if (command.equals(CMD_ADD) || command.equals(CMD_ADD_SHORT))
+		}
+		if (command.equals(CMD_ADD) || command.equals(CMD_ADD_SHORT)) {
 			return CMD_ADD;
-		if (command.equals(CMD_DELETE) || command.equals(CMD_DELETE_SHORT))
-			return CMD_DELETE;
-		if (command.equals(CMD_CLEAR))
-			return CMD_CLEAR;
-		if (command.equals(CMD_SEARCH))
-			return CMD_SEARCH;
-		if (command.equals(CMD_EDIT))
+		}
+		if (command.equals(CMD_DELETE) || command.equals(CMD_DELETE_SHORT)) {
+		    return CMD_DELETE;
+		}
+		if (command.equals(CMD_CLEAR)) {
+		    return CMD_CLEAR;
+		}
+		if (command.equals(CMD_SEARCH)) {
+		    return CMD_SEARCH;
+		}
+		if (command.equals(CMD_EDIT)) {
 			return CMD_EDIT;
-		if (command.equals(CMD_DONE))
+		} 
+		if (command.equals(CMD_DONE)) {
 			return CMD_DONE;
-		if (command.equals(CMD_SHOW))
+		} 
+		if (command.equals(CMD_SHOW)) {
 			return CMD_SHOW;
-		if (command.equals(CMD_TAG))
+		} 
+		if (command.equals(CMD_TAG)) {
 			return CMD_TAG;
-		if (command.equals(CMD_UNTAG))
+		}
+		if (command.equals(CMD_UNTAG)) {
 			return CMD_UNTAG;
-		if (command.equals(CMD_UNDO))
+		}
+		if (command.equals(CMD_UNDO)) {
 			return CMD_UNDO;
-		if (command.equals(CMD_REDO))
+		}
+		if (command.equals(CMD_REDO)) {
 			return CMD_REDO;
-		if (command.equals(CMD_EXPORT))
+		}
+		if (command.equals(CMD_EXPORT)) {
 			return CMD_EXPORT;
+		}
 		return command;
+		
 	}
 	//@author A0119387U
 	/**
@@ -216,8 +231,9 @@ public class Parser {
 
 	private UserInput parseExit(String content) {
 		log.info("entering exit command");
-		if (content != null && !content.equals(""))
-			return errorCommand();
+		if (content != null && !content.equals("")) {
+            return errorCommand();
+        }
 		UserInput input = new UserInput();
 		input.addCommand(CMD.EXIT);
 		log.info("exit exit command");
@@ -323,8 +339,9 @@ public class Parser {
 		String[] contents = tempContent.split(ADD_EVERY,2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT))
-				return parseFloat(input, content);
+		if (description.equals("")&&!input.getCommand().equals(CMD.EDIT)) {
+            return parseFloat(input, content);
+        }
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
@@ -353,10 +370,11 @@ public class Parser {
 		String[] contents = content.split(ADD_BY,2);
 		description = contents[0].trim();
 		times.parseTime(contents[1]);
-		if (input.getCommand() == CMD.ADD)
-			if (description.equals("")) {
+		if (input.getCommand() == CMD.ADD) {
+            if (description.equals("")) {
 				return parseFloat(input, content);
 			}
+        }
 		List<Date> dates = times.getDates();
 		if (dates.size() != 1) {
 			return parseFloat(input, content);
@@ -657,8 +675,9 @@ public class Parser {
 		ParseTime times = new ParseTime();
 		times.parseTime(content);
 		dates = times.getDates();
-		if (dates.size() > 2)
-			return errorCommand();
+		if (dates.size() > 2) {
+            return errorCommand();
+        }
 		if (dates.size() == 1) {
 			SimpleDateFormat timeRestFormat = new SimpleDateFormat(TIME_FORMAT_SECOND);
 			String timeRest = timeRestFormat.format(dates.get(0));
