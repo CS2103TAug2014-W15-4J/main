@@ -18,7 +18,8 @@ import exception.TaskTagException;
 
 public abstract class Task {
 	protected static final String DATE_FORMAT = "EEE HH:mm dd/MMM/yyyy";
-
+	
+	/** This is the default four types of task */
 	public enum Type {
 		FLOAT, DEADLINE, FIXED, REPEATED
 	}

@@ -21,8 +21,10 @@ import exception.TaskInvalidIdException;
 //@author A0115384H
 /**
  * This class is for testing the functionalities of the Logic class.
+ * 
  */
 public class LogicTest {
+	/** Following are default test input */
     final String MESSAGE_ADD_SUCCESS = "Task added successfully.";
     final String MESSAGE_EDIT_DESCRIPTION = "Task \"%s\" is renamed as \"%s\"";
     final String MESSAGE_EDIT_DEADLINE = "The deadline is changed to \"%s\"";

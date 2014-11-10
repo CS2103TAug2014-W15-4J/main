@@ -13,7 +13,8 @@ import exception.TaskInvalidDateException;
 
 //@author A0115384H
 /**
- * This class models a repeated task: tasks that recur after a period of time
+ * This class models a repeated task: tasks that recur after a period of time.
+ * 
  */
 public class RepeatedTask extends Task {
 	@XStreamAlias("Deadline")

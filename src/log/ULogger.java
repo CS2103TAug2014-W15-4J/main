@@ -11,7 +11,6 @@ import java.util.logging.SimpleFormatter;
  * This class adapt the singleton pattern.
  * 
  * @author a0119446B
- *
  */
 public class ULogger {
 	
@@ -23,7 +22,7 @@ public class ULogger {
 	private static FileHandler fileHandler;
 	
 	/**
-	 * The private constructor to generate an instance
+	 * The private constructor to generate an instance.
 	 * 
 	 */
 	private ULogger() {
@@ -38,7 +37,7 @@ public class ULogger {
 	        SimpleFormatter formatter = new SimpleFormatter();  
 	        fileHandler.setFormatter(formatter);  
 	        
-	        // the following statement is used ato log a initial message
+	        // the following statement is used to log a initial message
 	        logWriter.info("Logger is ready.");  
 
 	    } catch (SecurityException e) {  
@@ -84,6 +83,7 @@ public class ULogger {
 	
 	/**
 	 * This method close the file writer. It should be called when the system exits.
+	 * 
 	 */
 	public static void close() {
 		logger = null;

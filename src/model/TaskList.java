@@ -30,7 +30,8 @@ public class TaskList {
 	
 	//@author A0119446B
 	/**
-	 * This Comparator is used in outputting task list order by deadline
+	 * This Comparator class is used in outputting task list order by deadline.
+	 * 
 	 */
 	static class DeadlineComparator implements Comparator<Task> {
 
@@ -47,7 +48,8 @@ public class TaskList {
 	
 	//@author A0119446B
 	/**
-	 * This Comparator is used in outputting task list order by added time
+	 * This Comparator is used in outputting task list order by added time.
+	 * 
 	 */
 	static class AddedDateComparator implements Comparator<Task> {
 
@@ -59,7 +61,8 @@ public class TaskList {
 	
 	//@author A0115384H
 	/**
-	 * This Comparator is used in outputting task list order by done time
+	 * This Comparator is used in outputting task list order by done time.
+	 * 
 	 */
 	static class DoneDateComparator implements Comparator<Task> {
 	    
@@ -107,7 +110,8 @@ public class TaskList {
 	private int totalFinished;
 
 	/**
-	 * This constructor creates a new TaskList object, and initialises all values. 
+	 * This constructor creates a new TaskList object, and initializes all values. 
+	 * 
 	 */
 	public TaskList() {
 
@@ -124,7 +128,8 @@ public class TaskList {
 
 	/**
 	 * This method sets the isDisplay attribute to false when called.
-	 * When isDisplay is set to false, the whole list is displayed.
+	 * When isDisplay is set to false, every task is displayed.
+	 * 
 	 */
 	public void setShowDisplayListToFalse() {
 		// lazy evaluation
@@ -577,7 +582,8 @@ public class TaskList {
 	}
 
 	/**
-	 * This method clears the TaskList, and all its tasks.
+	 * This method clears the TaskList, and all its tasks as well.
+	 * 
 	 */
     public void clearList() {
         ArrayList<Task> tasksRemoved = new ArrayList<Task>();
