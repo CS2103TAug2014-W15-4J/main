@@ -206,6 +206,9 @@ public class MainViewController extends GridPane{
 	private static final String DISPLAY_HELP_EXIT_STRUCTURE = "      exit";
 	private static final String DISPLAY_HELP_EXIT_EXAMPLE = "      exit";
 	
+	private static final String DISPLAY_TITLE_TASK_DUE_SOON = "Task(s) Due Soon";
+	private static final String DISPLAY_TITLE_TASK_TO_DO = "Task(s) To Do";
+	
 	private static final int TOTAL_PAGE_NUM = 8;
 	private static final int TODAY_TASKS_PAGE_INDEX = 0;
 	private static final int PERIOD_TASKS_PAGE_INDEX = 1;
@@ -256,12 +259,19 @@ public class MainViewController extends GridPane{
 	
 	private static final String STYLE_HELP_COMMAND = "-fx-text-fill: #e51c23; -fx-padding: 0 0 0 50; -fx-font-size: 24";
 	
+	private static final String STYLE_FLOAT_DIVISION = "-fx-background-color: white";
+	private static final String STYLE_CAPTION = "-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;";
+	
 	private static final double SIZE_HEIGHT_HELPBOX = 40;
 	private static final double SIZE_WIDTH_HELPBOX = 900;
 	private static final double SIZE_HEIGHT_HELP_GRIDPANE = 140;
 	private static final double SIZE_WIDTH_HELP_GRIDPANE = 900;
+	private static final double SIZE_HEIGHT_FLOAT_DIVISION = 20;
+	private static final double SIZE_WIDTH_FLOAT_DIVISION = 850;
 	
 	private static final double SPACING_HELP_COOMPONENT = 20;
+	
+	private static final String CLASS_NAME_TASKCARD = "taskCard";
 	
 	@FXML
 	private Label date;
@@ -645,7 +655,7 @@ public class MainViewController extends GridPane{
 		page[HELP_DOC_PAGE_INDEX].setSpacing(SPACING_HELP_COOMPONENT);
 		if (index == F_KEY_ADD) {
 			
-			Label add = new Label(DISPLAY_HELP_COMMAND[F_KEY_ADD]);F
+			Label add = new Label(DISPLAY_HELP_COMMAND[F_KEY_ADD]);
 			add.setStyle(STYLE_HELP_COMMAND);
 			
 			GridPane addFloatTask = new GridPane();
@@ -662,7 +672,7 @@ public class MainViewController extends GridPane{
 			
 			GridPane addFixedTask = new GridPane();
 			setHelpForCommand(addFixedTask, DISPLAY_HELP_ADD_FIXED_TASK_DESCRIPTION, 
-					DISPLAY_HELP_ADD_REPEATED_TASK_STRUCTURE, DISPLAY_HELP_ADD_REPEATED_TASK_EXAMPLE);
+					DISPLAY_HELP_ADD_FIXED_TASK_STRUCTURE, DISPLAY_HELP_ADD_FIXED_TASK_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
 			page[HELP_DOC_PAGE_INDEX].getChildren().addAll(add, addFloatTask, addDeadlineTask, addRepeatedTask, addFixedTask);
@@ -677,7 +687,7 @@ public class MainViewController extends GridPane{
 					DISPLAY_HELP_DELETE_ONE_TASK_STRUCTURE, DISPLAY_HELP_DELETE_ONE_TASK_EXAMPLE);
 			
 			GridPane deleteManyTasks = new GridPane();
-			setHelpForCommand(deleteManyTasks, DISPLAY_HELP_DONE_MANY_TASKS_DESCRIPTION, 
+			setHelpForCommand(deleteManyTasks, DISPLAY_HELP_DELETE_MANY_TASKS_DESCRIPTION, 
 					DISPLAY_HELP_DELETE_MANY_TASKS_STRUCTURE, DISPLAY_HELP_DELETE_MANY_TASKS_EXAMPLE);
 			
 			page[HELP_DOC_PAGE_INDEX].getChildren().clear();
@@ -840,32 +850,32 @@ public class MainViewController extends GridPane{
 	private void setOnePageView(int pageIndex) throws TaskInvalidDateException {
 		page[pageIndex].getChildren().clear();
 		
-		for (int i=0; i<taskList.countUndone(); i++) {
+		for (int i=INITIAL_POSITION; i<taskList.countUndone(); i++) {
 			GridPane taskLayout = new GridPane();
-			taskLayout.getStyleClass().add("taskCard");
+			taskLayout.getStyleClass().add(CLASS_NAME_TASKCARD);
       
-			setTaskFormat(taskLayout, i);
+			setTaskFormat(taskLayout, i);F
 			
 			if (((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == -1) 
-					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0)) && (i==0)) {
+					|| (taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) > 0)) && (i==INITIAL_POSITION)) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) Due Soon");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_DUE_SOON);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
 			} else if ((taskList.indexOfFirstFloatingTask(taskList.prepareDisplayList(false)) == 0) && (i==0)) {
 				GridPane floatDivision = new GridPane();
-				floatDivision.setStyle("-fx-background-color: white");
+				floatDivision.setStyle(STYLE_FLOAT_DIVISION);
 				Label caption = new Label();
-				caption.setText("Task(s) To Do");
-				caption.setStyle("-fx-text-fill: #9E9E9E;-fx-font-weight: bold;-fx-font-size: 16px;");
+				caption.setText(DISPLAY_TITLE_TASK_TO_DO);
+				caption.setStyle(STYLE_CAPTION);
 				GridPane.setConstraints(caption, 0, 0);
 				floatDivision.getChildren().add(caption);
-				setGridPaneSize(floatDivision, 850, 20);
+				setGridPaneSize(floatDivision, SIZE_WIDTH_FLOAT_DIVISION, SIZE_HEIGHT_FLOAT_DIVISION);
 				page[pageIndex].getChildren().add(floatDivision);
 			}
 			
