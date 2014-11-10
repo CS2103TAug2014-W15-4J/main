@@ -1,3 +1,4 @@
+//@author A0119414L
 package view;
 
 import controller.Logic;
@@ -51,7 +52,7 @@ import javafx.util.Duration;
 /**
  * This class is a controller which is to control the view displayed in MainView.
  * 
- * @author Wang Zhipeng
+ * @author A0119414L
  *
  */
 public class MainViewController extends GridPane{
