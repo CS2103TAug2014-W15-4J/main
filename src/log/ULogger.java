@@ -5,12 +5,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-//@author a0119446B
+//@author A0119446B
 /**
  * This class is used to write logging information to the default log file ('uClear.log').
  * This class adapt the singleton pattern.
  * 
- * @author a0119446B
+ * @author A0119446B
  */
 public class ULogger {
 	
