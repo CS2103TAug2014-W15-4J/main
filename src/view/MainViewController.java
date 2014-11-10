@@ -112,9 +112,9 @@ public class MainViewController extends GridPane{
 	private static final String TITLE_DONE_TASKS = "Done";
 	private static final String TITLE_OVERDUE_TASKS = "Overdue";
 	private static final String TITLE_TASKS_WITH_TAG = "Tag";
-	private static final String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tag \'%s\"";
+	private static final String TITLE_SHOW_TASKS_WITH_TAG = "Showing Tasks With Tag:   <%s>";
 	private static final String TITLE_SEARCH_RESULT = "Search";
-	private static final String TITLE_SHOW_SEARCH_RESULT = "Searching \"%s\"";
+	private static final String TITLE_SHOW_SEARCH_RESULT = "Searching Result For:   \"%s\"";
 	private static final String TITLE_HELP_PAGE = "Help";
 	
 	private static final int TOTAL_PAGE_NUM = 8;
@@ -1222,7 +1222,7 @@ public class MainViewController extends GridPane{
 				if (taskList.isTagContained(showTag)) {
 					List<Task> tagTasks = getTagTaskList(showTag);
 					if (tagTasks.size() > 1) {
-						response.setText(String.format(MANY_TASKS_NOT_DONE, tagTasks.size()));
+						response.setText(String.format(TITLE_SHOW_TASKS_WITH_TAG, showTag));
 					} else if (tagTasks.size() == 1) {
 						response.setText(ONE_TASK_NOT_DONE);
 					} else {
@@ -1240,9 +1240,9 @@ public class MainViewController extends GridPane{
 				if (count == 0) {
 					response.setText(String.format("Nothing found for %s", searchKey));
 				} else if (count == 1) {
-					response.setText("1 result shown.");
+					response.setText(String.format(TITLE_SHOW_SEARCH_RESULT, searchKey));
 				} else {
-					response.setText(count + " results shown.");
+					response.setText(String.format(TITLE_SHOW_SEARCH_RESULT, searchKey));
 				}
 			}
 		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX){
