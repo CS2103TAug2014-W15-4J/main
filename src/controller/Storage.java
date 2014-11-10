@@ -163,13 +163,14 @@ public class Storage {
 	
 	/**
 	 * Export user's list of task into a text file.
+	 * 
 	 * @param tasks 	the TaskList object which contains the list of tasks
 	 * @return a feedback message
 	 */
 	public static void export(List<Task> taskTImed, List<Task> taskTodo, List<Task> taskFinished) {
 		logger.info(MESSAGE_EXPORTING);
+
 		// preparation work
-		
 		StringBuilder output = new StringBuilder();
 		output.append(EXPORT_HEADING);
 		for (Task task : taskTImed) {
