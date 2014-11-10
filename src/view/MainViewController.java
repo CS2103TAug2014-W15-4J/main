@@ -1282,7 +1282,11 @@ public class MainViewController extends GridPane{
 	 * @throws TaskInvalidDateException
 	 * @throws TaskNoSuchTagException 
 	 */
-	private boolean isSpecialCommand() throws TaskInvalidDateException, TaskNoSuchTagException {		
+	private boolean isSpecialCommand() throws TaskInvalidDateException, TaskNoSuchTagException {
+		if (command.length() < 4) {
+			return false;
+		}
+		
 		if (command.trim().toLowerCase().equals("exit")) {
 			// close logger
 			ULogger.close();
