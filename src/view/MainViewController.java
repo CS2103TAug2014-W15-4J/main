@@ -116,6 +116,15 @@ public class MainViewController extends GridPane{
 	private static final String TITLE_HELP_PAGE = "Help";
 	private static final String TITLE_HELP_COMMAND = "Press \"Esc\" to return";
 	
+	private static final String TITLE_RESPONSE_HELP = "Press \"F1\" - \"F8\" for more details.";
+	private static final String TITLE_RESPONSE_FIRST_SEARCH = "You haven't search anything yet. Try \"search <keyword>\".";
+	private static final String TITLE_RESPONSE_SEARCH_NO_RESULT = "Nothing found for %s";
+	private static final String TITLE_RESPONSE_NO_SUCH_TAG = "No Such Tag!";
+	private static final String TITLE_RESPONSE_FIRST_SHOW_TAG = "You haven't show tags yet. Try \"show <tags>\".";
+	private static final String TITLE_RESPONSE_NO_DONE_TASK = "You haven't finished any tasks yet!";
+	private static final String TITLE_RESPONSE_NO_TASK_IN_THE_PERIOD = "No time period shown yet. Try \"show this week\".";
+	private static final String TITLE_RESPONSE_ONE_DONE_TASK = "Good! 1 task has been finished!";
+	
 	private static final String DISPLAY_HELP_OTHER_COMMAND = "OTHER COMMANDS";
 	private static final String DISPLAY_HELP_DISCRIPTION = "Description";
 	private static final String DISPLAY_HELP_STRUCTURE = "Structure";
@@ -272,6 +281,7 @@ public class MainViewController extends GridPane{
 	
 	private static final String STYLE_TASK_DEADLINE = "-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;";
 	private static final String STYLE_TASK_START_TIME = "-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px; -fx-font-size:16;";
+	private static final String STYLE_TASK_DESCRIPTION = "-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:28;";
 	
 	private static final String STYLE_RESPONSE = "-fx-text-fill: #4CAF50;";
 	private static final String STYLE_RESPONSE_FADE = "-fx-font-size: 20;-fx-text-fill: #e51c23";
@@ -322,6 +332,7 @@ public class MainViewController extends GridPane{
 	private static final String KEY_EIGHT = "8";
 	
 	private static final String CLASS_NAME_TASKCARD = "taskCard";
+	private static final String CLASS_NAME_STATUS_CARD = "status-card";
 	
 	@FXML
 	private Label date;
@@ -1184,7 +1195,7 @@ public class MainViewController extends GridPane{
 		description.setPrefSize(650, 40);
 		description.setMaxHeight(40);
 		description.setTextOverrun(OverrunStyle.CENTER_WORD_ELLIPSIS);
-		description.setStyle("-fx-text-fill: rgb(0,0,0,87); -fx-padding:0 0 0 16px ; -fx-font-size:28;");
+		description.setStyle(STYLE_TASK_DESCRIPTION);
 		GridPane.setConstraints(description, 1, 0, 1, 1);
 		taskLayout.getChildren().add(description);
 	}
@@ -1204,7 +1215,7 @@ public class MainViewController extends GridPane{
 		status.setMinWidth(100);
 		status.setMaxWidth(150);
 		status.setAlignment(Pos.CENTER);
-		status.getStyleClass().add("status-card");
+		status.getStyleClass().add(CLASS_NAME_STATUS_CARD);
 		
 		determineStatusText(status, task);
 		
@@ -1399,7 +1410,7 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == PERIOD_TASKS_PAGE_INDEX) {
 			if (showPeriod == null) {
-				response.setText("No time period shown yet. Try \"show this week\".");
+				response.setText(TITLE_RESPONSE_NO_TASK_IN_THE_PERIOD);
 			} else {
 				List<Task> periodTasks = getPeriodTaskList(showPeriod);
 				if (periodTasks.size() > 1) {
@@ -1419,9 +1430,9 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == DONE_TASKS_PAGE_INDEX) {
 			if (taskList.countFinished() == 0) {
-				response.setText("You haven't finished any tasks yet!");
+				response.setText(TITLE_RESPONSE_NO_DONE_TASK);
 			} else if (taskList.countFinished() == 1) {
-				response.setText("Good! 1 task has been finished!");
+				response.setText(TITLE_RESPONSE_ONE_DONE_TASK);
 			} else {
 				response.setText("Good! " + taskList.countFinished() + " tasks have been finished!");
 			}
@@ -1435,7 +1446,7 @@ public class MainViewController extends GridPane{
 			}
 		} else if (listDisplay.getCurrentPageIndex() == TASKS_WITH_TAG_PAGE_INDEX) {
 			if (showTag == null) {
-				response.setText("You haven't show tags yet. Try \"show <tags>\".");
+				response.setText(TITLE_RESPONSE_FIRST_SHOW_TAG);
 			} else {
 				if (taskList.isTagContained(showTag)) {
 					List<Task> tagTasks = getTagTaskList(showTag);
@@ -1447,16 +1458,16 @@ public class MainViewController extends GridPane{
 						response.setText(ALL_TASKS_DONE);
 					}
 				} else {
-					response.setText("No Such Tag!");
+					response.setText(TITLE_RESPONSE_NO_SUCH_TAG);
 				}
 			}
 		} else if (listDisplay.getCurrentPageIndex() == SEARCH_RESULT_PAGE_INDEX) {
 			if (searchKey == null) {
-				response.setText("You haven't search anything yet. Try \"search <keyword>\".");
+				response.setText(TITLE_RESPONSE_FIRST_SEARCH);
 			} else {
 				int count = taskList.searchTaskByKeyword(searchKey).size();
 				if (count == 0) {
-					response.setText(String.format("Nothing found for %s", searchKey));
+					response.setText(String.format(TITLE_RESPONSE_SEARCH_NO_RESULT, searchKey));
 				} else if (count == 1) {
 					response.setText(String.format(TITLE_SHOW_SEARCH_RESULT, searchKey));
 				} else {
@@ -1464,7 +1475,7 @@ public class MainViewController extends GridPane{
 				}
 			}
 		} else if (listDisplay.getCurrentPageIndex() == HELP_DOC_PAGE_INDEX){
-			response.setText("Press \"F1\" - \"F8\" for more details.");
+			response.setText(TITLE_RESPONSE_HELP);
 		} else {
 			
 		}
