@@ -37,7 +37,6 @@ public class Logic {
 	private static final String NEW_LINE = "\n\n";
 	
 	private static final String MESSAGE_TASK_ADDED = "\"%s\" is added to your list.";
-	private static final String MESSAGE_TASK_EDITED = "Task edited successfully.";
 	private static final String MESSAGE_TASK_EDITED_DESCRITPION = "Task \"%s\" is renamed as \"%s\"";
 	private static final String MESSAGE_TASK_EDITED_DEADLINE = "The deadline is changed to \"%s\"";
 	private static final String MESSAGE_TASK_EDITED_ALL = "Task is renamed as \"%s\". New deadline: \"%s\"";
@@ -60,7 +59,6 @@ public class Logic {
 	private static final String MESSAGE_EMPTY_SEARCH_RESULT = "Nothing found.";
 
 	private static final String MESSAGE_INVALID_EDIT = "Invalid edit.";
-	private static final String MESSAGE_INVALID_DELETE = "Error deleting task(s).";
 	private static final String MESSAGE_INVALID_MARKED_DONE = "Error: task(s) already marked done.";
 
 	private static final String MESSAGE_INVALID_TAG_DELETE = "No such tag to remove.";
@@ -77,26 +75,7 @@ public class Logic {
 	private static final String MESSAGE_INVALID_DATE_NUMBER = "Invalid number of dates.";
 
 	private static final String MESSAGE_COMMAND_NOT_ALLOW = "You can only search or delete tasks when showing finished tasks.";
-	private static final String MESSAGE_HELP = "Current list of available commands: \n" +
-			"- add a floating task     : add <description>\n" +
-			"- add a deadline task     : add <description> by <time/date>\n" +
-			"- add a fixed time        : add <description> <time/date1> to <time/date2>\n" +
-			"- add a repeated task     : add <description> every <time/date> <period(daily/weekly/monthly)>\n" +
-			"- edit a task description : edit <taskID> <description>\n" +
-			"- edit a task time/date   : edit <taskID> <time/date>\n" +
-			"- delete task(s)          : delete <taskID> [<taskID> <taskID> ...]\n" +
-			"- clear all tasks         : clear\n" +
-			"- mark task(s) done       : done <taskID> [<taskID> <taskID> ...]\n" +
-			"- tag a task              : tag <taskID> <tag>\n" +
-			"- untag a task            : untag <taskID> <tag>\n" +
-			"- untag all tags from task: untag <taskID>\n" +
-			"- show all tasks          : show / show all\n" +
-			"- show tasks (add order)  : show added\n" +
-			"- show tasks with tag     : show <tag>\n" +
-			"- show tasks that are done: show done\n" +
-			"(You can only delete or search tasks when displying tasks that are done)\n" +
-			"- search tasks            : search <keyword>\n" +
-			"- exit the program        : exit";
+
 
 	static Storage storage = new Storage();
 
@@ -212,10 +191,7 @@ public class Logic {
 	 */
 	private static String executeCommand(UserInput userCommand) {
 
-		if (userCommand.getCommand() == UserInput.CMD.HELP) {
-			return MESSAGE_HELP;
-
-		} else if (userCommand.getCommand() == UserInput.CMD.ADD) {
+		if (userCommand.getCommand() == UserInput.CMD.ADD) {
 			String desc = userCommand.getDescription();
 			List<Date> dateList = userCommand.getDate();
 			listOfTasks.setShowDisplayListToFalse();
