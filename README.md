@@ -1,12 +1,7 @@
 uClear
 ====
 
-CS2103T Project of team W15-4j
-
-Current Stage
-====
-
-Milestone V0.48
+2014 CS2103T Project of team W15-4j
 
 User Guide
 ====
